@@ -89,13 +89,13 @@ As predictors, model choice and hyper-parameters have a strong impact on model q
 \end{figure}
 
 \subsection{Sequence prediction}
-In this section, a formal definition of sequences is presented, and then set in relation with the problem at hand\footnote{Definition adapted from \cite{pei2001prefixspan}}.  Let $I = \{i_1,i_2,...i_n\}$ be the set of all items. An \textit{itemset} is a subset of $I$. A \textit{sequence} is an ordered list of itemsets, such that in its notation $seq = \langle s_1s_2...s_l \rangle$, the following rule holds: $\forall\ 1 \leq j \leq l: s_j \subseteq I$. Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items.
+In this section, a formal definition of sequences is presented, and then set in relation with the problem at hand\footnote{Definition adapted from \cite{pei2001prefixspan}}.  Let $I = \{i_1, i_2, ..., i_n\}$ be the set of all items. An \textit{itemset} is a subset of $I$. A \textit{sequence} is an ordered list of itemsets, such that in its notation $seq = \langle s_1s_2...s_l \rangle\ |\ \forall\ 0 \leq j \leq l: s_j \subseteq I$. Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items. For  subsequences, the notation $seq_{i,k}$ denotes the containment of the elements from index $i$ through $k$ from the original sequence.
 
-Assuming that a a sequence can be finished, consider the database of completed sequences $DS$. Under the assumption of the Markovian hypothesis that "[...] the probability of each event depends only on the state attained in the previous event"\footnote{Gagniuc, Paul A. (2017). Markov Chains: From Theory to Implementation and Experimentation. USA, NJ: John Wiley \& Sons. pp. 1–235. ISBN 978-1-119-38755-8.}, a predictive model is be trained on this database to predict the next sequence $nseq$ or itemset $s_k$ of an incomplete sequence $seq_{inc}$:
+Assuming that a a sequence can be complete, consider the database of completed sequences $DS$. Under the assumption of the Markovian hypothesis that "[...] the probability of each event depends only on the state attained in the previous event"\footnote{Gagniuc, Paul A. (2017). Markov Chains: From Theory to Implementation and Experimentation. USA, NJ: John Wiley \& Sons. pp. 1–235. ISBN 978-1-119-38755-8.}, a predictive model is be trained on this database to predict the next sequence $nseq$ or itemset $s_k$ of an incomplete sequence $seq_{inc}$:
 
 \begin{equation}
 \begin{split}
-    predict(seq_{inc}) &= \widehat{nseq}\\ predict(seq_{inc}) &= \hat{s_k}\ |\ 1 \leq k \leq l
+    predict(seq_{inc}) &= \widehat{nseq}\\ predict(seq_{inc}) &= \hat{s_k}\ |\ 0 \leq k \leq l
 \end{split}
 \label{eq:prediction-from-sequence}
 \end{equation}
@@ -113,15 +113,34 @@ Referring to the \autoref{eq:prediction-from-sequence}, $seq_{in}$ can be unders
 
 Next to this kind of prediction, there are also \textit{sequence-to-word} predictions, which can be used to generate text and even write simple novels.
 
-However, the next itemset of a sequence need not be a word - it can also be an activity of a business process still running. The formal transfer of sequence prediction to business processes shall be presented in \autoref{sec:contribution}, as it is an important part of the contribution.
+Having transferred the general formuulation onto the translation problem, it is easy to imagine that the next itemset of a sequence need not be a word - it could also be an activity of a business process that is still running. The formal transfer of sequence prediction to business processes shall be presented in \autoref{sec:contribution}, as it is an important part of the contribution.
 
-Predictive models such as random forests take inputs of fixed size. Unfortunately, sequences can be of arbitrary length, and thus the \textit{curse of dimensionality} also appears in context with this problem. To bring variable length inputs into a format that can be processed by predictive models (such as in \autoref{fig:process-log}), several data input formats have been invented. As their names suggest, these come from the domain of Natural Language Processing (NLP), but can easily be transferred to the problem at hand. These shall be briefly introduced in the following:
+Predictive models such as random forests take inputs of fixed size. Unfortunately, sequences can be of arbitrary length, and thus the curse of dimensionality also appears in context with this problem. To bring variable length inputs into a format that can be used with predictive models (such as in \autoref{fig:process-log}), several data input formats have been invented. As their names suggest, these come from the domain of Natural Language Processing (NLP), but can easily be transferred to the problem at hand. These shall be briefly introduced in the following:
 
 \subsubsection{Sliding Window}
-\subsubsection{N-gram}
+The sliding window format is very common in the areas of NLP and Time Series Forecasting. With sliding window, chunks of length $c$ of the sequence $seq$ are fed into the prediction model. This results in several input tuples for every sequence, which can be many depending on $c$:
+
+\begin{equation}
+    \{ (s_k, s_{k+1}, ..., s_{k+c})\ |\ 0 \leq k \leq l-c \wedge s_k \in seq \}
+\end{equation}
+
 \subsubsection{Bag-Of-Words}
+The bag-of-words (BOW) approach produces exactly $l$ input tuples, the length of the sequence $seq$. This is done by counting the occurence of each item or itemset in $seq$ for each subsequence $seq_{0,k}$:
+
+% fixed corpuse/universe
+% count occurences of items in subsequences
+% leave zero for non-occurences
+
+\begin{equation}
+    bow(seq) = \{ bow\_ss(seq_{0,k})\ |\ 0 \leq k < c \}
+\end{equation}
+\begin{equation}
+    bow\_ss(seq) = ( c_0, ..., c_n\ | \ )
+\end{equation}
+
+\subsubsection{N-gram}
+
 \subsubsection{Learned features, word2vec}
-Strictly piecewise\\
 subsequences, embedding
 PrefixSpan
 
