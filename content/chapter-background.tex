@@ -116,6 +116,7 @@ Next to this kind of prediction, there are also \textit{sequence-to-word} predic
 Having transferred the general formuulation onto the translation problem, it is easy to imagine that the next itemset of a sequence need not be a word - it could also be an activity of a business process that is still running. The formal transfer of sequence prediction to business processes shall be presented in \autoref{sec:contribution}, as it is an important part of the contribution.
 
 Predictive models such as random forests take inputs of fixed size. Unfortunately, sequences can be of arbitrary length, and thus the curse of dimensionality also appears in context with this problem. To bring variable length inputs into a format that can be used with predictive models (such as in \autoref{fig:process-log}), several data input formats have been invented. As their names suggest, these come from the domain of Natural Language Processing (NLP), but can easily be transferred to the problem at hand. These shall be briefly introduced in the following:
+\todo{with example and how a single line item is constructed}
 
 \subsubsection{Sliding Window}
 The sliding window format is very common in the areas of NLP and Time Series Forecasting. With sliding window, chunks of length $c$ of the sequence $seq$ are fed into the prediction model. This results in several input tuples for every sequence, which can be many depending on $c$:
@@ -137,16 +138,20 @@ The bag-of-words (BOW) approach produces exactly $l$ input tuples, the length of
 \subsubsection{$n$-grams}
 The $n$-gram approach is very popular in computational linguistics, biology and data compression as it facilitates predicting the next item in a sequence. An $n$-gram model of a dataset is effectively an $(n-1)$-order Markov model, with the most popular choices for $n$ being $1,2,3$. These models would be called \textit{unigram}, \textit{bigram} and \textit{trigram.}
 
-Similar to BOW, an $n$-gram model would count frequencies. Differently to BOW however, it counts the occurences of subsequences of length $n$. This is done by concatenating all sequences into one large sequence $LS$. From $LS$, a large feature set $FS$ would be constructed with every item being a subsequence of length $n$:
+Similar to BOW, an $n$-gram model would count frequencies. Differently to BOW however, it counts the occurences of subsequences of length $n$. This is done by concatenating all sequences into one large sequence $LS$. From $LS$, a large feature set $FS$ would be constructed with every item being a subsequence of length $n$. A feature in this set would be referred to as \textit{gram}, as \autoref{eq:ngram-fs-construction} shows.
 
-\begin{equation}
+\begin{equation}\label{eq:ngram-fs-construction}
     FS = \{LS_{i,i+n}\ |\ 1 \leq i \leq |LS|-n \}
 \end{equation}
 
-With $FS$ created, an $n$-gram model would too create $l$ input tuples. Similar to BOW, the occurrences of the $FS$ elements is counted:
+Each $FS$ element would be represented by a boolean flag $f_i$ in each line item, denoting whether this specific subsequence already occured within a given sequence. \autoref{eq:ngram-tuple} formalizes the construction of a single $n$-gram-encoded tuple of sequence $seq$ at step $k$:
 
-\begin{equation}
-    smart ass equation for counting tuple elements...
+\begin{equation}\label{eq:ngram-tuple}
+    ngram\_tuple(seq_{1,k}) = (f_1, ..., f_{|FS|})\ |\ \ f_i = 
+    \begin{cases}
+    1, & \text{if $f_i \in seq_{1,k}$}.\\
+    0, & \text{otherwise}.
+    \end{cases}
 \end{equation}
 
 \subsubsection{Learned features, word2vec}
