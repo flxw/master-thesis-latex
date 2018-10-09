@@ -136,15 +136,15 @@ The bag-of-words (BOW) approach produces exactly $l$ input tuples, the length of
 \end{equation}
 
 \subsubsection{$n$-grams}
-The $n$-gram approach is very popular in computational linguistics, biology and data compression as it facilitates predicting the next item in a sequence. An $n$-gram model of a dataset is effectively an $(n-1)$-order Markov model, with the most popular choices for $n$ being $1,2,3$. These models would be called \textit{unigram}, \textit{bigram} and \textit{trigram.}
+The $n$-gram approach is very popular in computational linguistics, biology and data compression and is effectively an $(n-1)$-order Markov model, with the most popular choices for $n$ being $1,2,3$. These models would be called \textit{unigram}, \textit{bigram} and \textit{trigram.}
 
-Similar to BOW, an $n$-gram model would count frequencies. Differently to BOW however, it counts the occurences of subsequences of length $n$. This is done by concatenating all sequences into one large sequence $LS$. From $LS$, a large feature set $FS$ would be constructed with every item being a subsequence of length $n$. A feature in this set would be referred to as \textit{gram}, as \autoref{eq:ngram-fs-construction} shows.
+Similar to BOW, an $n$-gram model would count frequencies. Differently to BOW however, it counts the occurences of subsequences of length $n$. This is done by concatenating all sequences into one large sequence $LS$. From $LS$, a large feature set $FS$ would be constructed with every item being an appearing permutation of length $n$. A feature in this set would be referred to as \textit{gram}, as \autoref{eq:ngram-fs-construction} shows.
 
 \begin{equation}\label{eq:ngram-fs-construction}
     FS = \{LS_{i,i+n}\ |\ 1 \leq i \leq |LS|-n \}
 \end{equation}
 
-Each $FS$ element would be represented by a boolean flag $f_i$ in each line item, denoting whether this specific subsequence already occured within a given sequence. \autoref{eq:ngram-tuple} formalizes the construction of a single $n$-gram-encoded tuple of sequence $seq$ at step $k$:
+In a line iteam, each $FS$ element would be represented by a boolean flag $f_i$, denoting whether this specific subsequence already occured within a given sequence. \autoref{eq:ngram-tuple} formalizes the construction of a single $n$-gram-encoded tuple of sequence $seq$ at step $k$:
 
 \begin{equation}\label{eq:ngram-tuple}
     ngram\_tuple(seq_{1,k}) = (f_1, ..., f_{|FS|})\ |\ \ f_i = 
@@ -154,9 +154,19 @@ Each $FS$ element would be represented by a boolean flag $f_i$ in each line item
     \end{cases}
 \end{equation}
 
-\subsubsection{Learned features, word2vec}
-subsequences, embedding
-PrefixSpan
+While $n$-grams can be be powerful features to use, they also suffer from the curse of dimensionality.
+\todo{All permutations or only existings?}
+
+\subsubsection{Subsequence mining}
+The previously mentioned features are the most popular methods to engineer features. There are however also methods to mine or learn features.
+
+One of the main weaknesses of $n$-grams is the restriction to a single $n$ and that "one may need to examine a combinatorially explosive
+number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reason, algorithms that bring the benefit of $n$-grams without its high dimensionality have been developed. These algorithms mine common sequential patterns of any length from historical data, resulting in similar line items as in \autoref{eq:ngram-tuple} with the $f_i$ denoting the presence of a specific subsequence in the trace.
+\todo{define trace etc}
+Examples for these are GSP \cite{srikant1996gsp}, FreeSpan \cite{han2000freespan} and PrefixSpan \cite{pei2001prefixspan}. PrefixSpan outperforms the two former and shall be used in this work \cite{pei2001prefixspan}.
+
+\subsection{Feature learning}
+
 
 \section{Neural networks}
 give insights into deep learning and neural networks 
