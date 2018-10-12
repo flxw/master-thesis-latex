@@ -2,7 +2,7 @@
 This thesis brings together two different domains, and in both domains research has been published on sequence prediction. First in the context of processes and second in the context of natural language.
 \marginpar{Furthermore they may be some research on Neural Network Architecture?!}
 
-\section{Process prediction}
+%\section{Process prediction}
 Hauder et al. mention numerous research challenges in the domain of ACM, among them an active support system for knowledge workers \cite{hauder2014}.
 The need for such a system is emphasized by Francescomarino et al. in their literature review, where it has been found that few prediction approaches target the next activity \cite{francescomarino2018}.\\
 
@@ -21,12 +21,36 @@ Francescomarino et al. have performed clustering in the preprocessing phase of m
 This approach was evaluated on the accuracy of predicate fulfillment with two different clustering methods (k-means and DBSCAN) and two different prediction models (decision trees and random forests) \cite{francescomarino2015}.
 A further evaluation criteria was \textit{earliness}, i.e. at which point in time the correct result could be determined.
 
-Continuing Francescomarinos approach and training a neural network for every cluster was seriously considered at the beginning of this thesis but foregone because of the embedding layer.
+Continuing Francescomarinos approach and training a neural network for every cluster was considered at the beginning of this thesis but foregone because of possibility to use embedding layers.\\
 
-\section{Sequence prediction}
-\cite{web:spice}
-\cite{shibata2016bipartite}
+Colocated with the International Conference in Grammatical Inference 2016 (ICGI) was a competition called SPiCE\ "about guessing the next element in a sequence" \cite{web:spice}.
+Most entries submitted to the competition used RNNs with LSTM cells to predict the next word of a sentence.
+The winning submission by Shibata et al. used a bipartite network architecture training separate layers on different features of the same row. The results of separate input layers are merged in the middle hidden layers to produce a single output \cite{shibata2016bipartite}. This architecture is depicted in \autoref{fig:spice-winner-architecture}.
+While one half of the layers was trained on the most recent word of the sentence, the other half was trained on the prefix of that word. As this prefix could have been on any length, Shibata et al. propose a binary bag-of-words encoding. This encodes the states of a SP-2 automaton.
 
-\todo[inline]{SPICE competition submissions}
-\todo[inline]{LSTM application on sequences}
-\todo[inline]{PrefixSpan, Strictly-Piecewise features...}
+\begin{figure}
+    \centering
+    \includegraphics[height=.5\textwidth]{gfx/spice-winner-architecture.png}
+    \caption{The neural network architecture of the winning submission at the SPiCE competition \cite{shibata2016bipartite}.}
+    \label{fig:spice-winner-architecture}
+\end{figure}
+
+SP-$k$ languages are used to describe certain long-term dependencies through forbidding subsequences. If $\langle a,b \rangle$ is forbidden, then no $b$ may ever occur after $a$. A deterministic finite automaton (DFA) can also be used to characterize SP-$k$ languages, if its states encode the subsequences of size $k-1$  present in the previous prefixes \cite{heinz2010estimatingSP}. \autoref{tab:sp2-encoding} illustrates this encoding with a small example.
+
+\begin{table}
+    \centering
+    \begin{tabular}{cclccccc}
+        \hline
+          &      &              & \multicolumn{5}{c}{SP-2 vector}\\
+        t & a(t) & prefix(a(t)) & [a & b & c & d & e]\\
+        \hline
+        0 & a    & a            & [1 & 0 & 0 & 0 & 0]\\
+        1 & d    & ad           & [1 & 0 & 0 & 1 & 0]\\
+        2 & a    & ada          & [1 & 0 & 0 & 1 & 0]\\
+        3 & c    & adac         & [1 & 0 & 1 & 1 & 0]\\
+        4 & d    & adacd        & [1 & 0 & 1 & 1 & 0]\\
+        \hline
+    \end{tabular}
+    \caption{Exemplary SP-2 encoded prefixes with $\sum=\{a,b,c,d,e\}$, abridged from Shibata et al.  \cite{shibata2016bipartite}. \textbf{TODO USE SEQUENCE NOTATION HERE}}
+    \label{tab:sp2-encoding}
+\end{table}
