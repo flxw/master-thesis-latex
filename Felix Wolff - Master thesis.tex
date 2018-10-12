@@ -1,129 +1,83 @@
-%% LLT: Turn off some annoying warnings...
-\RequirePackage{silence}
-\WarningFilter{titlesec}{Non standard sectioning command}
-\WarningFilter{scrreprt}{Usage of package}
-\WarningFilter{scrreprt}{Activating an ugly workaround}
-% **************************************************
-% Document Class Definition
-% **************************************************
-\documentclass[%
-	paper=A4,
-	twoside=true,				% onesite or twoside printing
-	openright,					% doublepage cleaning ends up right side
-	parskip=full,				% spacing value / method for paragraphs
-	chapterprefix=true,			% prefix for chapter marks
-	11pt,						% font size
-	headings=normal,			% size of headings
-	bibliography=totoc,			% include bib in toc
-	listof=totoc,				% include listof entries in toc
-	titlepage=on,				% own page for each title page
-	captions=tableabove,		% display table captions above the float env
-	draft=false,				% value for draft version
-]{scrreprt}
+\documentclass[
+		twoside,openright,titlepage,numbers=noenddot,headinclude,%1headlines,
+	 	footinclude=true,cleardoublepage=empty,
+		dottedtoc, % Make page numbers in the table of contents flushed right with dots leading to them
+		BCOR=5mm,paper=a4,fontsize=11pt, % Binding correction, paper type and font size
+		ngerman,american, % Languages, change this to your language(s)
+		]{scrreprt} 
+                
+% Includes the file which contains all the document configurations and packages - make sure to edit this file
+\input{classicthesis-config}
+
+\addbibresource{Bibliography.bib} % The file housing your bibliography
+%\addbibresource[label=ownpubs]{Self_Publications.bib} % Uncomment for optional self-publications
+\usepackage{todonotes}
+\usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 
-% **************************************************
-% Debug LaTeX Information
-% **************************************************
-%\listfiles
+%\hyphenation{Put special hyphenation here}
 
-% **************************************************
-% Information and Commands for Reuse
-% **************************************************
-\newcommand{\thesisTitle}{Deep Learning Next Event Prediction With Subsequence-Enrichted Input Data}
-\newcommand{\thesisName}{Felix Wolff}
-\newcommand{\thesisSubject}{Master's thesis}
-\newcommand{\thesisDate}{February 20, 2019}
-\newcommand{\thesisVersion}{My First Draft}
-
-\newcommand{\thesisFirstReviewer}{Prof. Dr. Mathias Weske}
-\newcommand{\thesisFirstReviewerUniversity}{\protect{Hasso Plattner Institut}}
-\newcommand{\thesisFirstReviewerDepartment}{Business Process Technology Group}
-
-\newcommand{\thesisSecondReviewer}{Prof. Dr. ????????????}
-\newcommand{\thesisSecondReviewerUniversity}{\protect{????????????}}
-\newcommand{\thesisSecondReviewerDepartment}{????????????}
-
-\newcommand{\thesisFirstSupervisor}{Dr. Luise Pufahl}
-\newcommand{\thesisSecondSupervisor}{Dr. Haojin Yang}
-
-\newcommand{\thesisUniversity}{\protect{Hasso Plattner Institut}}
-\newcommand{\thesisUniversityDepartment}{Business Process Technology Group}
-\newcommand{\thesisUniversityInstitute}{}
-\newcommand{\thesisUniversityGroup}{}
-\newcommand{\thesisUniversityCity}{Potsdam}
-\newcommand{\thesisUniversityStreetAddress}{Prof.-Dr.-Helmert-Straße 2-3}
-\newcommand{\thesisUniversityPostalCode}{14482}
-
-% **************************************************
-% Load and Configure Packages
-% **************************************************
-\usepackage[english]{babel}
-\usepackage[
-	figuresep=colon,%
-	sansserif=false,%
-	hangfigurecaption=false,%
-	hangsection=true,%
-	hangsubsection=true,%
-	colorize=full,%
-	colortheme=bluemagenta,
-	bibsys=biber,%
-	bibfile=bib-refs,%
-	bibstyle=numeric,
-]{cleanthesis}
-\usepackage{amsmath}
-
-\hypersetup{					% setup the hyperref-package options
-	pdftitle={\thesisTitle},	% 	- title (PDF meta)
-	pdfsubject={\thesisSubject},% 	- subject (PDF meta)
-	pdfauthor={\thesisName},	% 	- author (PDF meta)
-	plainpages=false,			% 	-
-	colorlinks=false,			% 	- colorize links?
-	pdfborder={0 0 0},			% 	-
-	breaklinks=true,			% 	- allow line break inside links
-	bookmarksnumbered=true,		%
-	bookmarksopen=true			%
-}
-\usepackage{todonotes}
-
-% **************************************************
-% Document CONTENT
-% **************************************************
 \begin{document}
 
-% --------------------------
-% rename document parts
-% --------------------------
-%\renewcaptionname{ngerman}{\figurename}{Abb.}
-%\renewcaptionname{ngerman}{\tablename}{Tab.}
-%\renewcaptionname{english}{\figurename}{Fig.}
-%\renewcaptionname{english}{\tablename}{Tab.}
+\frenchspacing % Reduces space after periods to make text more compact
 
-% --------------------------
-% Front matter
-% --------------------------
-\pagenumbering{roman}			% roman page numbing (invisible for empty page style)
-\pagestyle{empty}				% no header or footers
-\input{content/titlepages}		% INCLUDE: all titlepages
+\raggedbottom % Makes all pages the height of the text on that page
+
+\selectlanguage{american} % Select your default language - e.g. american or ngerman
+
+%\renewcommand*{\bibname}{new name} % Uncomment to change the name of the bibliography
+%\setbibpreamble{} % Uncomment to include a preamble to the bibliography - some text before the reference list starts
+
+\pagenumbering{roman} % Roman page numbering prior to the start of the thesis content (i, ii, iii, etc)
+
+\pagestyle{plain} % Suppress headers for the pre-content pages
+
+%----------------------------------------------------------------------------------------
+%	PRE-CONTENT THESIS PAGES
+%----------------------------------------------------------------------------------------
+
+\include{FrontBackMatter/Titlepage} % Main title page
+
+\include{FrontBackMatter/Titleback} % Back of the title page
+
+\cleardoublepage\include{FrontBackMatter/Dedication} % Dedication page
+
+%\cleardoublepage\include{FrontBackMatter/Foreword} % Uncomment and create a Foreword.tex to include a foreword
+
+\cleardoublepage\include{FrontBackMatter/Abstract} % Abstract page
+
+\cleardoublepage\include{FrontBackMatter/Publications} % Publications from the thesis page
+
+\cleardoublepage\include{FrontBackMatter/Acknowledgments} % Acknowledgements page
+
+\pagestyle{scrheadings} % Show chapter titles as headings
+
+\cleardoublepage\include{FrontBackMatter/Contents} % Contents, list of figures/tables/listings and acronyms
+
 \cleardoublepage
 
-\pagestyle{plain}				% display just page numbers
-\input{content/abstract}		% INCLUDE: the abstracts (english and german)
-\cleardoublepage
-%
-\input{content/acknowledgement} % INCLUDE: acknowledgement
-\cleardoublepage
-%
-\setcounter{tocdepth}{2}		% define depth of toc
-\tableofcontents				% display table of contents
-\cleardoublepage
+\pagenumbering{arabic} % Arabic page numbering for thesis content (1, 2, 3, etc)
+%\setcounter{page}{90} % Uncomment to manually start the page counter at an arbitrary value (for example if you wish to count the pre-content pages in the page count)
 
-% --------------------------
-% Body matter
-% --------------------------
-\pagenumbering{arabic}			% arabic page numbering
-\setcounter{page}{1}			% set page counter
-\pagestyle{maincontentstyle} 	% fancy header and footer
+\cleardoublepage % Avoids problems with pdfbookmark
+
+%----------------------------------------------------------------------------------------
+%	THESIS CONTENT - CHAPTERS
+%----------------------------------------------------------------------------------------
+
+%\ctparttext{You can put some informational part preamble text here. Illo principalmente su nos. Non message \emph{occidental} angloromanic da. Debitas effortio simplificate sia se, auxiliar summarios da que, se avantiate publicationes via. Pan in terra summarios, capital interlingua se que. Al via multo esser specimen, campo responder que da. Le usate medical addresses pro, europa origine sanctificate nos se.} % Text on the Part 1 page describing  the content in Part 1
+
+%\part{Some Kind of Manual} % First part of the thesis
+
+%\include{Chapters/Chapter01} % Chapter 1
+
+%\cleardoublepage % Empty page before the start of the next part
+
+%------------------------------------------------
+
+%\ctparttext{You can put some informational part preamble text here. Illo principalmente su nos. Non message \emph{occidental} angloromanic da. Debitas effortio simplificate sia se, auxiliar summarios da que, se avantiate publicationes via. Pan in terra summarios, capital interlingua se que. Al via multo esser specimen, campo responder que da. Le usate medical addresses pro, europa origine sanctificate nos se.} % Text on the Part 2 page describing the content in Part 2
+
+%\part{The Showcase} % Second part of the thesis
 
 \input{content/chapter-introduction}
 \input{content/chapter-background}
@@ -132,36 +86,29 @@
 \input{content/chapter-evaluation}
 \input{content/chapter-conclusion}
 
-\cleardoublepage
+%\cleardoublepage % Empty page before the start of the next part
 
-% --------------------------
-% Back matter
-% --------------------------
-{%
-\setstretch{1.1}
-\renewcommand{\bibfont}{\normalfont\small}
-\setlength{\biblabelsep}{0pt}
-\setlength{\bibitemsep}{0.5\baselineskip plus 0.5\baselineskip}
-\printbibliography[nottype=online]
-\printbibliography[heading=subbibliography,title={Webseiten},type=online,prefixnumbers={@}]
-}
-\cleardoublepage
+%----------------------------------------------------------------------------------------
+%	THESIS CONTENT - APPENDICES
+%----------------------------------------------------------------------------------------
 
-\listoffigures
-\cleardoublepage
+\appendix
 
-\listoftables
-\cleardoublepage
+\part{Appendix} % New part of the thesis for the appendix
 
-\input{content/colophon}
-\cleardoublepage
+\include{Chapters/Chapter0A} % Appendix A
+%\include{Chapters/Chapter0B} % Appendix B - empty template
 
-\input{content/declaration}
-\clearpage
-\newpage
-\mbox{}
+%----------------------------------------------------------------------------------------
+%	POST-CONTENT THESIS PAGES
+%----------------------------------------------------------------------------------------
 
-% **************************************************
-% End of Document CONTENT
-% **************************************************
+\cleardoublepage\include{FrontBackMatter/Bibliography} % Bibliography
+
+\cleardoublepage\include{FrontBackMatter/Declaration} % Declaration
+
+\cleardoublepage\include{FrontBackMatter/Colophon} % Colophon
+
+%----------------------------------------------------------------------------------------
+
 \end{document}
