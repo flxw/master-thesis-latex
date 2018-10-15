@@ -1,19 +1,22 @@
 \chapter{Related Work}\label{sec:related-work}
-This thesis brings together two different domains, and in both domains research has been published on sequence prediction. First in the context of processes and second in the context of natural language.
-\marginpar{Furthermore they may be some research on Neural Network Architecture?!}
-
-%\section{Process prediction}
 Hauder et al. mention numerous research challenges in the domain of ACM, among them an active support system for knowledge workers \cite{hauder2014}.
 The need for such a system is emphasized by Francescomarino et al. in their literature review, where it has been found that few prediction approaches target the next activity \cite{francescomarino2018}.\\
 
+With the focus of this thesis put on improving next activity predictions, the domains of process science and data science are brought together. In both, research has been published on sequence prediction. In the former in the context of processes and events and the latter in the context of natural language. By topic, the related works in these domains shall be presented in this chapter.
+\todo[inline]{Furthermore they may be some research on Neural Network Architecture?!}
+
+\section{Process prediction}
 \marginpar{CoCaMa is an abbreviation for a project called Collaborative Case Management, which appears to be retired: \href{http://archive.li/uZFnN}{archive.li/uZFnN}}
-An example for how such a system might look like is given by Huber, who has developed a next-step recommendation system serving different case goals.
-The system is prototypically implemented as CoCaMa, a prototypical case management application. The system has been evaluated with 25 hand-made case logs.\\
+An example for how such a support system \cite{hauder2014} might look like is given by Huber, who has developed a next-step prediction and recommendation system. The system is prototypically implemented within CoCaMa, a case management application.
 
-Building upon each other are the works by Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}. Evermann et al. have successfully demonstrated the good performance of long-short-term memory (LSTM) neural networks in predicting the next activity on BPI datasets from 2012 and 2013. Their approach did not take into account specific case data attributes however. How making use of this contextual information can improve the prediction accuracy even more, has been shown by Schönig et al. \cite{schoenig2018} on BPI datasets from 2017. Furthermore, Schönig et al. have explored data preparation methods for supporting the model during learning.
-This thesis can thus be seen as the continuation of these two works.
+After gathering the training data from various sources via an extract, transform and load (ETL) process, several \textit{Next Models} are constructed. The Next Models are a collection of predictive models used to predict the next activity, focused on different criteria: remaining time, constraint violation, decisions based on case-specific data, and case outcome. The weighting of the predictions from these individual models is non-trivial and extensively discussed. Huber models the prediction as a classification problem and uses decision trees from the WEKA \cite{web:weka} machine learning toolkit to implement them. The system has been evaluated with 25 hand-made case logs \cite{huber2015}.\\
 
-Similar to Schönig et al., Polato et al. make use of environmental information in their work for improving the prediction of the remaining time of business process instances \cite{polato2014}.\\
+Building upon each other are the works by Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}. Evermann et al. remark the lack of research on next event predictions and have successfully demonstrated the applicability of LSTM neural networks in the context of predicting the next activity. Using a neural network implemented with Tensorflow, precision in excess of $90\%$ on the BPIC2012 and BPIC2013 datasets was achieved. Evermann et al. want their work to be understood as a "demonstration of the applicability of the approach and the potential for future work". The authors highlight the lacking use of data attributes during model training as well as the fact that the count of LSTM cells was not set in relation to trace length.
+
+Schönig et al. \cite{schoenig2018} picked up on Evermann's related work and demonstrated on BPIC datasets from 2017 that using data attributes does increase prediction accuracy. Schönig et al. implemented their solution with Keras and trained it using stratified 5-fold cross-validation. The data was formatted with the sliding window method of width 1. The work nicely demonstrates that an increasing number of included data attributes can continually improve accuracy \cite[p.5]{schoenig2018}
+
+Similar to Schönig et al., Polato et al. make use of data attributes in their work for improving the prediction of the remaining time of business process instances \cite{polato2014}. During feature engineering, their SVR training data is enriched with information about possible other activities. Unfortunately, Polato et al. do not list which dataset they have used\\
+\todo[inline]{Verify whether they actually do not mention it}
 
 Metzger et al. predict run-time of a case by comparing and combining different prediction models into a model ensemble. Then, the members of the ensemble are selected based on their predictive performance measures. This allows taking into account costs of false predictions \cite{metzger2015}.\\
 
@@ -23,6 +26,7 @@ A further evaluation criteria was \textit{earliness}, i.e. at which point in tim
 
 Continuing Francescomarinos approach and training a neural network for every cluster was considered at the beginning of this thesis but foregone because of possibility to use embedding layers.\\
 
+\subsection{Sequence prediction}
 Colocated with the International Conference in Grammatical Inference 2016 (ICGI) was a competition called SPiCE\ "about guessing the next element in a sequence" \cite{web:spice}.
 Most entries submitted to the competition used RNNs with LSTM cells to predict the next word of a sentence.
 The winning submission by Shibata et al. used a bipartite network architecture training separate layers on different features of the same row. The results of separate input layers are merged in the middle hidden layers to produce a single output \cite{shibata2016bipartite}. This architecture is depicted in \autoref{fig:spice-winner-architecture}.
