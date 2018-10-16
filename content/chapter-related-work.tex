@@ -1,11 +1,9 @@
 \chapter{Related Work}\label{sec:related-work}
+\todo[inline]{luise says 5 pages minimum}
 Hauder et al. mention numerous research challenges in the domain of ACM, among them an active support system for knowledge workers \cite{hauder2014}.
 The need for such a system is emphasized by Francescomarino et al. in an extensive literature review, where it has been found that few prediction approaches target the next activity \cite{francescomarino2018}.\\
 
 As shown in the previous chapter, the focus of this thesis brings the domains of process science and data science together. In both, research has been published on sequence prediction. In the former in the context of processes and events and the latter in the context of text modeling and NLP. By domain, the related works in these domains shall be presented in this chapter.
-\todo[inline]{Furthermore they may be some research on Neural Network Architecture?!}
-
-\todo[inline]{Improving the reliability of predictive process monitoring -- subsequence encoding}
 
 \section{Process prediction}
 \marginpar{CoCaMa is an abbreviation for a project called Collaborative Case Management that appears to be retired: \href{http://archive.li/uZFnN}{archive.li/uZFnN}}
@@ -31,11 +29,10 @@ Their approach, implemented as a ProM plugin called \textit{Predictive Process M
 
 Continuing Francescomarinos approach and training a neural network for every cluster was considered at the beginning of this thesis but foregone because of the possibility to use an embedding layer inside the ANN.\\
 
+Klinkmüller et al. enrich their training dataset with markers for encoding subsequence occurrence \cite{klinkmuller2018reliablemonitoring}. Doing so on a synthetic and undisclosed dataset, they are able to increase the accuracy of a random forest in comparison to a baseline that is not using the engineered subsequence features. This approach is similar to that of Shibata et al. \cite{shibata2016bipartite} two years earlier.
+
 \subsection{Text modeling}
 Colocated with the International Conference in Grammatical Inference 2016 (ICGI) was a competition called SPiCE\ "about guessing the next element in a sequence" \cite{web:spice}. Most entries submitted to the competition used RNNs with LSTM cells to predict the next word of a sentence.
-
-The winning submission by Shibata et al. uses a bipartite network architecture training separate layers on different features of the same sentence. The results of separate input layers are then merged in the middle hidden layers to produce a single output \cite{shibata2016bipartite}. This architecture is depicted in \autoref{fig:spice-winner-architecture}.
-While one half of the layers are trained on the most recent word of the sentence, the other half is trained on the prefix of that word. As this prefix can be of any length, Shibata et al. propose a binary bag-of-words encoding, representing the states of a SP-2 automaton.
 
 \begin{figure}
     \centering
@@ -43,6 +40,9 @@ While one half of the layers are trained on the most recent word of the sentence
     \caption{The neural network architecture of the winning submission at the SPiCE competition \cite{shibata2016bipartite}.}
     \label{fig:spice-winner-architecture}
 \end{figure}
+
+The winning submission by Shibata et al. uses a bipartite network architecture training separate layers on different features of the same sentence. The results of separate input layers are then merged in the middle hidden layers to produce a single output \cite{shibata2016bipartite}. This architecture is depicted in \autoref{fig:spice-winner-architecture}.
+While one half of the layers are trained on the most recent word of the sentence, the other half is trained on the prefix of that word. As this prefix can be of any length, Shibata et al. propose a binary bag-of-words encoding, representing the states of a SP-2 automaton.
 
 SP-$k$ languages are used to describe certain long-term dependencies through forbidden subsequences. For example, if $\langle a,b \rangle$ is forbidden, then no $b$ may ever occur after $a$. As per Heinz, who assisted Shibata, deterministic finite automatons (DFA) can also be used to characterize SP-$k$ languages, if its states encode the subsequences of size $k-1$  present in the previous prefixes \cite{heinz2010estimatingSP}. To make this concept more tangible, \autoref{tab:sp2-encoding} illustrates this encoding with a small example taken from Shibata's paper \cite{shibata2016bipartite}.\\
 
@@ -60,8 +60,8 @@ SP-$k$ languages are used to describe certain long-term dependencies through for
         4 & d    & adacd        & [1 & 0 & 1 & 1 & 0]\\
         \hline
     \end{tabular}
-    \caption{Prefixes encoded with SP-2. As $t$ progresses, more and more occurence of single-item subsequences are marked as occured. The alphabet is $I=\{a,b,c,d,e\}$. This example is taken from Shibata et al.  \cite{shibata2016bipartite}.}
+    \caption{Prefixes encoded with SP-2. As $t$ progresses, more and more single-item subsequences ($k-1=1$) are marked as occurred. The alphabet is $I=\{a,b,c,d,e\}$. This example is taken from Shibata et al.  \cite{shibata2016bipartite}.}
     \label{tab:sp2-encoding}
 \end{table}
 
-\lipsum[2-4]
+Attention, a fairly new development in the domain of ANNs, has been leveraged by Kokkinos et al. in a tree-structured neural network to classify sentiments in sentences \cite{kokkinos2017structural}. In a detailed comparison with other works, their bipartite tree approach yields the highest accuracy on the Stanford Sentiment Treebank dataset. While the proposition of tree-structured Gated Recurrent Units (GRUs, a variant of LSTM units) and their use of attention is arguably the main contribution of this work, the use of a bipartite network architecture and different features in both give further lift to the approaches of Shibata et al. and this thesis. Furthermore, the authors also make use of word embeddings during network training and fully disclosed the used hyperparameters.
