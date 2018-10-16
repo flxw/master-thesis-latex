@@ -190,7 +190,7 @@ number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reas
 Examples for these algorithms are GSP \cite{srikant1996gsp}, FreeSpan \cite{han2000freespan} and PrefixSpan \cite{pei2001prefixspan}. PrefixSpan outperforms the two former and shall be used in this work \cite{pei2001prefixspan}.
 
 \subsubsection{Feature learning}
-As mentioned in \autoref{sec:feature-engineerin}, some features are encoded before being fed to the predictive model for training. Instead of using one-hot or dictionary encoding to do so, one can also use an encoding derived from \textit{word embeddings}.
+As mentioned in \autoref{sec:predictive-model-development:transformation}, some features are encoded before being fed to the predictive model for training. Instead of using one-hot or dictionary encoding to do so, one can also use an encoding derived from \textit{word embeddings}.
 
 A word embedding is the output of a simple neural network that has been trained on a large text corpus and thus detected how words relay to each other. Internally, the neural network uses high-dimensional vectors for each word that can represent any word property that the model has learned itself. This enables interesting calculations with vector arithmetic, such as the one shown in \autoref{eq:word-embedding:king}. In this famous example the network was able to detect gender properties and social semantics of a word. 
 
