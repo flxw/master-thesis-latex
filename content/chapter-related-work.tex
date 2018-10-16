@@ -1,36 +1,41 @@
 \chapter{Related Work}\label{sec:related-work}
 Hauder et al. mention numerous research challenges in the domain of ACM, among them an active support system for knowledge workers \cite{hauder2014}.
-The need for such a system is emphasized by Francescomarino et al. in their literature review, where it has been found that few prediction approaches target the next activity \cite{francescomarino2018}.\\
+The need for such a system is emphasized by Francescomarino et al. in an extensive literature review, where it has been found that few prediction approaches target the next activity \cite{francescomarino2018}.\\
 
-With the focus of this thesis put on improving next activity predictions, the domains of process science and data science are brought together. In both, research has been published on sequence prediction. In the former in the context of processes and events and the latter in the context of natural language. By topic, the related works in these domains shall be presented in this chapter.
+As shown in the previous chapter, the focus of this thesis brings the domains of process science and data science together. In both, research has been published on sequence prediction. In the former in the context of processes and events and the latter in the context of text modeling and NLP. By domain, the related works in these domains shall be presented in this chapter.
 \todo[inline]{Furthermore they may be some research on Neural Network Architecture?!}
 
+\todo[inline]{Improving the reliability of predictive process monitoring -- subsequence encoding}
+
 \section{Process prediction}
-\marginpar{CoCaMa is an abbreviation for a project called Collaborative Case Management, which appears to be retired: \href{http://archive.li/uZFnN}{archive.li/uZFnN}}
-An example for how such a support system \cite{hauder2014} might look like is given by Huber, who has developed a next-step prediction and recommendation system. The system is prototypically implemented within CoCaMa, a case management application.
+\marginpar{CoCaMa is an abbreviation for a project called Collaborative Case Management that appears to be retired: \href{http://archive.li/uZFnN}{archive.li/uZFnN}}
+An example for how one such support system \cite{hauder2014} might look like is given by Huber, who has developed a next-step prediction and recommendation system  \cite{huber2015}. The system is prototypically implemented within CoCaMa, a case management application.
 
 After gathering the training data from various sources via an extract, transform and load (ETL) process, several \textit{Next Models} are constructed. The Next Models are a collection of predictive models used to predict the next activity, focused on different criteria: remaining time, constraint violation, decisions based on case-specific data, and case outcome. The weighting of the predictions from these individual models is non-trivial and extensively discussed. Huber models the prediction as a classification problem and uses decision trees from the WEKA \cite{web:weka} machine learning toolkit to implement them. The system has been evaluated with 25 hand-made case logs \cite{huber2015}.\\
 
-Building upon each other are the works by Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}. Evermann et al. remark the lack of research on next event predictions and have successfully demonstrated the applicability of LSTM neural networks in the context of predicting the next activity. Using a neural network implemented with Tensorflow, precision in excess of $90\%$ on the BPIC2012 and BPIC2013 datasets was achieved. Evermann et al. want their work to be understood as a "demonstration of the applicability of the approach and the potential for future work". The authors highlight the lacking use of data attributes during model training as well as the fact that the count of LSTM cells was not set in relation to trace length.
+Building upon each other are the works by Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}. Evermann et al. remark the lack of research on next event predictions and have successfully demonstrated the applicability of LSTM neural networks in the context of predicting the next activity. Using a neural network implemented with Tensorflow, precision in excess of $90\%$ on the BPIC2012 and BPIC2013 datasets was achieved. Evermann et al. want their work to be understood as a "demonstration of the applicability of the approach and the potential for future work". The authors highlight that their work lacks use of data attributes during model training and the fact that the count of LSTM cells was not set in relation to trace length, too.
 
-Schönig et al. \cite{schoenig2018} picked up on Evermann's related work and demonstrated on BPIC datasets from 2017 that using data attributes does increase prediction accuracy. Schönig et al. implemented their solution with Keras and trained it using stratified 5-fold cross-validation. The data was formatted with the sliding window method of width 1. The work nicely demonstrates that an increasing number of included data attributes can continually improve accuracy \cite[p.5]{schoenig2018}
+Schönig et al. \cite{schoenig2018} picked up on Evermann's future work and demonstrated on BPIC datasets from 2017 that using data attributes does increase prediction accuracy. Schönig et al. implemented their solution with Keras and trained it using stratified 5-fold cross-validation. The data was formatted with the sliding window method of width 1. Also, the work nicely demonstrates that an increasing number of included data attributes can continually improve accuracy \cite[p.5]{schoenig2018}, however without referring to any of their statistical properties.\\
 
-Similar to Schönig et al., Polato et al. make use of data attributes in their work for improving the prediction of the remaining time of business process instances \cite{polato2014}. During feature engineering, their SVR training data is enriched with information about possible other activities. Unfortunately, Polato et al. do not list which dataset they have used\\
-\todo[inline]{Verify whether they actually do not mention it}
+Similar to Schönig et al., Polato et al. make use of data attributes in their work for improving the prediction of the remaining time of business process instances \cite{polato2014}. During feature engineering, their SVR training data is enriched with information about possible other activities. Their dataset is unfortunately relatively small at 5000 items and not public.\\
 
-Metzger et al. predict run-time of a case by comparing and combining different prediction models into a model ensemble. Then, the members of the ensemble are selected based on their predictive performance measures. This allows taking into account costs of false predictions \cite{metzger2015}.\\
+Metzger et al. predict constraint violation of a case by comparing fundamentally different prediction models and combining them into a model ensemble based on various criteria \cite{metzger2015}. They argue that late and precise or early and incorrect predictions are both worthless for interventions, leading them to establish that between $60\% - 85\%$ progress into the process, predictions become stable and precise.
 
-Francescomarino et al. have performed clustering in the preprocessing phase of model training and prediction. Having clustered the training data, one model was created and trained for each cluster. For obtaining a prediction, the cluster for a new data item is found from which the corresponding model is selected.
-This approach was evaluated on the accuracy of predicate fulfillment with two different clustering methods (k-means and DBSCAN) and two different prediction models (decision trees and random forests) \cite{francescomarino2015}.
-A further evaluation criteria was \textit{earliness}, i.e. at which point in time the correct result could be determined.
+Three models are used to predict constraint violations: constraint satisfaction, Quality-of-Service (QoS) violation checks and machine learning. The two former models use rules to predict a process outcome while the latter is a trained neural network. For it, Metzger et. al use the ANN implementation from the WEKA machine learning toolkit with a single hidden layer. 
 
-Continuing Francescomarinos approach and training a neural network for every cluster was considered at the beginning of this thesis but foregone because of possibility to use embedding layers.\\
+The authors are able to formulate rules for the two other models because the process at hand is very rigid and well defined: The Cargo 2000 process is a standard proposed by the International Air Transport Association (IATA) \cite{metzger2015}.\\
 
-\subsection{Sequence prediction}
-Colocated with the International Conference in Grammatical Inference 2016 (ICGI) was a competition called SPiCE\ "about guessing the next element in a sequence" \cite{web:spice}.
-Most entries submitted to the competition used RNNs with LSTM cells to predict the next word of a sentence.
-The winning submission by Shibata et al. used a bipartite network architecture training separate layers on different features of the same row. The results of separate input layers are merged in the middle hidden layers to produce a single output \cite{shibata2016bipartite}. This architecture is depicted in \autoref{fig:spice-winner-architecture}.
-While one half of the layers was trained on the most recent word of the sentence, the other half was trained on the prefix of that word. As this prefix could have been on any length, Shibata et al. propose a binary bag-of-words encoding. This encodes the states of a SP-2 automaton.
+Also aiming at predicate fulfilment were Francescomarino et al. when they they organized predictive models in a clustered fashion \cite{francescomarino2015}. Having clustered the training data, one model was trained on each cluster. Then, to obtain a prediction, the cluster for a new data item needs to found, and the corresponding model selected. Furthermore, the authors varied the probability threshold for accepting a prediction and measured how it affected the point at which the predictions become stable (similar to Metzger et al.). They referred to this characteristic as \textit{earliness}.
+
+Their approach, implemented as a ProM plugin called \textit{Predictive Process Monitoring.}, uses two different clustering methods (k-means and DBSCAN) and two different types of predictive models (decision trees and random forests). It was tested on the BPIC2011 dataset \cite{BPIC2011} without emphasis on hyperparameter tuning.
+
+Continuing Francescomarinos approach and training a neural network for every cluster was considered at the beginning of this thesis but foregone because of the possibility to use an embedding layer inside the ANN.\\
+
+\subsection{Text modeling}
+Colocated with the International Conference in Grammatical Inference 2016 (ICGI) was a competition called SPiCE\ "about guessing the next element in a sequence" \cite{web:spice}. Most entries submitted to the competition used RNNs with LSTM cells to predict the next word of a sentence.
+
+The winning submission by Shibata et al. uses a bipartite network architecture training separate layers on different features of the same sentence. The results of separate input layers are then merged in the middle hidden layers to produce a single output \cite{shibata2016bipartite}. This architecture is depicted in \autoref{fig:spice-winner-architecture}.
+While one half of the layers are trained on the most recent word of the sentence, the other half is trained on the prefix of that word. As this prefix can be of any length, Shibata et al. propose a binary bag-of-words encoding, representing the states of a SP-2 automaton.
 
 \begin{figure}
     \centering
@@ -39,7 +44,7 @@ While one half of the layers was trained on the most recent word of the sentence
     \label{fig:spice-winner-architecture}
 \end{figure}
 
-SP-$k$ languages are used to describe certain long-term dependencies through forbidding subsequences. If $\langle a,b \rangle$ is forbidden, then no $b$ may ever occur after $a$. A deterministic finite automaton (DFA) can also be used to characterize SP-$k$ languages, if its states encode the subsequences of size $k-1$  present in the previous prefixes \cite{heinz2010estimatingSP}. \autoref{tab:sp2-encoding} illustrates this encoding with a small example.
+SP-$k$ languages are used to describe certain long-term dependencies through forbidden subsequences. For example, if $\langle a,b \rangle$ is forbidden, then no $b$ may ever occur after $a$. As per Heinz, who assisted Shibata, deterministic finite automatons (DFA) can also be used to characterize SP-$k$ languages, if its states encode the subsequences of size $k-1$  present in the previous prefixes \cite{heinz2010estimatingSP}. To make this concept more tangible, \autoref{tab:sp2-encoding} illustrates this encoding with a small example taken from Shibata's paper \cite{shibata2016bipartite}.\\
 
 \begin{table}
     \centering
@@ -55,6 +60,8 @@ SP-$k$ languages are used to describe certain long-term dependencies through for
         4 & d    & adacd        & [1 & 0 & 1 & 1 & 0]\\
         \hline
     \end{tabular}
-    \caption{Exemplary SP-2 encoded prefixes with $\sum=\{a,b,c,d,e\}$, abridged from Shibata et al.  \cite{shibata2016bipartite}. \textbf{TODO USE SEQUENCE NOTATION HERE}}
+    \caption{Prefixes encoded with SP-2. As $t$ progresses, more and more occurence of single-item subsequences are marked as occured. The alphabet is $I=\{a,b,c,d,e\}$. This example is taken from Shibata et al.  \cite{shibata2016bipartite}.}
     \label{tab:sp2-encoding}
 \end{table}
+
+\lipsum[2-4]
