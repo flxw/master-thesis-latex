@@ -31,8 +31,11 @@ Continuing Francescomarinos approach and training a neural network for every clu
 
 Klinkmüller et al. enrich their training dataset with markers for encoding subsequence occurrence \cite{klinkmuller2018reliablemonitoring}. Doing so on a synthetic and undisclosed dataset, they are able to increase the accuracy of a random forest in comparison to a baseline that is not using the engineered subsequence features. This approach is similar to that of Shibata et al. \cite{shibata2016bipartite} two years earlier.
 
+Approaching the process prediction from a different angle are Böhmer et al. with predictions rooted in heuristic analysis \cite{böhmer2018probability}. Based on the fact that the black-box nature of ANNs makes their predictions and inner workings very hard to comprehend, they argue that the amount of trust that users put into their predictions results is limited. As potentially large organizational changes could be made due to the predictions, the authors perceive it of importance to explain alternative futures which were not classiﬁed as being most probable and explain the aspects which motivated speciﬁc prediction results.
+Böhmer et al. approximate trace similarities with the Damerau-Levenstein method and a custom cost function. Using this method, they filter historic traces to produce a set of similar executions. From this set, probability distributions are mined, with the most probable behaviour ultimately used as the final prediction \cite{böhmer2018probability}.
+
 \subsection{Text modeling}
-Colocated with the International Conference in Grammatical Inference 2016 (ICGI) was a competition called SPiCE\ "about guessing the next element in a sequence" \cite{web:spice}. Most entries submitted to the competition used RNNs with LSTM cells to predict the next word of a sentence.
+Colocated with the International Conference in Grammatical Inference 2016 (ICGI) was a competition called SPiCE\ "about guessing the next element in a sequence" \cite{web:spice}. Most entries submitted to this competition made use of RNNs with LSTM cells to predict the next word of a sentence.
 
 \begin{figure}
     \centering
