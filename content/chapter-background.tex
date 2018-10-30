@@ -5,9 +5,9 @@ This chapter gives insights into the parts of these topics that will be used and
 This work can be attributed to the domain of Predictive Process Monitoring, which will also be introduced.
 
 \section{Process Science And Process Monitoring}
-Process Science, as loosely defined by van der Aalst \cite{Aalst2016}, refers to the \textit{broader discipline that combines knowledge from information technology and knowledge from management sciences to improve and run operational processes}. This means that approaches in this domain tend to be driven by models, such as Six Sigma or Kaizen\todo{source?}.
+Process Science, as loosely defined by van der Aalst \cite{Aalst2016}, refers to the \textit{broader discipline that combines knowledge from information technology and knowledge from management sciences to improve and run operational processes}. This results in improvement approaches that tend to be driven by process models.
 
-Central to process science is Business Process Management (BPM) which is squarely aimed at improving operational business performance through the optimization of business processes via their models.
+Central to process science is Business Process Management (BPM) which is a field aimed at improving operational business performance through the optimization of business processes via their models \cite{panagacos2012ultimate}.
 Modeled e.g. with the Business Process Modeling Notation (BPMN) \cite{bpmn2.0}, these models are typically very rigid and permit little variation of the workflow. The central element of these notations are the individual steps of which a process is comprised, referred to as \textit{activities}, shown in \ref{fig:activity-introduction}. A running process is referred to as a case.
 
 \begin{figure}
@@ -17,39 +17,40 @@ Modeled e.g. with the Business Process Modeling Notation (BPMN) \cite{bpmn2.0}, 
     \label{fig:activity-introduction}
 \end{figure}
 
-With the help of workflow management systems (WFMS), it became possible to embed and enforce these structured processes in an organization, making them traceable via the logs that these systems generated. The existence of these process logs is key for any analysis and thus they are also indispensable for this thesis.
+With the help of workflow management systems (WFMS), it is possible to embed and enforce these structured processes in an organization, making them traceable via the logs that these systems generate. The existence of these process logs is key for any analysis and thus they are also indispensable for this thesis. The execution history of a process instance is sometimes referred to as trace.
 
-The application of rigid processes did not work perfectly for everybody. Especially in the insurance and health-care sector, each case tended to be very different from the next \cite{hewelt2016}. This led to the notion that the course of a case strongly depends on the information contained inside it.
+Some processes do not work well together with such a rigid world view, however. Especially in the insurance and health-care sector, each instance tends to be very different from the next \cite{hewelt2016}. This led to the notion that the course of a case strongly depends on the information contained inside it.
 
-\subsection{Case Management}
-\todo{knowledge worker}
+\subsection{Adaptive Case Management}
 In settings in which it is common to employ BPM, such as assembly line productions, there is little heterogeneity. As the latter increases, BPMN and other business process modeling notations result in complex and hardly understandable models and thus fail their purpose of being easily understandable. As previously mentioned, this tends to occur in domains where the case trajectory is highly dependant on information contained inside it.
 
-The fact that this type of process is data-driven led to the creation of the \textit{case folder} - a directory central to a case, describing its current state. In Case Management (CM), the process acts on the data contained inside this folder, making it have a direct impact on the course of a case. In contrast to BPM, the formalization of Case Management and the subsequent creation of modeling languages has only just begun. Notable developments include the Case Management Modeling Notation \cite{web:cmmn} as well as the Chimera approach \cite{hewelt2016}.
-\todo[inline]{graphical illustration of case}
+The fact that this type of process is data-driven led to the creation of the \textit{case folder} - a directory central to a case, describing its current state. In Adaptive Case Management (ACM), the process is driven through the data contained inside this folder. The person driving the case forward is referred to case worker \cite{drucker1999}, who not only works with the information in the case but also the knowledge that he or she possesses. For this reason, case workers are often referred to as knowledge workers.
+
+In contrast to BPM, the formalization of Case Management and the subsequent creation of modeling languages has only just begun. Notable developments include the Case Management Modeling Notation \cite{web:cmmn} as well as the Chimera approach \cite{hewelt2016}.
 
 \subsection{Process Mining}
-The logs generated through the users actions give rise to the discipline of Process Mining, which covers the three steps of model discovery, conformance checking and model enhancement \cite{Aalst2016}. These are enabled through the use of techniques from the area of Data Science, making it possible to understand Process Mining as the link between Data Science and Process Science as in \autoref{fig:process-data-science}. An excerpt from such a log is depicted in figure \ref{fig:process-log}.
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/process-data-science.png}
+    \caption{Process Mining can be understood as the bridge between Process Science and Data Science \cite[p.18]{Aalst2016}. The blue line symbolizes the subdomains that Predictive Process Monitoring brings together.}
+    \label{fig:process-data-science}
+\end{figure}
 
-A major problem in this domain is posed by \textit{spaghetti} and \textit{lasagna} models. Such overly complex and unreadable models are mined from process logs that contain highly variable execution traces. These traces often come from CM executions.
+The logs generated by the WFMS actions give rise to the discipline of Process Mining, which covers the three steps of model discovery, conformance checking and model enhancement \cite{Aalst2016}. These steps are enabled through the use of techniques from the area of Data Science, making it possible to understand Process Mining as the link between Data Science and Process Science as in \autoref{fig:process-data-science}. An exemplary log suited for analysis is depicted in figure \ref{fig:process-log}.
+
+A major problem in this domain is posed by \textit{spaghetti} and \textit{lasagna} models. Such overly complex and unreadable models are mined from process logs that contain highly variable execution traces. These traces often come from ACM executions.
 
 As Process Mining is concerned with data-driven process discovery and optimization only on offline data, a possibility to act on case developments in real-time is desirable.
+
+\newpage
+\subsection{Predictive Process Monitoring}
+A recent domain aiming at the use of online data to make statements about the progression of a running case is that of \textit{Predictive Process Monitoring}~\cite{francescomarino2015, schoenig2018}. The application of predictive analytics on running and thus incomplete case logs connects two subdomains of Process Science and Data Science, setting it apart from Process Mining in \autoref{fig:process-data-science}.
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/process-log}
     \caption{The first entries of an exemplary event log from a case from the BPIC 2011 dataset\cite{BPIC2011}. Each event is associated with data and the column \texttt{concept:name} corresponds to the activity title.}
     \label{fig:process-log}
-\end{figure}
-
-\subsection{Predictive Process Monitoring}
-A recent domain aiming at using online data to make statements about the progression of a case is that of \textit{Predictive Process Monitoring} \cite{francescomarino2015, schoenig2018}. The application of predictive analytics on running and thus incomplete case logs connects two subdomains of Process Science and Data Science, setting it apart from Process Mining in \autoref{fig:process-data-science}.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=\textwidth]{gfx/process-data-science.png}
-    \caption{Process Mining can be understood as the bridge between Process Science and Data Science \cite[p.18]{Aalst2016}. The blue line symbolizes the subdomains that Predictive Process Monitoring brings together.}
-    \label{fig:process-data-science}
 \end{figure}
 
 Instead of revolving around models, this discipline is concerned with predicting certain characteristics of the running case that lie in its future. This allows answering questions such as:
