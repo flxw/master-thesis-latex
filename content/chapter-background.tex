@@ -48,7 +48,7 @@ A recent domain aiming at the use of online data to make statements about the pr
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gfx/process-log}
+    \includegraphics[width=\textwidth]{gfx/process-log.png}
     \caption{The first entries of an exemplary event log from a case from the BPIC 2011 dataset\cite{BPIC2011}. Each event is associated with data and the column \texttt{concept:name} corresponds to the activity title.}
     \label{fig:process-log}
 \end{figure}
@@ -79,39 +79,39 @@ This section shall introduce a common process for predictive model generation an
 \subsection{Predictive model development}
 \begin{figure}
 	\centering
-	\includegraphics[width=\textwidth]{gfx/kdd_process}
+	\includegraphics[width=\textwidth]{gfx/kdd_process.png}
 	\caption{The process for \textit{Knowledge Discovery in Databases} as per Fayyad et al. \cite{fayyad1996data}.}
 	\label{fig:kdd_process}
 \end{figure}
 
 In 1996 Fayyad et al. published what came to be known as the Knowledge Discovery In Databases (KDD) process \cite{fayyad1996data}. Published 20 years ago and aimed at data mining, it is also applicable to predictive model building. It is illustrated in \autoref{fig:kdd_process}, and shall be explained step by step in the following with technical details relevant for this thesis. The process is highly iterative and jumps between every step are possible.
 
-\subsubsection{Selection}
+\subsubsection*{Selection}
 Predictive models work on \textit{line items} comprised of a number of \textit{features}, which are variables that are likely to influence the prediction of the \textit{target variable}. In \autoref{fig:process-log}, each row is a line item and each column corresponds to a single feature. Features are sometimes also referred to as predictor variables.
 
 During the selection step features are chosen as predictors based on differed criteria such as inter-variable correlations.
 
-\subsubsection{Pre-processing}
+\subsubsection*{Pre-processing}
 Some features may be sparse or contain data of low-quality data. With methods from the area of data cleansing, these issues are resolved and appropriate values imputed for missing features. As we use already pre-processed data from BPIC \cite{BPIC2011, BPIC2012, BPIC2017}, this step is mentioned for the sake of completeness.
 
-\subsubsection{Transformation}
+\subsubsection*{Transformation}
 \label{sec:predictive-model-development:transformation}
 During transformation, some features might be aggregated, normalized or differently encoded to assist the model in picking up relations between variables. Common tasks are one-hot or dictionary encoding of discrete values such as strings, e.g. activity names.
 
 Variable concatenations or complex aggregations might also be added as separate \textit{engineered} features.
 
-\subsubsection{Data Mining}
+\subsubsection*{Data Mining}
 The goal of predicting the next activity is a classification task. For this type of task a wide array of applicable predictive models is available, such as linear regressions, decision trees, random forests, scalable vector machines (SVM) or artificial neural networks (ANN).
 
 The data prepared in the previous steps is used to \textit{train} the model. During this training phase, the model uses accuracy metrics to assess the quality of its predictions, learn the statistical properties of the data and adjust its internals accordingly. Certain input parameters of the model are adjusted during this phase as well, an activity referred to as \textit{hyper-parameter tuning}. Training the model can be a very time-consuming task, unless appropriate hardware is used. Such hardware might be specially designed for model learning (i.e. Google's Tensor Processing Units) or a simple Graphics Processing Unit (GPU).
 
-\subsubsection{Evaluation}
+\subsubsection*{Evaluation}
 Typically, not all of the available data is used for training. Instead, it is split into a \textit{training} and a \textit{test} set. The former is used for model training, while the latter is used in this step.
 
-The predictions for the test set are compared to the known values and used to assess its performance on unseen data. Our problem is multiclass classification problem, and viable metrics are total accuracy (share of correct classifications) and logarithmic loss (predicted probability of the target classes for a given line item).
+The predictions for the test set are compared to the known values and used to assess model performance on unseen data.
 
 \subsection{Sequence prediction}
-In this section, a formal definition of sequences is presented, and then set in relation with the problem at hand\footnote{Definition adapted from \cite{pei2001prefixspan}}.  Let $I = \{i_1, i_2, ..., i_n\}$ be the set of all items. An \textit{itemset} is a subset of $I$. A \textit{sequence} is an ordered list of itemsets, such that in its notation $seq = \langle s_1s_2...s_l \rangle\ |\ \forall\ 0 \leq j \leq l: s_j \subseteq I$. Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items. For  subsequences, the notation $seq_{i,k}$ denotes the containment of the elements from index $i$ through $k$ from the original sequence: $seq_{1,2} = \langle s_1s_2 \rangle$
+In this section, a formal definition of sequences is presented, and then set in relation with the problem at hand\footnote{Definition adapted from \cite{pei2001prefixspan}}.  Let $I = \{i_1, i_2, ..., i_n\}$ be the set of all items. An \textit{itemset} is a subset of $I$. A \textit{sequence} is an ordered list of itemsets, such that in its notation $seq = \langle s_1s_2...s_l \rangle\ |\ \forall\ 0 \leq j \leq l: s_j \subseteq I$. Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items. For  subsequences, the notation $seq_{i,k}$ denotes the containment of the elements from index $i$ through $k$ from the original sequence: $seq_{1,2} = \langle s_1s_2 \rangle$.
 
 Assuming that a a sequence can be finished, consider the database of finished sequences $DS$. Under the assumption of the Markovian hypothesis that "[...] the probability of each event depends only on the state attained in the previous event"\cite{gagniuc2017markov}, a predictive model can be trained on this database to predict the next sequence $nseq$ or itemset $s_k$ of an incomplete sequence $seq_{inc}$:
 
@@ -136,12 +136,16 @@ Referring to \autoref{eq:prediction-from-sequence}, $seq_{in}$ can be understood
 
 Next to this kind of prediction, there are also \textit{sequence-to-word} predictions, which can be used to generate text and even write simple novels.
 
-With the transfer of the general formulation onto the translation problem at hand, it is easy to imagine that the prediction target of a sequence need not be a word of an incomplete sentence - it could also be an activity of an incomplete business process. The formal transfer of sequence prediction to business processes shall be presented in \autoref{sec:contribution}, as it is an important part of the contribution.
+With the transfer of the general formulation onto the translation problem at hand, it is easy to imagine that the prediction target of a sequence need not be a word of an incomplete sentence - it could also be an activity of an ongoing business process. This transfer of sequence prediction to business processes shall be presented in \autoref{sec:contribution}.
+
+\subsection{Feature engineering for categorical input}
+
+One-Hot, Dictionary
 
 \subsection{Feature engineering for variable-length inputs}
 Predictive models such as random forests take inputs of fixed size. As shown, sequences can be of arbitrary length, and thus the curse of dimensionality also appears in context with this problem. To bring variable length inputs into a usable format for predictive models, several data input formats have been invented. As their names suggest, these come from the domain of Natural Language Processing (NLP), but can easily be transferred to the problem at hand. These shall be introduced in the following along with information on how each method can be use to construct a single line item.
 
-\subsubsection{Sliding Window}
+\subsubsection*{Sliding Window}
 The sliding window format is very common in the areas of NLP and Time Series Forecasting. With sliding window, chunks of length $c$ of the sequence $seq$ are fed into the prediction model. This results in several input tuples for every sequence, which can be many depending on $c$. \autoref{eq:sliding-window:tuple-set} shows how a sequence results in a set of tuples:
 
 \begin{equation}
@@ -149,7 +153,7 @@ The sliding window format is very common in the areas of NLP and Time Series For
     \{ (s_k, s_{k+1}, ..., s_{k+c})\ |\ 1 \leq k \leq l-c \wedge s_k \in seq \}
 \end{equation}
 
-\subsubsection{Bag-Of-Words}
+\subsubsection*{Bag-Of-Words}
 The bag-of-words (BOW) approach produces exactly $l$ input tuples, the length of sequence $seq$. Under the assumption that all possible items or itemset are known, encoding a sequence will produce $l$ tuples of the same length. This is achieved by counting the occurence of each item or itemset in $seq$ for each subsequence $seq_{1,k}$. \autoref{eq:bow:multiset} showcases the multiset containing one line item for each further step into the sequence:
 
 \begin{equation}
@@ -160,7 +164,7 @@ The bag-of-words (BOW) approach produces exactly $l$ input tuples, the length of
     bow\_ss(seq) = ( s_1^{count(s_1,seq)}, ..., s_n^{count(s_n,seq)} )
 \end{equation}
 
-\subsubsection{$n$-grams}
+\subsubsection*{$n$-grams}
 The $n$-gram approach is very popular in computational linguistics, biology and data compression and is effectively an $(n-1)$-order Markov model, with the most popular choices for $n$ being $1,2$ and $3$. These models would be called \textit{unigram}, \textit{bigram} and \textit{trigram} models.
 
 Similar to BOW, an $n$-gram model counts frequencies. Different from to BOW however, it counts the occurences of subsequences of length $n$. This is done by concatenating all sequences into one large item set $LS$, thus eliminating any duplicates. From $LS$, a large feature set $FS$ is constructed with every item being a permutation of length $n$. A feature in this set would be referred to as \textit{gram}, as \autoref{eq:ngram-fs-construction} shows.
@@ -182,7 +186,7 @@ In a line item, each $FS$ element would be represented by a boolean flag $f_i$, 
 
 While $n$-grams can be be powerful features to use, their high dimensionality can cause high computational loads.
 
-\subsubsection{Subsequence mining}
+\subsubsection*{Subsequence mining}
 The previously mentioned methods are very popular ways to engineer features. In addition to crafting features manually, one can also try to mine them:
 
 One of the main weaknesses of $n$-grams is the restriction to a single $n$ and that "one may need to examine a combinatorially explosive
@@ -190,7 +194,7 @@ number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reas
 
 Examples for these algorithms are GSP \cite{srikant1996gsp}, FreeSpan \cite{han2000freespan} and PrefixSpan \cite{pei2001prefixspan}. PrefixSpan outperforms the two former and shall be used in this work \cite{pei2001prefixspan}.
 
-\subsubsection{Feature learning}
+\subsubsection*{Feature learning}
 As mentioned in \autoref{sec:predictive-model-development:transformation}, some features are encoded before being fed to the predictive model for training. Instead of using one-hot or dictionary encoding to do so, one can also use an encoding derived from \textit{word embeddings}.
 
 A word embedding is the output of a simple neural network that has been trained on a large text corpus and thus detected how words relay to each other. Internally, the neural network uses high-dimensional vectors for each word that can represent any word property that the model has learned itself. This enables interesting calculations with vector arithmetic, such as the one shown in \autoref{eq:word-embedding:king}. In this famous example the network was able to detect gender properties and social semantics of a word. 
