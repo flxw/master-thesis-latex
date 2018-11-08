@@ -25,6 +25,21 @@ Evermann network architecture, Schönig network architecture, my network archite
 Dropping the embedding layer if not embedding is present
 
 \section{Evaluation criteria}
+Three metrics of the four aforementioned implementations shall be the focus of the evaluation of the results:
+\begin{enumerate}
+    \item\textbf{Accuracy} - I.e. how many next-activity predictions were correct in total.
+    \item\textbf{Earliness} - I.e. whether and how early in the total trace the prediction accuracy begins to stabilize \cite{francescomarino2015}.
+    \item\textbf{Feature importance} - I.e. whether network-internal metrics indicate that an added feature is valuable for making predictions.
+\end{enumerate}
+
+\todo[inline]{MAKE THIS FIGURE!}
+\begin{figure}
+    \centering
+    % \includegraphics{}
+    \caption{figure of the four implementations side by side}
+    \label{fig:my_label}
+\end{figure}
+
 Accuracy and earliness
 
 Does accuracy rise with increasing trace length?

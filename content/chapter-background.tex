@@ -183,31 +183,28 @@ To assist predictive models during training, most features need to be reformatte
 While ordinal features are most often normalized, categorical features can be encoded in a variety of ways. Where one-hot and dictionary encoding are traditional approaches, word embeddings represent a relatively new and promising approach:
 
 \subsubsection*{One-hot encoding}
-One-hot encoding is often used for features which have a small to medium-sized number of unique values. Using it, each line item of a feature is expanded to an $n$ column representation, where each $n$ represents the number a unique values of the original. The columns hold a boolean flag, of which only one can be true in any given row, hence the name. This type of encoding is also sometimes referred to as "dummy encoding".
+One-hot encoding is often used for features which have a small to medium-sized number of unique values. Using it, each line item of a feature is expanded to an $n$ column representation, where each $n$ represents the number a unique values of the original. The columns hold a boolean flag $b$, of which only one is true in any given row, hence the name. This type of encoding is also sometimes referred to as "dummy encoding".
 
-% TODO: put formula for one-hot encoding here
-
-\begin{equation}\label{eq:ngram-tuple}
-    ngram\_tuple(seq_{1,k}) = (f_1, ..., f_{|FS|})\ |\ \ f_i = 
+The following equation shows the feature set construction for a sequence $seq$ of one-item itemsets:
+\begin{equation}\label{eq:one-hot}
+    one\_hot(seq) = \{(b_1, ..., b_n) | \forall s \in seq: \wedge b_i = 
     \begin{cases}
-    1, & \text{if $f_i \in seq_{1,k}$}.\\
+    1, & \text{if index corresponds to value}.\\
     0, & \text{otherwise}.
     \end{cases}
+    \}
 \end{equation}
-
-\begin{equation}\label{eq:ngram-tuple}
-    ngram\_tuple(seq_{1,k}) = (f_1, ..., f_{|FS|})\ |\ \ f_i = 
-    \begin{cases}
-    1, & \text{if $f_i \in seq_{1,k}$}.\\
-    0, & \text{otherwise}.
-    \end{cases}
-\end{equation}
+\todo[inline]{The way this looks there is still potential}
 
 \subsubsection*{Dictionary encoding}
-\subsubsection*{Word embedding}
-As mentioned in \autoref{sec:predictive-model-development:transformation}, some features are encoded before being fed to the predictive model for training. Instead of using one-hot or dictionary encoding to do so, one can also use an encoding derived from \textit{word embeddings}.
+Widely used in compression, for example in in-memory database systems~\cite{plattner2012memory}, dictionary encoding is also used to encode categorical values. Since predictive models only process numerical values, dictionary encoding is used to create a look-up table and map every value of a feature to a numeric code.
 
-A word embedding is the output of a simple neural network that has been trained on a large text corpus and thus detected how words relay to each other. Internally, the neural network uses high-dimensional vectors for each word that can represent any word property that the model has learned itself. This enables interesting calculations with vector arithmetic, such as the one shown in \autoref{eq:word-embedding:king}. In this famous example the network was able to detect gender properties and social semantics of a word. 
+In contrast to one-hot encoding, this dictionary encoding does not result in wide and sparse inputs, making it suitable for features with a large number of distinct features. However, it has one important ramification: It imposes an order on features which previously might not have had an one. If e.g. the word "car" is encoded with a 1 and the word "red" is encoded with a 2, the following expression suddenly holds true: "car" $<$ "red".
+
+\subsubsection*{Word embedding}
+Because dictionary encodings impose an order, and one-hot encodings lead to sparse and wide inputs, word embeddings are perceived as a viable alternative for encoding categorical variables.
+
+A word embedding is the output of a neural network with a single hidden layer that has been trained on a large text corpus and thus detected how words relay to each other \cite{web:word-embedding}. The network puts out highly dimensional vectors for each word which represent any word property that the model has learned by. This allows for interesting examples with vector arithmetic, such as the one shown in \autoref{eq:word-embedding:king}. In this famous example the network was able to detect gender properties and social semantics of a word. 
 
 \begin{equation}
     \label{eq:word-embedding:king}
@@ -216,14 +213,13 @@ A word embedding is the output of a simple neural network that has been trained 
 
 A word embedding thus allows clustering of words by certain properties.
 Made popular by Google, the most extensive implementation for word embeddings is word2vec \cite{web:ahogrammer, goldberg2014word2vec}.
-
-The application of embeddings in the context of predictive process monitoring is a novelty and shall be explored as part of the contribution in \autoref{sec:contribution}.
+\todo[inline]{Refer to embeddings in related work when presenting Francescomarinos work}
 
 \subsection{Feature engineering for variable-length sequences}
 Predictive models take inputs of fixed size. As shown, sequences can be of arbitrary length, and thus the curse of dimensionality also appears in context with this problem. To bring variable length inputs into a usable format for predictive models, several methods of formatting have been invented. As some of their names names suggest, these come from the domain of Natural Language Processing (NLP), but can easily be transferred to the problem at hand. These shall be introduced in the following along with information on how each method can be use to construct a single line item.
 
 \subsubsection*{Sliding Window}
-The sliding window format is very common in the areas of NLP and Time Series Forecasting. With sliding window, chunks of length $c$ of the sequence $seq$ are fed into the prediction model. This results in several input tuples for every sequence, which can be many depending on $c$. \autoref{eq:sliding-window:tuple-set} shows how a sequence results in a set of tuples:
+The sliding window format is very common in the areas of NLP and Time Series Forecasting. By using it, chunks of length $c$ of the sequence $seq$ are fed into the prediction model. This results in several input tuples for every sequence, which can be many depending on $c$. \autoref{eq:sliding-window:tuple-set} shows how a sequence results in a set of tuples:
 
 \begin{equation}
     \label{eq:sliding-window:tuple-set}
@@ -231,27 +227,26 @@ The sliding window format is very common in the areas of NLP and Time Series For
 \end{equation}
 
 \subsubsection*{Bag-Of-Words}
-The bag-of-words (BOW) approach produces exactly $l$ input tuples, the length of sequence $seq$. Under the assumption that all possible items or itemset are known, encoding a sequence will produce $l$ tuples of the same length. This is achieved by counting the occurence of each item or itemset in $seq$ for each subsequence $seq_{1,k}$. \autoref{eq:bow:multiset} showcases the multiset containing one line item for each further step into the sequence:
+The bag-of-words (BOW) approach produces $l$ input tuples, the length of sequence $seq$. Similarly to one-hot encoding, the possibly occuring values need to be known. One arrives at the encoding by counting the occurrences of each item or itemset in $seq$ for each subsequence $seq_{1,k}$. \autoref{eq:bow:multiset} showcases the multiset containing one line item for each further step into the sequence:
 
 \begin{equation}
     \label{eq:bow:multiset}
-    \{ bow\_ss(seq_{1,k})\ |\ 1 \leq k \leq c \}
-\end{equation}
-\begin{equation}
+    \{ bow\_ss(seq_{1,k})\ |\ 1 \leq k \leq c \} \\
     bow\_ss(seq) = ( s_1^{count(s_1,seq)}, ..., s_n^{count(s_n,seq)} )
 \end{equation}
+\todo[inline]{Optical enhancement}
 
 \subsubsection*{$n$-grams}
 The $n$-gram approach is very popular in computational linguistics, biology and data compression and is effectively an $(n-1)$-order Markov model, with the most popular choices for $n$ being $1,2$ and $3$. These models would be called \textit{unigram}, \textit{bigram} and \textit{trigram} models.
 
-Similar to BOW, an $n$-gram model counts frequencies. Different from to BOW however, it counts the occurences of subsequences of length $n$. This is done by concatenating all sequences into one large item set $LS$, thus eliminating any duplicates. From $LS$, a large feature set $FS$ is constructed with every item being a permutation of length $n$. A feature in this set would be referred to as \textit{gram}, as \autoref{eq:ngram-fs-construction} shows.
+Similar to BOW, an $n$-gram model counts frequencies. Different from to BOW however, it counts the occurences of subsequences of length $n$. Suppose a set $LS$ holds all possible values of a single feature. From $LS$, a feature set $FS$ is constructed with every item being a permutation of length $n$. A feature in this set would be referred to as \textit{gram}, as \autoref{eq:ngram-fs-construction} shows.
 
 \begin{equation}\label{eq:ngram-fs-construction}
 %    FS = \{LS_{i,i+n}\ |\ 1 \leq i \leq |LS|-n \}
     FS = S(LS, n)
 \end{equation}
 
-In a line item, each $FS$ element would be represented by a boolean flag $f_i$, denoting how often this specific subsequence already occured within a given sequence. \autoref{eq:ngram-tuple} formalizes the construction of a single $n$-gram-encoded tuple of sequence $seq$ at step $k$:
+In a line item, each $FS$ element would be represented by a number $f_i$, denoting whether this specific subsequence already occurred within a given sequence. \autoref{eq:ngram-tuple} formalizes the construction of a single $n$-gram-encoded tuple of sequence $seq$ at step $k$:
 
 \begin{equation}\label{eq:ngram-tuple}
     ngram\_tuple(seq_{1,k}) = (f_1, ..., f_{|FS|})\ |\ \ f_i = 
@@ -261,12 +256,10 @@ In a line item, each $FS$ element would be represented by a boolean flag $f_i$, 
     \end{cases}
 \end{equation}
 
-While $n$-grams can be be powerful features to use, their high dimensionality can cause high computational loads.
+While $n$-grams can be be powerful features to use, their high dimensionality causes high computational loads. It helps find words that occur together and possibly have a meaning together. The higher the $n$, the more detailed these findings are, leading to the next approach of dealing with sequences.
 
 \subsubsection*{Subsequence mining}
-The previously mentioned methods are very popular ways to engineer features. In addition to crafting features manually, one can also try to mine them:
-
 One of the main weaknesses of $n$-grams is the restriction to a single $n$ and that "one may need to examine a combinatorially explosive
-number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reason, algorithms that bring the benefit of $n$-grams without the resulting high dimensionality have been developed. These algorithms sift through input sequences and detect sequential patterns of any length, resulting in line items similar to the ones in \autoref{eq:ngram-tuple} with the $f_i$ denoting the presence of a specific subsequence in the sequence.
+number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reason, algorithms have been developed that combine the benefit of $n$-grams with more flexibility by avoiding the limitation to $n$. These algorithms sift through input sequences and detect sequential patterns of any length, resulting in line items similar to the ones in \autoref{eq:ngram-tuple} with the $f_i$ denoting the presence of a specific subsequence in the sequence instead of ngrams.
 
-Examples for these algorithms are GSP \cite{srikant1996gsp}, FreeSpan \cite{han2000freespan} and PrefixSpan \cite{pei2001prefixspan}. PrefixSpan outperforms the two former and shall be used in this work \cite{pei2001prefixspan}.
+Examples for these algorithms are GSP \cite{srikant1996gsp}, FreeSpan \cite{han2000freespan} and PrefixSpan \cite{pei2001prefixspan}.

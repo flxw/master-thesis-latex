@@ -1,27 +1,23 @@
 \chapter{Contribution}\label{sec:contribution}
-This thesis shall be understood as an extension to the works of Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}, both of which were presented in the previous section.
 
-The two works have demonstrated the applicability of LSTM neural networks in Predictive Process Monitoring, but have left out the general perspective on the sequence prediction problem. Furthermore, the impact of added features to the training data was not investigated.
+This thesis shall be understood as an extension to the works of Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}, both of which were presented in the previous section. The two works have demonstrated the applicability of LSTM neural networks in Predictive Process Monitoring, but have left out the general perspective on the sequence prediction problem. Furthermore, the impact of added features to the training data was not investigated.\\
 
-This thesis introduces said general perspective through the adaption of the approach of Shibata et al. \cite{shibata2016bipartite}. Their bipartite network architecture as well as the engineered SP-2 features have shown extraordinary performance in the SPiCE competition \cite{web:spice}. This transfer is made under the hypothesis that a case can exhibit properties similar to grammatical rules. Besides SP-2 features, sub-sequence information as proposed by Klinkmüller et al. \cite{klinkmuller2018reliablemonitoring} is considered as an alternative. These sub-sequences are mined with PrefixSpan \cite{pei2001prefixspan}.
-\newline
+The thesis introduces said general perspective through the adaption of the approach of Shibata et al. \cite{shibata2016bipartite}. Their bipartite network architecture as well as the engineered SP-2 features have shown extraordinary performance in the SPiCE competition \cite{web:spice}. This transfer is made under the hypothesis that a case can exhibit properties similar to grammatical rules. Sub-sequence information as proposed by Klinkmüller et al. \cite{klinkmuller2018reliablemonitoring} are considered as an alternative to the SP-2 features. These sub-sequences are mined with PrefixSpan \cite{pei2001prefixspan}.
 
-Henceforth the two implementations shall be referred to as SP2 for the bipartite architecture using SP-2 features and PFS for the bipartite architecture using sub-sequence information mined with PrefixSpan. They are compared to the performance of implementations that mimic Evermann et al. and Schönig et al. Where original numbers were published, these are used additionally. The BPIC2011 \cite{BPIC2011} and BPIC2012 \cite{BPIC2012} datasets are used and pre-processed differently as per each approach.\\
+The two implementations are henceforth referred to as SP2 for the bipartite architecture using SP-2 features and PFS for the bipartite architecture using sub-sequence information mined with PrefixSpan. They are compared to the performance of implementations that mimic Evermann et al. and Schönig et al. Where original numbers were published, these are used additionally. The BPIC2011 \cite{BPIC2011} and BPIC2012 \cite{BPIC2012} datasets are used and pre-processed differently as per each approach.\\
 
-\section{Evaluation metrics}
-Three metrics of the four aforementioned implementations shall be the focus of the evaluation of the results:
-\begin{enumerate}
-    \item\textbf{Accuracy} - I.e. how many next-activity predictions were correct in total.
-    \item\textbf{Earliness} - I.e. whether and how early in the total trace the prediction accuracy begins to stabilize \cite{francescomarino2015}.
-    \item\textbf{Feature importance} - I.e. whether network-internal metrics indicate that an added feature is valuable for making predictions.
-\end{enumerate}
+\section{Overview of compared approaches}
+Not present in literature is a direct comparison of different approaches on predictive process monitoring
 
-\todo[inline]{MAKE THIS FIGURE!}
+figure with schönig, evermann and my architecture
+
+% Use this to plot subfigures:
+% https://texblog.org/2011/05/24/placing-figures-side-by-side-subfig/
 \begin{figure}
     \centering
-    % \includegraphics{}
-    \caption{figure of the four implementations side by side}
-    \label{fig:my_label}
+    \includegraphics[height=.5\textwidth]{gfx/spice-winner-architecture.png}
+    \caption{The neural network architecture of the winning submission at the SPiCE competition by Shibata et al. \cite{shibata2016bipartite}.}
+    \label{fig:spice-winner-architecture}
 \end{figure}
 
 \section{Understanding a trace as a sequence}
