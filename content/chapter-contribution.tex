@@ -6,20 +6,31 @@ The thesis introduces said general perspective through the adaption of the appro
 
 The two implementations are henceforth referred to as SP2 for the bipartite architecture using SP-2 features and PFS for the bipartite architecture using sub-sequence information mined with PrefixSpan. They are compared to the performance of implementations that mimic Evermann et al. and Schönig et al. Where original numbers were published, these are used additionally. The BPIC2011 \cite{BPIC2011} and BPIC2012 \cite{BPIC2012} datasets are used and pre-processed differently as per each approach.\\
 
-\section{Contrasting compared approaches}
-Not present in literature is a direct comparison of different approaches on predictive process monitoring
+Finally, a statement about the importance of individual features for predictions shall be made to assert whether the added overhead for feature engineering and network construction is justified by a boost in performance and prediction stability.
 
-figure with schönig, evermann and my architecture
-what they were tested on, which preprocessing etc
+\section{Contrasting compared approaches}
+A further contribution to current research of this thesis is the comparison of differently designed networks that solve the same prediction problem.
 
 % Use this to plot subfigures:
 % https://texblog.org/2011/05/24/placing-figures-side-by-side-subfig/
 
 \begin{figure}[ht]
 \centering
-\subfloat[][]{}
+\subfloat[][]{
+    \includegraphics[width=0.4\textwidth]{gfx/evermann-network-architecture.png}
+}
 \qquad
-\subfloat[][]{}
+\subfloat[][]{
+    \includegraphics[width=0.4\textwidth]{gfx/schoenig-network-architecture.png}
+}
+\qquad
+\subfloat[][]{
+    \includegraphics[width=0.4\textwidth]{gfx/sp2-network-architecture.png}
+}
+\qquad
+\subfloat[][]{
+    \includegraphics[width=0.4\textwidth]{gfx/pfs-network-architecture.png}
+}
 \caption{This is a table containing several subtables.}
 \end{figure}
 
