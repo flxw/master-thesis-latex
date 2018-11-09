@@ -108,6 +108,7 @@ Typically, not all of the available data is used for training. Instead, it is sp
 The predictions for the test set are compared to the known values and used to assess model performance on unseen data.
 
 \subsection{Sequence prediction}
+\label{sec:background:sequence-prediction}
 In this section, a formal definition of sequences is presented, and then set in relation with the problem at hand\footnote{Definition adapted from \cite{pei2001prefixspan}}.  Let $I = \{i_1, i_2, ..., i_n\}$ be the set of all items. An \textit{itemset} is a subset of $I$. A \textit{sequence} is an ordered list of itemsets, such that in its notation $seq = \langle s_1s_2...s_l \rangle\ |\ \forall\ 0 \leq j \leq l: s_j \subseteq I$. Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items. For  subsequences, the notation $seq_{i,k}$ denotes the containment of the elements from index $i$ through $k$ from the original sequence: $seq_{1,2} = \langle s_1s_2 \rangle$.
 
 Assuming that a a sequence can be finished, consider the database of finished sequences $DS$. Under the assumption of the Markovian hypothesis that "the probability of each event depends only on the state attained in the previous event"\cite{gagniuc2017markov}, a predictive model can be trained on this database to predict the next sequence $nseq$ or itemset $s_k$ of an incomplete sequence $seq_{inc}$:
@@ -213,7 +214,6 @@ A word embedding is the output of a neural network with a single hidden layer th
 
 A word embedding thus allows clustering of words by certain properties.
 Made popular by Google, the most extensive implementation for word embeddings is word2vec \cite{web:ahogrammer, goldberg2014word2vec}.
-\todo[inline]{Refer to embeddings in related work when presenting Francescomarinos work}
 
 \subsection{Feature engineering for variable-length sequences}
 Predictive models take inputs of fixed size. As shown, sequences can be of arbitrary length, and thus the curse of dimensionality also appears in context with this problem. To bring variable length inputs into a usable format for predictive models, several methods of formatting have been invented. As some of their names names suggest, these come from the domain of Natural Language Processing (NLP), but can easily be transferred to the problem at hand. These shall be introduced in the following along with information on how each method can be use to construct a single line item.

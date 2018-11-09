@@ -1,4 +1,4 @@
-\chapter{Related Work}\label{sec:related-work}
+\chapter{Related Work}\label{chap:related-work}
 Hauder et al. mention numerous research challenges in the domain of ACM, among them an active support system for knowledge workers \cite{hauder2014}.
 The need for such a system is emphasized by Francescomarino et al. in an extensive literature review, where it has been found that few prediction approaches target the next activity \cite{francescomarino2018}.\\
 
@@ -14,7 +14,7 @@ Building upon each other are the works by Evermann et al. \cite{evermann2016} an
 
 Schönig et al. \cite{schoenig2018} picked up on Evermann's future work and demonstrated on BPIC datasets from 2017 that using data attributes does increase prediction accuracy. Schönig et al. implemented their solution with Keras and trained it using stratified 5-fold cross-validation. Their data was preprocessed with one-hot encoding for categorical variables and min-max-normalization for continuous features. Also, the work nicely demonstrates that an increasing number of included data attributes can continually improve accuracy \cite[p.5]{schoenig2018}, without referring to any of their statistical properties.
 
-The works of Evermann et al. and Schönig et al. will represent important benchmarks in \autoref{sec:evaluation}, as they are similar to our approach and the source code for both works has been made available.\\
+The works of Evermann et al. and Schönig et al. represent important parts of Contribution and Evaluation, as they are similar to our approach and the source code for both works has been made available.\\
 
 Similar to Schönig et al., Polato et al. make use of data attributes in their work for improving the prediction of the remaining time of business process instances \cite{polato2014}. During feature engineering, their SVR training data is enriched with information about possible other activities. Their dataset is unfortunately relatively small at 5000 items and not public.\\
 
@@ -36,10 +36,17 @@ Böhmer et al. approximate trace similarities with the Damerau-Levenstein method
 \section{Text modeling}
 Colocated with the International Conference in Grammatical Inference 2016 (ICGI) was a competition called SPiCE\ "about guessing the next element in a sequence" \cite{web:spice}. Most entries submitted to this competition made use of RNNs with LSTM cells to predict the next word of a sentence.
 
-The winning submission by Shibata et al. uses a bipartite network architecture training separate layers on different features of the same sentence. The results of these separate layers are then merged in the middle hidden layers to produce a single output \cite{shibata2016bipartite}.
+\begin{figure}
+    \centering
+    \includegraphics[height=.4\textwidth]{gfx/spice-winner-architecture.png}
+    \caption{The neural network architecture of the winning submission at the SPiCE competition by Shibata et al. \cite{shibata2016bipartite}.}
+    \label{fig:spice-winner-architecture}
+\end{figure}
+
+The winning submission by Shibata et al. uses a bipartite network architecture training separate layers on different features of the same sentence. The results of these separate layers are then merged in the middle hidden layers to produce a single output \cite{shibata2016bipartite}, as \autoref{fig:spice-winner-architecture} shows.
 While one half of the layers are trained on the most recent word of the sentence, the other half is trained on the prefix of that word. As this prefix can be of any length, Shibata et al. propose a binary bag-of-words encoding, representing the states of a SP-2 automaton.
 
-SP-$k$ languages are used to describe certain long-term dependencies through forbidden subsequences. For example, if $\langle a,b \rangle$ is forbidden, then no $b$ may ever occur after $a$. As per Heinz, who assisted Shibata, deterministic finite automatons (DFA) can also be used to characterize SP-$k$ languages, if its states encode the subsequences of size $k-1$  present in the previous prefixes \cite{heinz2010estimatingSP}. To make this concept more tangible, \autoref{tab:sp2-encoding} illustrates this encoding with a small example taken from Shibata's paper \cite{shibata2016bipartite}.\\
+SP-$k$ languages are used to describe certain long-term dependencies through forbidden subsequences. For example, if $\langle a,b \rangle$ is forbidden, then no $b$ may ever occur after $a$. As per Heinz, who assisted Shibata, deterministic finite automatons (DFA) can also be used to characterize SP-$k$ languages, if its states encode the subsequences of size $k-1$  present in the previous prefixes \cite{heinz2010estimatingSP}. To make this concept more tangible, \autoref{tab:sp2-encoding} illustrates a small example.
 
 \begin{table}[ht!]
     \centering
@@ -51,12 +58,12 @@ SP-$k$ languages are used to describe certain long-term dependencies through for
         0 & a    & a            & [1 & 0 & 0 & 0 & 0]\\
         1 & d    & ad           & [1 & 0 & 0 & 1 & 0]\\
         2 & a    & ada          & [1 & 0 & 0 & 1 & 0]\\
-        3 & c    & adac         & [1 & 0 & 1 & 1 & 0]\\
-        4 & d    & adacd        & [1 & 0 & 1 & 1 & 0]\\
+        % 3 & c    & adac         & [1 & 0 & 1 & 1 & 0]\\
+        % 4 & d    & adacd        & [1 & 0 & 1 & 1 & 0]\\
         \hline
     \end{tabular}
     \caption{Prefixes encoded with SP-2. As $t$ progresses, more and more single-item subsequences ($k-1=1$) are marked as occurred. The alphabet is $I=\{a,b,c,d,e\}$. This example is taken from Shibata et al.  \cite{shibata2016bipartite}.}
     \label{tab:sp2-encoding}
 \end{table}
 
-Attention, a fairly new development in the domain of ANNs, has been leveraged by Kokkinos et al. in a tree-structured neural network to classify sentiments in sentences \cite{kokkinos2017structural}. In a detailed comparison with other works, their bipartite tree approach yields the highest accuracy on the Stanford Sentiment Treebank dataset. While the proposition of tree-structured Gated Recurrent Units (GRUs, a variant of LSTM units) and their use of attention is arguably the main contribution of this work, they make use of a bipartite network architecture and different features as well. This gives further lift to the approaches of Shibata et al. and why it was continued in this thesis. Furthermore, the authors also make use of word embeddings during network training.
+Attention, a fairly new development in the domain of ANNs, has been leveraged by Kokkinos et al. in a tree-structured neural network to classify sentiments in sentences \cite{kokkinos2017structural}. In a detailed comparison with other works, their bipartite tree approach yields the highest accuracy on the Stanford Sentiment Treebank dataset. While the proposition of tree-structured Gated Recurrent Units (GRUs, a variant of LSTM units) and their use of attention is arguably the main contribution of this work, they make use of a bipartite network architecture and word embeddings as well.
