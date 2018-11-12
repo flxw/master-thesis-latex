@@ -61,41 +61,35 @@ for i in range(1,len(t)):
 \end{lstlisting}
 
 \subsection*{Sub-sequence feature engineering}
-The sub-sequence features for the PFS model were created with the help of the \textit{prefixspan-py} library~\cite{web:prefixspan-py}.
+The sub-sequence features for the PFS model were created with the help of the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. As \autoref{lst:pfs-mining} shows, the library greatly facilitates obtaining closed sequences ranked by support and returns a two-dimensional array of sub-sequences. This array contains one array per sub-sequence.
+\todo[inline]{put closed sequences and support into background}
 
-\begin{lstlisting}
-# Prefixspan requires an array of arrays with one subarray for every trace
-encoded_traces = [ t[target_column].map(feature_dict[target_column]['to_int']).tolist() for t in traces ]
+\begin{lstlisting}[caption={Obtaining closed sequences using the \textit{prefixspan-py} library.}, label={lst:pfs-mining}]
 prefixspan_traces = PrefixSpan(encoded_traces)
-closed_sequences = prefixspan_traces.topk(25, closed=True) # support is how often the subsequence appears in total
-# http://sequenceanalysis.github.io/slides/analyzing_sequential_user_behavior_part2.pdf, slide 5
-
-# only take subsequence which are at a certain level of support? like if ss[0]/len(traces) < .90
-#ps_topkc = list(filter(lambda x: x[0]/len(traces) > .90, ps_topkc))
-closed_sequences = [ p[1] for p in closed_sequences ]
-pftrace_args = [ (t, closed_sequences[:], feature_dict[target_column]['to_int']) for t in traces ] # enrich traces with copy of mined subsequences
+closed_sequences = prefixspan_traces.topk(25, closed=True)
 \end{lstlisting}
 
-\begin{lstlisting}
-def enrich_trace_with_subseq(t, ps, event_to_int):
-    col_prefix = "PFS_"
-    subseq_labels = [ "{0}{1}".format(col_prefix,ss_idx) for ss_idx, ss in enumerate(ps) ]
-    subseq_df = pd.DataFrame(columns=subseq_labels, index=range(0,len(t)), dtype=np.bool)
+After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. The activity at the current index is compared with the beginning of every subsequence in the list of subsequences. If they are equal, the beginning is popped off the list of this specific subsequence. If this depletes the list, the subsequence has completely occured and is marked as such. This continues until the end of every trace.
+
+\begin{lstlisting}[caption={Creating the subsequence features.}, label={lst:subsequence-feature-creation}]
+col_prefix = "PFS_"
+subseq_labels = [ "{0}{1}".format(col_prefix,ss_idx) for ss_idx, ss in enumerate(ps) ]
+subseq_df = pd.DataFrame(columns=subseq_labels, index=range(0,len(t)))
+
+for col in subseq_df.columns: subseq_df[col].values[:] = 0
+for i in range(0,len(t)):
+    activity_code = t["concept:name"].iloc[i]
     
-    for col in subseq_df.columns: subseq_df[col].values[:] = 0
-    for i in range(0,len(t)): # loop through sequence, prune items from mined sequences, and once a subsequence array is empty, this subsequence has occured :)
-        activity_code = event_to_int.get(t["concept:name"].iloc[i], None)
-        
-        for subseq_idx in range(0,len(ps)):
+    for subseq_idx in range(0,len(ps)):
+        if ps[subseq_idx] == []:
+            continue
+        if ps[subseq_idx][0] == activity_code:
+            ps[subseq_idx].pop(0)
             if ps[subseq_idx] == []:
-                continue
-            if ps[subseq_idx][0] == activity_code:
-                ps[subseq_idx].pop(0)
-                if ps[subseq_idx] == []:
-                    subseq_df.values[i:,subseq_idx] = 1
-        
-    return subseq_df
+                subseq_df.values[i:,subseq_idx] = 1
 \end{lstlisting}
+
+\todo[inline]{Choosing a specific support for the PFS features...}
 
 \section{Test setup}
 Dropping the embedding layer if results are really bad
