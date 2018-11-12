@@ -17,28 +17,84 @@ Following the KDD process~\cite{fayyad1996data}, the data was preprocessed to el
 \end{enumerate}
 
 
-For the BPIC2011 dataset, the column \texttt{lifecycle:transition} was dropped in step 1. In step 2, 
-activity code correlates to 
+For both BPIC2011 and BPIC2012 datasets, the column \texttt{lifecycle:transition} was dropped in step 1. To make statements about upcoming workflow-related activities only, only completion events related to workflow activities were kept in the BPIC2012 log \cite{evermann2016}.
+
+In step 2, the bi-directional results in \autoref{fig:bpic2011-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlated strongly with many others in the BPIC2011 dataset. Thus, these were dropped.
+
+As evidenced in \autoref{fig:bpic2012-correlation-heatmap}, the BPIC2012 dataset with its small number of features did not require any removals.
+
+\begin{figure}
+\centering
+\subfloat[][BPIC2011 Cramér's V heatmap]{
+    \includegraphics[width=0.4\textwidth]{gfx/bpic2011-correlation-matrix.png}
+    \label{fig:bpic2011-correlation-heatmap}
+}
+\qquad
+\subfloat[][BPIC2012 Cramér's V heatmap]{
+    \includegraphics[width=0.4\textwidth]{gfx/bpic2012-correlation-matrix.png}
+    \label{fig:bpic2012-correlation-heatmap}
+}
+\caption{Correlation heatmaps generated from the application of Cramér's V.}
+\end{figure}
 
 \section{Data transformation}
-one-hot encoding for certain columns since no ordinal relationship present
-Which columns were engineered and how
-Engineering of SP2 features and PrefixSpan \cite{web:prefixspan-py}
+Having removed unneeded features, the remaining ones were encoded following standard practice. All numerical features $x$ were normalized individually for every trace using the well-tested min-max method:
+
+$$z = \frac{x-min(x)}{max(x)-min(x)}$$
+
+Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermann's model, they were encoded with dictionary encoding, as this encoding is required for Embedding layers.
+
+\subsection*{SP-2 feature engineering}
+The SP-2 features for the SP2 model were engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. For all following activities, the contents of the previous row inside \texttt{sp2\_df} are copied into the current one and the presence of the current activity is marked. This repeats itself until the trace has been iterated over.
+
+\begin{lstlisting}[caption={SP-2 feature generation algorithm for a single trace},label={lst:sp2-generation}]
+sp2_df = pd.DataFrame(columns=activity_labels, index=range(0,len(t)), dtype=np.bool)
+for col in sp2_df.columns: sp2_df[col].values[:] = 0
+sp2_df["{0}{1}".format(sp2_prefix, t["concept:name"][0])].values[0]  = 1
+
+for i in range(1,len(t)):
+    first_activity_name = t["concept:name"].iloc[i]
+    col = "{0}{1}".format(sp2_prefix,first_activity_name)
+    
+    sp2_df.values[i] = sp2_df.values[i-1]
+    sp2_df[col].values[i] = 1
+\end{lstlisting}
+
+\subsection*{Sub-sequence feature engineering}
+The sub-sequence features for the PFS model were created with the help of the \textit{prefixspan-py} library~\cite{web:prefixspan-py}.
 
 \begin{lstlisting}
-def enrich_trace_with_sp2(t):
-    sp2_df = pd.DataFrame(columns=activity_labels, index=range(0,len(t)), dtype=np.bool)
-    for col in sp2_df.columns: sp2_df[col].values[:] = 0
-    sp2_df["{0}{1}".format(sp2_prefix, t["concept:name"][0])].values[0]  = 1
+# Prefixspan requires an array of arrays with one subarray for every trace
+encoded_traces = [ t[target_column].map(feature_dict[target_column]['to_int']).tolist() for t in traces ]
+prefixspan_traces = PrefixSpan(encoded_traces)
+closed_sequences = prefixspan_traces.topk(25, closed=True) # support is how often the subsequence appears in total
+# http://sequenceanalysis.github.io/slides/analyzing_sequential_user_behavior_part2.pdf, slide 5
+
+# only take subsequence which are at a certain level of support? like if ss[0]/len(traces) < .90
+#ps_topkc = list(filter(lambda x: x[0]/len(traces) > .90, ps_topkc))
+closed_sequences = [ p[1] for p in closed_sequences ]
+pftrace_args = [ (t, closed_sequences[:], feature_dict[target_column]['to_int']) for t in traces ] # enrich traces with copy of mined subsequences
+\end{lstlisting}
+
+\begin{lstlisting}
+def enrich_trace_with_subseq(t, ps, event_to_int):
+    col_prefix = "PFS_"
+    subseq_labels = [ "{0}{1}".format(col_prefix,ss_idx) for ss_idx, ss in enumerate(ps) ]
+    subseq_df = pd.DataFrame(columns=subseq_labels, index=range(0,len(t)), dtype=np.bool)
     
-    for i in range(1,len(t)):
-        first_activity_name = t["concept:name"].iloc[i]
-        col = "{0}{1}".format(sp2_prefix,first_activity_name)
+    for col in subseq_df.columns: subseq_df[col].values[:] = 0
+    for i in range(0,len(t)): # loop through sequence, prune items from mined sequences, and once a subsequence array is empty, this subsequence has occured :)
+        activity_code = event_to_int.get(t["concept:name"].iloc[i], None)
         
-        sp2_df.values[i] = sp2_df.values[i-1]
-        sp2_df[col].values[i] = 1
+        for subseq_idx in range(0,len(ps)):
+            if ps[subseq_idx] == []:
+                continue
+            if ps[subseq_idx][0] == activity_code:
+                ps[subseq_idx].pop(0)
+                if ps[subseq_idx] == []:
+                    subseq_df.values[i:,subseq_idx] = 1
         
-    return sp2_df
+    return subseq_df
 \end{lstlisting}
 
 \section{Test setup}
