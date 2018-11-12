@@ -1,30 +1,53 @@
 \chapter{Evaluation}\label{chap:evaluation}
-
+The contribution of this thesis is the direct comparison of the network architectures presented in the previous section on data from the Business Process Intelligence Competitions 2011 and 2012~\cite{BPIC2011, BPIC2012}. The execution of this comparison in code, the preceding data preparation and transformation as well as the obtained results shall be presented in this chapter.
 
 \section{Implementation}
-Model architecture diagrams
+Anaconda~\cite{web:anaconda} was set up to create a stable working environment in which dependencies and libraries would not change.
+Then, the data was explored, prepared and cleansed in an iterative fashion using JupyterLab notebooks~\cite{web:jupyter}. Helpful libraries in the process were prefixspan-py~\cite{web:prefixspan-py} and OpyenXes~\cite{web:opyenxes}. These notebooks were also used to develop the ANN training code in Keras~\cite{web:keras}.
 
-Baseline: Evermann
-Data: Schönig
-SP2/PFS: Shibata on Business processes
+As the codebase became more mature, Docker containers were built with the Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, the networks were trained on the GPU cluster infrastructure of the HPI FutureSOC Lab~\cite{web:fsoc}.
+The source code used in this thesis is available for download at: \url{https://github.com/flxw/master-thesis-code}.
 
-Keras, tuning with hyperas, FSOC, Anaconda environment,
+\section{Data preprocessing}
+Following the KDD process~\cite{fayyad1996data}, the data was preprocessed to eliminate generally known properties that hinder machine learning model performance. Here, this encompassed two steps for both datasets:
 
-one-hot encoding for certain columns since no ordinal relationship present
+\begin{enumerate}
+    \item All columns which exhibited zero entropy, i.e. were constituted of a single value, were dropped
+    \item Using the bias-corrected version of Cramér's~V~\cite{bergsma2013bias}, features that correlate strongly were dropped
+\end{enumerate}
 
-drop lifecycle:transition
+
+For the BPIC2011 dataset, the column \texttt{lifecycle:transition} was dropped in step 1. In step 2, 
 activity code correlates to 
-Keras, FSOC, Docker, Anaconda
 
 \section{Data transformation}
-Which columns were dropped and why?
+one-hot encoding for certain columns since no ordinal relationship present
+Which columns were engineered and how
+Engineering of SP2 features and PrefixSpan \cite{web:prefixspan-py}
+
+\begin{lstlisting}
+def enrich_trace_with_sp2(t):
+    sp2_df = pd.DataFrame(columns=activity_labels, index=range(0,len(t)), dtype=np.bool)
+    for col in sp2_df.columns: sp2_df[col].values[:] = 0
+    sp2_df["{0}{1}".format(sp2_prefix, t["concept:name"][0])].values[0]  = 1
+    
+    for i in range(1,len(t)):
+        first_activity_name = t["concept:name"].iloc[i]
+        col = "{0}{1}".format(sp2_prefix,first_activity_name)
+        
+        sp2_df.values[i] = sp2_df.values[i-1]
+        sp2_df[col].values[i] = 1
+        
+    return sp2_df
+\end{lstlisting}
 
 \section{Test setup}
-Evermann network architecture, Schönig network architecture, my network architecture
+Dropping the embedding layer if results are really bad
+Iterative way of working
+Making embedding layer optional
+How batches, timesteps and samples were framed for this problem
 
-Dropping the embedding layer if not embedding is present
-
-\section{Evaluation criteria}
+\section{Results}
 Three metrics of the four aforementioned implementations shall be the focus of the evaluation of the results:
 \begin{enumerate}
     \item\textbf{Accuracy} - I.e. how many next-activity predictions were correct in total.
@@ -32,22 +55,12 @@ Three metrics of the four aforementioned implementations shall be the focus of t
     \item\textbf{Feature importance} - I.e. whether network-internal metrics indicate that an added feature is valuable for making predictions.
 \end{enumerate}
 
-\todo[inline]{MAKE THIS FIGURE!}
-\begin{figure}
-    \centering
-    % \includegraphics{}
-    \caption{figure of the four implementations side by side}
-    \label{fig:my_label}
-\end{figure}
-
 Accuracy and earliness
 
 Does accuracy rise with increasing trace length?
-
-\section{Evaluation results}
 Feature Importance score extraction
 
-\section{Result discussion}
+\section{Discussion}
 Is the hassle worth it?
 Increase in memory, training time...?
 Compare with Evermanns etc results

@@ -9,7 +9,7 @@ The two implementations are henceforth referred to as SP2 for the bipartite arch
 Finally, a statement about the importance of individual features for predictions is made to assert whether the added overhead for feature engineering and network construction is justified by a boost in performance and prediction stability.
 
 \section{Contrasting the compared approaches}
-A further contribution to current research of this thesis is the direct comparison of differently designed networks that solve the same prediction problem. \autoref{fig:architectures} shows the four network architectures which are contrasted in \autoref{chap:evaluation}. In the following descriptions, $n$ denotes the number of neurons needed to read the input, while $m$ denotes the number of neurons needed to produce the one-hot-encoded nextactivity.\\
+A further contribution to current research of this thesis is the direct comparison of differently designed networks that solve the same prediction problem. \autoref{fig:architectures} shows the four network architectures which are contrasted in \autoref{chap:evaluation}. In the following descriptions, $n$ denotes the number of neurons needed to read the input, while $m$ denotes the number of neurons needed to produce the one-hot-encoded next-activity output.\\
 
 \autoref{fig:evermann-architecture} showcases the ANN architecture used by Evermann et al. \cite{evermann2016}. It has been reverse-engineered from the publicly available code-base \cite{web:evermann}. The network itself receives the input data in dictionary-encoded form so that it can be processed by the embedding layer. The embedding produces a 500-dimensional output, which is fed through two LSTM layers which also apply a dropout of $20\%$. Finally, a the next activity is presented by a softmax-activated output layer.\\
 
@@ -45,9 +45,9 @@ Heavily inspired by these two architectures and the bipartite approach of Shibat
 \section{Understanding a trace as a sequence}
 The definition for sequences presented in \autoref{sec:background:sequence-prediction} needs to be extended so that a case trace can be understood as a sequence.
 
-In the previous definition, the set $I$ had been used for \textit{items}, which form part of an itemset. An itemset represents a single row in the log. As such a row is made up of multiple different elements and adheres to a fix schema, the definition needs to account for those two properties.\\
+In the previous definition, the set $I$ had been used for \textit{items}, of which itemsets are comprised. An itemset represents a single row in the log. As such a row is made up of multiple different elements and adheres to a fixed schema, the definition needs to account for those two properties.\\
 
 First, the set $I$ is now understood as a union of the sets $C_i$ which make up the distinct values inside one of the $n$ columns of a trace:
 $$I = \bigcup\limits_{i=1}^{n} C_{i}$$
 
-Second, each itemset $s$ needs to be bound by a specific schema. The schema needs to match the schema of the log and can be defined as such: $s = <i_1i, i_2 ... i_i>$ with $i_i \in C_i$. Thus, the original condition $s \subseteq$ still holds true, but every item now has a fixed place in the itemset, depending on which column it originates from.
+Second, each itemset $s$ needs to be bound by a specific schema. The schema needs to match the schema of the log and can be defined as such: $s = <i_1, i_2 ..., i_i>$ with $i_i \in C_i$. Thus, the original condition $s \subseteq I$ still holds true, but every item now has a fixed place in the itemset depending on which column it originates from.
