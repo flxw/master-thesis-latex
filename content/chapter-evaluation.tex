@@ -1,19 +1,18 @@
 \chapter{Evaluation}\label{chap:evaluation}
 The contribution of this thesis is the direct comparison of the network architectures presented in the previous section on data from the Business Process Intelligence Competitions 2011 and 2012~\cite{BPIC2011, BPIC2012}. The execution of this comparison in code, the preceding data preparation and transformation as well as the obtained results shall be presented in this chapter.
 
-\section{Implementation}
+\section{Used Technologies}
 Anaconda~\cite{web:anaconda} was set up to create a stable working environment in which dependencies and libraries would not change.
 Then, the data was explored, prepared and cleansed in an iterative fashion using JupyterLab notebooks~\cite{web:jupyter}. Helpful libraries in the process were prefixspan-py~\cite{web:prefixspan-py} and OpyenXes~\cite{web:opyenxes}. These notebooks were also used to develop the ANN training code in Keras~\cite{web:keras}.
 
-As the codebase became more mature, Docker containers were built with the Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, the networks were trained on the GPU cluster infrastructure of the HPI FutureSOC Lab~\cite{web:fsoc}.
-The source code used in this thesis is available for download at: \url{https://github.com/flxw/master-thesis-code}.
+As the codebase became more mature, Docker containers were built with the Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, the networks were trained on the GPU cluster infrastructure of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code used is available for download at: \url{https://github.com/flxw/master-thesis-code}.
 
 \section{Data preprocessing}
 Following the KDD process~\cite{fayyad1996data}, the data was preprocessed to eliminate generally known properties that hinder machine learning model performance. Here, this encompassed two steps for both datasets:
 
 \begin{enumerate}
-    \item All columns which exhibited zero entropy, i.e. were constituted of a single value, were dropped
-    \item Using the bias-corrected version of Cramér's~V~\cite{bergsma2013bias}, features that correlate strongly were dropped
+    \item All columns which exhibited zero entropy, i.e. which were constituted of a single value, were dropped.
+    \item Features which correlated strongly were eliminated. To account for categorical ones, the bias-corrected version of Cramér's~V~\cite{bergsma2013bias} was used.
 \end{enumerate}
 
 
@@ -38,14 +37,14 @@ As evidenced in \autoref{fig:bpic2012-correlation-heatmap}, the BPIC2012 dataset
 \end{figure}
 
 \section{Data transformation}
-Having removed unneeded features, the remaining ones were encoded following standard practice. All numerical features $x$ were normalized individually for every trace using the well-tested min-max method:
+Having removed unneeded features, the remaining ones were encoded following standard practice. Each numerical feature $x$ was normalized for with values specific to each trace using the min-max method:
 
-$$z = \frac{x-min(x)}{max(x)-min(x)}$$
+$$normalize(x) = \frac{x-min(x)}{max(x)-min(x)}$$
 
 Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermann's model, they were encoded with dictionary encoding, as this encoding is required for Embedding layers.
 
 \subsection*{SP-2 feature engineering}
-The SP-2 features for the SP2 model were engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. For all following activities, the contents of the previous row inside \texttt{sp2\_df} are copied into the current one and the presence of the current activity is marked. This repeats itself until the trace has been iterated over.
+The SP-2 features for the SP2 model were engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. For all following activities, the contents of the previous row inside \texttt{sp2\_df} are copied into the current one and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
 
 \begin{lstlisting}[caption={SP-2 feature generation algorithm for a single trace},label={lst:sp2-generation}]
 sp2_df = pd.DataFrame(columns=activity_labels, index=range(0,len(t)), dtype=np.bool)
@@ -91,24 +90,66 @@ for i in range(0,len(t)):
 
 \todo[inline]{Choosing a specific support for the PFS features...}
 
-\section{Test setup}
-Dropping the embedding layer if results are really bad
-Iterative way of working
-Making embedding layer optional
-How batches, timesteps and samples were framed for this problem
+\section{Technical considerations}
+The prediction task at hand was framed as a classification problem with a time-component, as a class for the next activity needed to be predicted using a variable amount of input. Extensive use was made of Keras' LSTM layers, which led to an implementation decision laid out here.
 
-\section{Results}
-Three metrics of the four aforementioned implementations shall be the focus of the evaluation of the results:
+As weights are updated after every batch, the batch size is an important parameter. Typical neural network inputs are rows where each rows stands for itself. In the case presented here, training on multiple unrelated sequences with variable timesteps required a semantic separation of unrelated data.
+
+This was achieved by leveraging three-dimensional vectors to feed data into the network. Each dimension can be understood as follows:
+
 \begin{enumerate}
-    \item\textbf{Accuracy} - I.e. how many next-activity predictions were correct in total.
-    \item\textbf{Earliness} - I.e. whether and how early in the total trace the prediction accuracy begins to stabilize \cite{francescomarino2015}.
-    \item\textbf{Feature importance} - I.e. whether network-internal metrics indicate that an added feature is valuable for making predictions.
+    \item Number of sequences per batch
+    \item Number of time-steps per sequence
+    \item Number of variables per time-step
 \end{enumerate}
 
-Accuracy and earliness
+This definition requires a design choice as Keras requires the number of time-steps inside batch to be constant. Three approaches are thinkable:\\
 
-Does accuracy rise with increasing trace length?
-Feature Importance score extraction
+First, padding all sequences to the same length with null values which RNNs were supposed to be capable of understanding as such. Several forums suggest doing so, but as no hard evidence could be found, this approach was forgone.
+
+Secondly, grouping training traces by length and thus modifying the first dimension of the input vector, the number of sequences per batch. This would reduce the number of batches from 900 to 310 on the BPIC2011 training set, leveraging the power-law distribution in trace lengths, clearly evidenced in \autoref{fig:bpic2011-length-distribution}.
+
+Third and most straightforward, training one sequence per batch. These last two approaches shall be evaluated for impact on each network.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/frequency-distribution.png}
+    \caption{Distribution of trace lengths in the BPIC2011 training set.}
+    \label{fig:bpic2011-length-distribution}
+\end{figure}
+
+\section{Test setup}
+Dropping the embedding layer if results are really bad
+Iterative way of working, these are the ultimate results
+Making embedding layer optional
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{c|cccc}
+        Network & Evermann et al. & Schönig et al. & SP2 & PFS\\
+        \hline
+        Optimizer & self-built & RMSprop  & \\
+        Epochs  & 50    & 100 & \\
+        Training time\\
+        Prediction time\\
+        Accuracy\\
+    \end{tabular}
+    \caption{Caption}
+    \label{tab:my_label}
+\end{table}
+
+Three metrics of the four aforementioned implementations shall be the focus of the evaluation of the results:
+\begin{enumerate}
+    \item\textbf{Accuracy} - The share of total next-activity predictions.
+    \item\textbf{Earliness} - Whether and how early the prediction accuracy begins to stabilize as the trace progresses; see Francescomarino~\cite{francescomarino2015}.
+    \item\textbf{Feature importance} - Whether network-internal metrics indicate that an added feature is valuable for making predictions.
+\end{enumerate}
+
+\section{Results}
+
+\subsection*{Accuracy}
+\subsection*{Earliness}
+\subsection*{Feature importances}
 
 \section{Discussion}
 Is the hassle worth it?
