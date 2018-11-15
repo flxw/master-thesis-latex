@@ -3,7 +3,7 @@ The contribution of this thesis is the direct comparison of the network architec
 
 \section{Used Technologies}
 Anaconda~\cite{web:anaconda} was set up to create a stable working environment in which dependencies and libraries would not change.
-Then, the data was explored, prepared and cleansed in an iterative fashion using JupyterLab notebooks~\cite{web:jupyter}. Helpful libraries in the process were prefixspan-py~\cite{web:prefixspan-py} and OpyenXes~\cite{web:opyenxes}. These notebooks were also used to develop the ANN training code in Keras~\cite{web:keras}.
+Then, the data was explored, prepared and cleansed in an iterative fashion using JupyterLab notebooks~\cite{web:jupyter}. Helpful libraries in the process were prefixspan-py~\cite{web:prefixspan-py} and OpyenXes~\cite{web:opyenxes}. Notebooks were also used to develop the ANN training code in Keras~\cite{web:keras}.
 
 As the codebase became more mature, Docker containers were built with the Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, the networks were trained on the GPU cluster infrastructure of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code used is available for download at: \url{https://github.com/flxw/master-thesis-code}.
 
@@ -18,28 +18,27 @@ Following the KDD process~\cite{fayyad1996data}, the data was preprocessed to el
 
 For both BPIC2011 and BPIC2012 datasets, the column \texttt{lifecycle:transition} was dropped in step 1. To make statements about upcoming workflow-related activities only, only completion events related to workflow activities were kept in the BPIC2012 log \cite{evermann2016}.
 
-In step 2, the bi-directional results in \autoref{fig:bpic2011-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlated strongly with many others in the BPIC2011 dataset. Thus, these were dropped.
-
-As evidenced in \autoref{fig:bpic2012-correlation-heatmap}, the BPIC2012 dataset with its small number of features did not require any removals.
+In step 2, the bi-directional results in \autoref{fig:bpic2011-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlated strongly with many others in the BPIC2011 dataset. Thus, these were dropped. As evidenced in \autoref{fig:bpic2012-correlation-heatmap}, the BPIC2012 dataset with its small number of features did not require any removals.
 
 \begin{figure}
 \centering
 \subfloat[][BPIC2011 Cramér's V heatmap]{
-    \includegraphics[width=0.4\textwidth]{gfx/bpic2011-correlation-matrix.png}
+    \includegraphics[width=0.5\textwidth]{gfx/bpic2011-correlation-matrix.png}
     \label{fig:bpic2011-correlation-heatmap}
 }
 \qquad
 \subfloat[][BPIC2012 Cramér's V heatmap]{
-    \includegraphics[width=0.4\textwidth]{gfx/bpic2012-correlation-matrix.png}
+    \includegraphics[width=0.35\textwidth]{gfx/bpic2012-correlation-matrix.png}
     \label{fig:bpic2012-correlation-heatmap}
 }
-\caption{Correlation heatmaps generated from the application of Cramér's V.}
+\caption{Correlation heatmaps with values from Cramér's V.}
 \end{figure}
 
 \section{Data transformation}
 Having removed unneeded features, the remaining ones were encoded following standard practice. Each numerical feature $x$ was normalized for with values specific to each trace using the min-max method:
 
 $$normalize(x) = \frac{x-min(x)}{max(x)-min(x)}$$
+\todo[inline]{Revisit this when benchmarks are through}
 
 Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermann's model, they were encoded with dictionary encoding, as this encoding is required for Embedding layers.
 
@@ -137,13 +136,6 @@ Making embedding layer optional
     \caption{Caption}
     \label{tab:my_label}
 \end{table}
-
-Three metrics of the four aforementioned implementations shall be the focus of the evaluation of the results:
-\begin{enumerate}
-    \item\textbf{Accuracy} - The share of total next-activity predictions.
-    \item\textbf{Earliness} - Whether and how early the prediction accuracy begins to stabilize as the trace progresses; see Francescomarino~\cite{francescomarino2015}.
-    \item\textbf{Feature importance} - Whether network-internal metrics indicate that an added feature is valuable for making predictions.
-\end{enumerate}
 
 \section{Results}
 

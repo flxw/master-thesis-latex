@@ -213,7 +213,7 @@ A word embedding is the output of a neural network with a single hidden layer th
 \end{equation}
 
 A word embedding thus allows clustering of words by certain properties.
-Made popular by Google, the most extensive implementation for word embeddings is word2vec \cite{web:ahogrammer, goldberg2014word2vec}.
+Made popular by Google, the most extensively word embedding that is publicly available is word2vec~\cite{web:ahogrammer, goldberg2014word2vec}.
 
 \subsection{Feature engineering for variable-length sequences}
 Predictive models take inputs of fixed size. As shown, sequences can be of arbitrary length, and thus the curse of dimensionality also appears in context with this problem. To bring variable length inputs into a usable format for predictive models, several methods of formatting have been invented. As some of their names names suggest, these come from the domain of Natural Language Processing (NLP), but can easily be transferred to the problem at hand. These shall be introduced in the following along with information on how each method can be use to construct a single line item.
@@ -239,13 +239,12 @@ The bag-of-words (BOW) approach produces $l$ input tuples, the length of sequenc
 \subsubsection*{$n$-grams}
 The $n$-gram approach is very popular in computational linguistics, biology and data compression and is effectively an $(n-1)$-order Markov model, with the most popular choices for $n$ being $1,2$ and $3$. These models would be called \textit{unigram}, \textit{bigram} and \textit{trigram} models.
 
-Similar to BOW, an $n$-gram model counts frequencies. Different from to BOW however, it counts the occurences of subsequences of length $n$. Suppose a set $LS$ holds all possible values of a single feature. From $LS$, a feature set $FS$ is constructed with every item being a permutation of length $n$. A feature in this set would be referred to as \textit{gram}, as \autoref{eq:ngram-fs-construction} shows.
+Similar to BOW, an $n$-gram model counts frequencies. Different from BOW however, it counts the occurences of subsequences of length $n$. Suppose a set $LS$ holds all possible values of a single feature. From $LS$, a feature set $FS$ is constructed with every item being a permutation of length $n$. A feature in this set would be referred to as \textit{gram}, and can also be understood as a subsequence.
 
-\begin{equation}\label{eq:ngram-fs-construction}
+$$
 %    FS = \{LS_{i,i+n}\ |\ 1 \leq i \leq |LS|-n \}
-    FS = S(LS, n)
-\end{equation}
-
+FS = S(LS, n)
+$$
 In a line item, each $FS$ element would be represented by a number $f_i$, denoting whether this specific subsequence already occurred within a given sequence. \autoref{eq:ngram-tuple} formalizes the construction of a single $n$-gram-encoded tuple of sequence $seq$ at step $k$:
 
 \begin{equation}\label{eq:ngram-tuple}
@@ -260,6 +259,15 @@ While $n$-grams can be be powerful features to use, their high dimensionality ca
 
 \subsubsection*{Subsequence mining}
 One of the main weaknesses of $n$-grams is the restriction to a single $n$ and that "one may need to examine a combinatorially explosive
-number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reason, algorithms have been developed that combine the benefit of $n$-grams with more flexibility by avoiding the limitation to $n$. These algorithms sift through input sequences and detect sequential patterns of any length, resulting in line items similar to the ones in \autoref{eq:ngram-tuple} with the $f_i$ denoting the presence of a specific subsequence in the sequence instead of ngrams.
+number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reason, algorithms have been developed that combine the benefit of $n$-grams with more flexibility by avoiding the limitation to $n$. These algorithms sift through input sequences and detect sequential patterns of any length, resulting in line items similar to the ones in \autoref{eq:ngram-tuple} with the $f_i$ denoting the presence of a specific subsequence in the sequence instead of ngrams. Examples for these algorithms are GSP \cite{srikant1996gsp}, FreeSpan \cite{han2000freespan} and PrefixSpan \cite{pei2001prefixspan}.\\
 
-Examples for these algorithms are GSP \cite{srikant1996gsp}, FreeSpan \cite{han2000freespan} and PrefixSpan \cite{pei2001prefixspan}.
+For every mined sub-sequence $ss$, the \textit{support} metric $supp(ss)$ can be calculated. It indicates how often $ss$ occurs in all complete sequences. Sometimes, shorter sub-sequences are part of longer sub-sequences, like $ss1$ is contained in $ss2$:
+
+\begin{equation*}
+\begin{split}
+s1 &= <a,d>\\
+s2 &= <a,d,c>
+\end{split}
+\end{equation*}
+
+If however, the condition $supp(ss1)>supp(ss2)$ holds true, then $ss1$ is called a \textit{closed} sub-sequence as it can not be expanded without shrinking its support.
