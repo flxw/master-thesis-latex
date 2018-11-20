@@ -1,6 +1,5 @@
-\chapter{Contribution}\label{sec:contribution}
-
-This thesis shall be understood as an extension to the works of Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}, both of which were presented in the previous section. The two works have demonstrated the applicability of LSTM neural networks in Predictive Process Monitoring, but have left out the general perspective on the sequence prediction problem. Furthermore, the impact of adding engineered features to the training data was not investigated.\\
+\chapter{Contribution}\label{chap:contribution}
+This thesis shall be understood as an extension to the works of Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}, both of which were presented in the previous section. The two works have demonstrated the applicability of LSTM neural networks in Predictive Process Monitoring, but have left out general perspectives on the sequence prediction problem. Furthermore, the impact of adding engineered features to the training data was not investigated.\\
 
 The thesis introduces said general perspective through the adaption of the approach of Shibata et al. \cite{shibata2016bipartite}. Their bipartite network architecture as well as the engineered SP-2 features have shown extraordinary performance in the SPiCE competition \cite{web:spice}. This transfer is made under the hypothesis that a case can exhibit properties similar to grammatical rules. Sub-sequence information as proposed by Klinkmüller et al. \cite{klinkmuller2018reliablemonitoring} are considered as an alternative to the SP-2 features. These sub-sequences are mined with PrefixSpan \cite{pei2001prefixspan}.
 
@@ -9,7 +8,7 @@ The two implementations are henceforth referred to as SP2 for the bipartite arch
 The performance of the four different approaches is evaluated along different dimensions, which are explained at the end of this chapter.
 
 \section{Contrasting the compared approaches}
-A contribution to current research is the direct comparison of differently designed networks that solve the same prediction problem. \autoref{fig:architectures} shows the four network architectures which are contrasted in \autoref{chap:evaluation}. In the following descriptions, $n$ denotes the number of neurons needed to read the input, while $m$ denotes the number of neurons needed to produce the one-hot-encoded next-activity output.\\
+A contribution to current research is the direct comparison of differently designed networks that solve the same prediction problem. \autoref{fig:architectures} and \autoref{fig:sp2-pfs-architecture} show the four network architectures which are contrasted in \autoref{chap:evaluation}. In the following descriptions, $n$ denotes the number of neurons needed to read the input, while $m$ denotes the number of neurons needed to produce the one-hot-encoded next-activity output. Common to all architectures is the modeling of the problem as a multi-class classification problem, thus resulting in one-hot encoded output\\
 
 \autoref{fig:evermann-architecture} showcases the ANN architecture used by Evermann et al. \cite{evermann2016}. It has been reverse-engineered from the publicly available code-base \cite{web:evermann} in collaboration with Jörg Evermann. The network itself receives the input data in dictionary-encoded form so that it can be processed by the embedding layer. The embedding produces a 500-dimensional output, which is fed through two LSTM layers which also apply a dropout of $20\%$. Finally, the next activity is presented by a softmax-activated output layer.\\
 
@@ -29,6 +28,7 @@ A contribution to current research is the direct comparison of differently desig
 \caption{An overview of the reverse-engineered networks that are used as a comparison in this thesis.}
 \label{fig:architectures}
 \end{figure}
+\todo[inline]{Put this into related work, as I did not produce it}
 
 \begin{figure}
     \centering
@@ -38,6 +38,8 @@ A contribution to current research is the direct comparison of differently desig
 \end{figure}
 
 Heavily inspired by these two architectures and the bipartite approach of Shibata et al. \cite{shibata2016bipartite}, Figures \ref{fig:sp2-pfs-architecture} present the injection of SP-2 or sub-sequence features at the top-level.
+
+<ACTIVITY><DATA><ENGINEERED FEATURES>
 
 \section{Understanding a trace as a sequence}
 The definition for sequences presented in \autoref{sec:background:sequence-prediction} needs to be extended so that a case trace can be understood as a sequence.
@@ -53,7 +55,7 @@ Second, each itemset $s$ needs to be bound by a specific schema. The schema need
 Three metrics of the four aforementioned implementations shall be the focus of the evaluation of the results:
 
 \begin{enumerate}
-    \item\textbf{Accuracy} - The share of total next-activity predictions.
+    \item\textbf{Accuracy} - The share of correct next-activity predictions.
     \item\textbf{Earliness} - Whether and how early the prediction accuracy begins to stabilize as the trace progresses; see Francescomarino~\cite{francescomarino2015}.
     \item\textbf{Feature importance} - Whether network-internal metrics indicate that an added feature is valuable for making predictions.
 \end{enumerate}

@@ -5,7 +5,7 @@ The contribution of this thesis is the direct comparison of the network architec
 Anaconda~\cite{web:anaconda} was set up to create a stable working environment in which dependencies and libraries would not change.
 Then, the data was explored, prepared and cleansed in an iterative fashion using JupyterLab notebooks~\cite{web:jupyter}. Helpful libraries in the process were prefixspan-py~\cite{web:prefixspan-py} and OpyenXes~\cite{web:opyenxes}. Notebooks were also used to develop the ANN training code in Keras~\cite{web:keras}.
 
-As the codebase became more mature, Docker containers were built with the Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, the networks were trained on the GPU cluster infrastructure of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code used is available for download at: \url{https://github.com/flxw/master-thesis-code}.
+As the codebase became more mature, Docker containers were built with the Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, the networks were trained on the GPU cluster infrastructure of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code is available for download at: \url{https://github.com/flxw/master-thesis-code}.
 
 \section{Data preprocessing}
 Following the KDD process~\cite{fayyad1996data}, the data was preprocessed to eliminate generally known properties that hinder machine learning model performance. Here, this encompassed two steps for both datasets:
@@ -18,7 +18,7 @@ Following the KDD process~\cite{fayyad1996data}, the data was preprocessed to el
 
 For both BPIC2011 and BPIC2012 datasets, the column \texttt{lifecycle:transition} was dropped in step 1. To make statements about upcoming workflow-related activities only, only completion events related to workflow activities were kept in the BPIC2012 log \cite{evermann2016}.
 
-In step 2, the bi-directional results in \autoref{fig:bpic2011-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlated strongly with many others in the BPIC2011 dataset. Thus, these were dropped. As evidenced in \autoref{fig:bpic2012-correlation-heatmap}, the BPIC2012 dataset with its small number of features did not require any removals.
+In step 2, the bi-directional results in \autoref{fig:bpic2011-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlate strongly with many others in the BPIC2011 dataset. Thus, these were dropped. As evidenced in \autoref{fig:bpic2012-correlation-heatmap}, the BPIC2012 dataset with its small number of features did not require any removals.
 
 \begin{figure}
 \centering
@@ -43,7 +43,7 @@ $$normalize(x) = \frac{x-min(x)}{max(x)-min(x)}$$
 Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermann's model, they were encoded with dictionary encoding, as this encoding is required for Embedding layers.
 
 \subsection*{SP-2 feature engineering}
-The SP-2 features for the SP2 model were engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. For all following activities, the contents of the previous row inside \texttt{sp2\_df} are copied into the current one and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
+The SP-2 features were engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. For all following activities, the contents of the previous row inside \texttt{sp2\_df} are copied into the current one and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
 
 \begin{lstlisting}[caption={SP-2 feature generation algorithm for a single trace},label={lst:sp2-generation}]
 sp2_df = pd.DataFrame(columns=activity_labels, index=range(0,len(t)), dtype=np.bool)
@@ -67,7 +67,7 @@ prefixspan_traces = PrefixSpan(encoded_traces)
 closed_sequences = prefixspan_traces.topk(25, closed=True)
 \end{lstlisting}
 
-After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. The activity at the current index is compared with the beginning of every subsequence in the list of subsequences. If they are equal, the beginning is popped off the list of this specific subsequence. If this depletes the list, the subsequence has completely occured and is marked as such. This continues until the end of every trace.
+After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. The activity at the current index is compared with the beginning of every subsequence in the list of subsequences. If they are equal, the foremost activity of that subsequence is popped. Should this depletes the list, the subsequence is consideres as completely occured and is marked as such. This continues until the end of every trace.
 
 \begin{lstlisting}[caption={Creating the subsequence features.}, label={lst:subsequence-feature-creation}]
 col_prefix = "PFS_"
@@ -90,9 +90,9 @@ for i in range(0,len(t)):
 \todo[inline]{Choosing a specific support for the PFS features...}
 
 \section{Technical considerations}
-The prediction task at hand was framed as a classification problem with a time-component, as a class for the next activity needed to be predicted using a variable amount of input. Extensive use was made of Keras' LSTM layers, which led to an implementation decision laid out here.
+The prediction task at hand was framed as a multi-class classification problem with a time-component, as a class for the next activity needed to be predicted using a variable amount of input. Extensive use was made of Keras' LSTM layers, which led to the implementation decision in the following:\\
 
-As weights are updated after every batch, the batch size is an important parameter. Typical neural network inputs are rows where each rows stands for itself. In the case presented here, training on multiple unrelated sequences with variable timesteps required a semantic separation of unrelated data.
+As weights are updated after every batch, the batch size is an important parameter. Typical machine learning algorithm inputs are rows where each rows and its corresponding prediction target stand for themselves. In the case presented here, the time-steps of a sequence do build upon each other, and training on multiple unrelated sequences with variable timesteps makes a semantic separation of unrelated data, so that there is no
 
 This was achieved by leveraging three-dimensional vectors to feed data into the network. Each dimension can be understood as follows:
 
@@ -102,7 +102,7 @@ This was achieved by leveraging three-dimensional vectors to feed data into the 
     \item Number of variables per time-step
 \end{enumerate}
 
-This definition requires a design choice as Keras requires the number of time-steps inside batch to be constant. Three approaches are thinkable:\\
+This definition demands a design choice as Keras requires the number of time-steps inside batch to be constant. Three approaches are thinkable:\\
 
 First, padding all sequences to the same length with null values which RNNs were supposed to be capable of understanding as such. Several forums suggest doing so, but as no hard evidence could be found, this approach was forgone.
 

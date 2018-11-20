@@ -1,12 +1,14 @@
 \chapter{Background}\label{chap:background}
-The title of this thesis is \textit{\myTitle}.
 It brings together the domains of Process Science, Predictive Modeling and Deep Learning.
 This chapter gives insights into the parts of these topics that will be used and needed throughout the thesis.
 This work can be attributed to the domain of Predictive Process Monitoring, which will also be introduced.
+\todo[inline]{detaillierter und durch das gesamte kapitel motivierend einleiten, bis zu einer Seite sogar}
 
 \section{Process Science And Process Monitoring}
+\todo[inline]{Maybe replace process science with business process management}
 Process Science, as loosely defined by van der Aalst \cite{Aalst2016}, refers to the \textit{broader discipline that combines knowledge from information technology and knowledge from management sciences to improve and run operational processes}. This results in improvement approaches that tend to be driven by process models.
 
+\todo[inline]{Keine Annahme über Herkunft der Logs treffen, und stattdessen die Anforderungen an die Logs definieren. Event, lifecycle-step, maps to activity}
 Central to process science is Business Process Management (BPM) which is a field aimed at improving operational business performance through the optimization of business processes via their models \cite{panagacos2012ultimate}.
 Modeled e.g. with the Business Process Modeling Notation (BPMN) \cite{bpmn2.0}, these models are typically very rigid and permit little variation of the workflow. The central element of these notations are the individual steps of which a process is comprised, referred to as \textit{activities}, shown in \ref{fig:activity-introduction}. A running process is referred to as a case.
 
@@ -17,11 +19,13 @@ Modeled e.g. with the Business Process Modeling Notation (BPMN) \cite{bpmn2.0}, 
     \label{fig:activity-introduction}
 \end{figure}
 
+\todo[inline]{WMFS is nowadays business process manaagemt syste, business process execution system}
 With the help of workflow management systems (WFMS), it is possible to embed and enforce these structured processes in an organization, making them traceable via the logs that these systems generate. The existence of these process logs is key for any analysis and thus they are also indispensable for this thesis. The execution history of a process instance is sometimes referred to as trace.
 
 Some processes do not work well together with such a rigid world view, however. Especially in the insurance and health-care sector, each instance tends to be very different from the next \cite{hewelt2016}. This led to the notion that the course of a case strongly depends on the information contained inside it.
 
 \subsection{Adaptive Case Management}
+\todo[inline]{Ist das überhaupt notwendig, vielleicht in Introduction motivierend verwenden, z.B. als Anwendungsfall darstellen?}
 In settings in which it is common to employ BPM, such as assembly line productions, there is little heterogeneity. As the latter increases, BPMN and other business process modeling notations result in complex and hardly understandable models and thus fail their purpose of being easily understandable. As previously mentioned, this tends to occur in domains where the case trajectory is highly dependant on information contained inside it.
 
 The fact that this type of process is data-driven led to the creation of the \textit{case folder} - a directory central to a case, describing its current state. In Adaptive Case Management (ACM), the process is driven through the data contained inside this folder. The person driving the case forward is referred toas case worker \cite{drucker1999}, who not only works with the information in the case but also the knowledge that he or she possesses. For this reason, case workers are often referred to as knowledge workers.
@@ -98,7 +102,7 @@ During transformation, some features might be aggregated, normalized or differen
 Variable concatenations or complex aggregations might also be added as separate \textit{engineered} features \cite{schoenig2018}.
 
 \subsubsection*{Data Mining}
-The goal of predicting the next activity is a classification task. For this type of task, a wide array of applicable predictive models is available, such as linear regressions, decision trees, random forests, scalable vector machines (SVM) or artificial neural networks (ANN).
+The goal of predicting the next activity is a classification task. For this type of task, a wide array of applicable predictive models is available, such as linear regressions, decision trees, random forests, support vector machines (SVM) or artificial neural networks (ANN).
 
 The data prepared in the previous steps is used to \textit{train} the model. During this training phase, the model uses accuracy metrics to assess the quality of its predictions, learn the statistical properties of the data and adjust its internals accordingly. Certain input parameters of the model are adjusted during this phase as well, an activity referred to as \textit{hyper-parameter tuning}. Training the model can be a very time-consuming task, unless appropriate hardware is used. Such hardware might be specially designed for model learning (i.e. Google's Tensor Processing Units) or a simple Graphics Processing Unit (GPU).
 
@@ -200,7 +204,7 @@ The following equation shows the feature set construction for a sequence $seq$ o
 \subsubsection*{Dictionary encoding}
 Widely used in compression, for example in in-memory database systems~\cite{plattner2012memory}, dictionary encoding is also used to encode categorical values. Since predictive models only process numerical values, dictionary encoding is used to create a look-up table and map every value of a feature to a numeric code.
 
-In contrast to one-hot encoding, this dictionary encoding does not result in wide and sparse inputs, making it suitable for features with a large number of distinct features. However, it has one important ramification: It imposes an order on features which previously might not have had an one. If e.g. the word "car" is encoded with a 1 and the word "red" is encoded with a 2, the following expression suddenly holds true: "car" $<$ "red".
+In contrast to one-hot encoding, this dictionary encoding does not result in wide and sparse inputs, making it suitable for features with a large number of distinct features. However, it has one important ramification: It imposes an order on features which previously might not have had one. If e.g. the word "car" is encoded with a 1 and the word "red" is encoded with a 2, the following expression suddenly holds true: "car" $<$ "red".
 
 \subsubsection*{Word embedding}
 Because dictionary encodings impose an order, and one-hot encodings lead to sparse and wide inputs, word embeddings are perceived as a viable alternative for encoding categorical variables.
@@ -213,7 +217,7 @@ A word embedding is the output of a neural network with a single hidden layer th
 \end{equation}
 
 A word embedding thus allows clustering of words by certain properties.
-Made popular by Google, the most extensively word embedding that is publicly available is word2vec~\cite{web:ahogrammer, goldberg2014word2vec}.
+Made popular by Google, the most extensively trained word embedding that is publicly available is word2vec~\cite{web:ahogrammer, goldberg2014word2vec}.
 
 \subsection{Feature engineering for variable-length sequences}
 Predictive models take inputs of fixed size. As shown, sequences can be of arbitrary length, and thus the curse of dimensionality also appears in context with this problem. To bring variable length inputs into a usable format for predictive models, several methods of formatting have been invented. As some of their names names suggest, these come from the domain of Natural Language Processing (NLP), but can easily be transferred to the problem at hand. These shall be introduced in the following along with information on how each method can be use to construct a single line item.
