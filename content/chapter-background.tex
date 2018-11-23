@@ -58,9 +58,9 @@ The answers to these questions can give case workers the opportunity to interven
 An exemplary log suited for analysis is depicted in \autoref{fig:process-log}, which was extracted from an XES-formatted file.
 XES is an abbreviation for the \textit{eXtensible Event Stream} standard, commonly used for process event logs~\cite{gunther2013xes}. As the execution of a process activity can take a certain amount of time, process \textit{events} are used to distinguish between e.g. the start or end of an activity. These events are contained inside these logs, together forming a trace.
 
-A log can be made up of any number of traces $t \in T$, whereas each trace $t$ represents a totally ordered number of events $e \in E$:
+A log can be made up of any number of traces $t \in T$, where each trace $t$ represents a totally ordered number of events $e \in E$:
 
-$$ t = \langle e_1, e_2, e_3 ... \rangle $$
+$$ t = \langle e_1, e_2, e_3 \dots \rangle $$
 
 In turn, each event $e$ has certain attributes associated with it. It is assumed that in a log for a specific process, the type, number and name of these attributes does not change. An example for a type of such a data attribute is the activity name or the timestamp at which this event occurred. Thus, an event represents a set of attributes, in which only one attribute $d_i$ of a specific type $D_i$ occurs:
 
@@ -69,7 +69,7 @@ $$ e = \{ d_1, d_2, d_3, ..., d_i\ |\ d_i \in D_i \}$$
 This type of log, easily transferrable into columns for attributes and rows for every event as in \autoref{fig:process-log}, lends itself for application in the context of Predictive Modeling, as the next chapter will show.
 
 \section{Predictive Modeling}\label{sec:predictive-modeling}
-Predictive Modeling is a method that uses learned statistical properties of data to predict outcomes. The models used to arrive at these outcomes are referred to as predictive models, unrelated to process models. This section introduces a common process for predictive model generation in \autoref{sec:predictive-model-development} and frame a problem in \autoref{sec:sequence-prediction} that is fundamental to the thesis: that of next-element predictions in a sequence.
+Predictive Modeling is a domain that deals with creating models from learned statistical properties of data to predict outcomes. The models used to arrive at these outcomes are referred to as predictive models, and are unrelated to process models. This section introduces a common process for predictive model generation in \autoref{sec:predictive-model-development} and frame a problem in \autoref{sec:sequence-prediction} that is fundamental to the thesis: that of next-element predictions in a sequence.
 
 \subsection{Predictive model development}
 \label{sec:predictive-model-development} 
@@ -83,7 +83,7 @@ Predictive Modeling is a method that uses learned statistical properties of data
 In 1996 Fayyad et al. published what came to be known as the Knowledge Discovery In Databases (KDD) process \cite{fayyad1996data}. Published 20 years ago and aimed at data mining, it is also applicable to predictive model building. It is illustrated in \autoref{fig:kdd_process}, and shall be explained step by step in the following with technical details relevant for this thesis. The process is highly iterative and jumps between every step are possible.
 
 \subsubsection*{Selection}
-Predictive models work on \textit{line items} comprised of a number of \textit{features}, which are variables that are considered likely to influence the prediction of the \textit{target variable}. In \autoref{fig:process-log}, each row is a line item and each column corresponds to a single feature. Features are sometimes also referred to as predictor variables.
+Predictive models work on \textit{line items} comprised of a number of \textit{features}, which are variables that are considered useful for the prediction of the \textit{target variable}. In \autoref{fig:process-log}, each row is a line item and each column corresponds to a single feature. Features are sometimes also referred to as predictor variables.
 
 During the selection step features are chosen as predictors based on differed criteria such as inter-variable correlations.
 
@@ -102,19 +102,16 @@ The goal of predicting the next activity is a classification task. For this type
 The data prepared in the previous steps is used to \textit{train} the model. During this training phase, the model uses accuracy metrics to assess the quality of its predictions, learn the statistical properties of the data and adjust its internals accordingly. Certain input parameters of the model are adjusted during this phase as well, an activity referred to as \textit{hyper-parameter tuning}. Training the model can be a very time-consuming task, unless appropriate hardware is used. Such hardware might be specially designed for model learning (i.e. Google's Tensor Processing Units) or a simple Graphics Processing Unit (GPU).
 
 \subsubsection*{Evaluation}
-Typically, not all of the available data is used for training. Instead, it is split into a \textit{training} and a \textit{test} set. The former is used for model training, while the latter is used in this step.
+Typically, not all of the available data is used for training. This is to make sure that the model generalizes well, i.e. predicts as good on data it is has not seen before as on the training data. If a model is not generalizing, it is said to be \textit{overfitting}. Overfitting happens when the model is strongly biased towards the training data too well and thus shows poor generalization performance. A simple and effective method to avoid biases is to divide the available data into three parts: 50\% of it to train the model, 25\% of it to calculate and improve the model during training and the remaining 25\% to finally test the model performance after training~\cite{kuhn2013applied, trevor2009elements}.
 
-The predictions for the test set are compared to the known values and used to assess model performance on unseen data.
-
-\subsection{Sequence prediction}
-\label{sec:sequence-prediction}
-Traces are composed of sequential steps by nature. This section presents a formal definition of sequences, which will later be used to connect sequences with the process prediction problem at hand. Let $I = \{i_1, i_2, \cdots, i_n\}$ be the set of all items. An \textit{itemset} $s$ is a subset of $I$. A \textit{sequence} $seq$ is an ordered list of itemsets, such that it can be noted as follows:
+\subsection{Sequence prediction}\label{sec:sequence-prediction}
+A sequence is made up of individual steps. This section presents a formal definition of sequences, which will later be used to connect process traces with the process prediction problem at hand. Let $I = \{i_1, i_2, \cdots, i_n\}$ be the set of all items. An \textit{itemset} $s$ is a subset of $I$. A \textit{sequence} $seq$ is an ordered list of itemsets, such that it can be noted as follows:
 
 $$seq = \langle s_1s_2\cdots s_l \rangle\ |\ \forall\ 0 \leq j \leq l: s_j \subseteq I$$
 
 Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items. For  subsequences, the notation $seq_{i,k}$ denotes the containment of the elements from index $i$ through $k$ from the original sequence: $seq_{1,2} = \langle s_1s_2 \rangle$.\\
 
-Assuming that a sequence finishes eventually, consider the database of finished sequences $DS$. Under the assumption of the Markovian hypothesis that "the probability of each event depends only on the state attained in the previous event"\cite{gagniuc2017markov}, a predictive model can be trained on this database to predict the next sequence $nseq$ or itemset $s_k$ of an incomplete sequence $seq_{inc}$:
+Assuming that a sequence finishes eventually, consider the database of finished sequences $DS$. Under the assumption of the Markovian hypothesis that "the probability of each event depends only on the state attained in the previous event"~\cite{gagniuc2017markov}, a predictive model can be trained on this database to predict the next sequence $nseq$ or itemset $s_k$ of an incomplete sequence $seq_{inc}$:
 
 \begin{equation}
 \begin{split}
@@ -140,7 +137,8 @@ Next to this kind of prediction, there are also \textit{sequence-to-word} predic
 \section{Artificial Neural Networks}\label{sec:artificial-neural-networks}
 An artificial neural network (ANN) mimics the inner workings of a human brain in that it is made up of connected nodes referred to as neurons. These neurons are interconnected and act on the incoming signals from each connection. This section first gives background on the general structure of a classic neural network in \autoref{sec:feedforward-networks} and then highlights two enhancements for sequence learning in \autoref{sec:recurrent-networks} and \autoref{sec:lstm}.
 
-\subsection{Feedforward neural networks}\label{sec:feedforward-networks}
+\subsection{Feedforward neural networks}
+\label{sec:feedforward-networks}
 \begin{figure}[ht!]
     \centering
     \includegraphics[width=.85\textwidth]{gfx/feedforward-neural-network.png}
@@ -148,16 +146,19 @@ An artificial neural network (ANN) mimics the inner workings of a human brain in
     \label{fig:feedforward-ann}
 \end{figure}
 
-In typical ANN implementations, the signal at an edge between neurons is a number, and the output of each artificial neuron is computed by a function of the sum of its inputs. This function is called \textit{activation function}, as it decides whether the neuron emits a signal or not. \autoref{fig:feedforward-ann} showcases the edges, their weights, and the activation function in a very simple ANN architecture. Edges are weighted with the weights being adjusted as the learning proceeds. During learning, data is passed from layer to layer in synchronized steps. This is done in \textit{batches} - after each batch the weights are adjusted. The passing of all training data through the network is called an \textit{epoch}.
+The nodes are organized in layers, with each neuron connecting to every neuron in the adjacent layers, resulting in fully connected layers. The layers between the input and output layers are referred to as \textit{hidden layers} and  can be greater in number. The signal at an edge between neurons is a number, and the output of each artificial neuron is computed by a function of the sum of its inputs. This function is called \textit{activation function}, as it decides whether the neuron emits a signal or not. \autoref{fig:feedforward-ann} showcases the edges, their weights, and the activation function in a very simple ANN architecture.
+%TODO https://datascience.stackexchange.com/questions/13490/how-to-set-class-weights-for-imbalanced-classes-in-keras
 
-Furthermore, the nodes are organized in layers, with each neuron connecting to every neuron in the adjacent layers resulting in fully connected layers. The layers between the input and output layers are referred to as \textit{hidden layers} and  can be greater in number.
+Edges are weighted with the weights being adjusted as the learning proceeds. During training, data is passed from layer to layer in synchronized steps. This is done in \textit{batches} - after each batch the weights are adjusted. The passing of all training data through the network is called an \textit{epoch}.
+
+The weight adjustment happens according to the result of the \textit{loss function}, which outputs how far the network's predictions missed the training data. The goal of the training algorithm is thus to minimize the loss, which can lead to overfitting if the loss is calculated on the training data.
 
 Feed-forward ANNs are moving their internal signals in a single direction: toward the output layer. This behaviour causes the network not to have any capacity for persisting what it has previously processed. Put simply, it is not able to \textit{remember}.
 
-Recurrent neural networks have been created with this capacity in mind, as the next chapter will show. Long short-term memory enhance this capacity further.
+Recurrent neural networks have been created with this capacity in mind, as the next chapter will show. Long short-term memory enhances this capacity further.
 
 \subsection{Recurrent neural networks}\label{sec:recurrent-networks}
-As the name suggests, recurrent neural networks (RNN) implement a feedback loop. This loop makes information from the output of a neuron available to that same neuron for the next step. In consideration of the time dimension, RNNs are often displayed in an unrolled fashion as in \autoref{fig:rnn-unrolled}. This form of illustration also reveals that recurrent neural networks are intimately related to sequences and lists.
+As the name suggests, recurrent neural networks (RNN) implement a feedback loop. This loop makes information from the output of a neuron available to that same neuron for the next step. Taking the time dimension into account, RNNs are often displayed in an unrolled fashion as in \autoref{fig:rnn-unrolled}. This form of illustration also reveals that recurrent neural networks are intimately related to sequences and lists.
 
 \begin{figure}
     \centering
@@ -166,7 +167,7 @@ As the name suggests, recurrent neural networks (RNN) implement a feedback loop.
     \label{fig:rnn-unrolled}
 \end{figure}
 
-While the loop indeed allows recognizing short-term dependencies, the network as a whole still struggles with long-term dependencies when the gaps between related inputs simply become too great. This problem has been thoroughly explored by Hochreiter et al.~\cite{hochreiter1991untersuchungen} who also proposed the long short-term memory fix presented in the following chapter.
+While the loop indeed allows recognizing short-term dependencies, the network as a whole still struggles with long-term dependencies when the gaps between related inputs become too great. The root cause is that RNNs lack a memory to bridge those gaps. This problem has been thoroughly explored by Hochreiter et al.~\cite{hochreiter1991untersuchungen} who also proposed the long short-term memory fix presented in the following section.
 
 \subsection{Long short-term memory}\label{sec:lstm}
 In recent years, RNNs were applied with great success to a variety of problems: speech recognition, language modeling or translation. This success can be attributed in part to the enhancement of RNNs with long short-term memory (LSTM) cells.
@@ -277,3 +278,6 @@ s2 &= <a,d,c>
 \end{equation*}
 
 If however, the condition $supp(ss1)>supp(ss2)$ holds true, then $ss1$ is called a \textit{closed} sub-sequence as it can not be expanded without shrinking its support.
+
+\subsection{The curse of dimensionality}
+...
