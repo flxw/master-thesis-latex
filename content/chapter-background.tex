@@ -1,16 +1,14 @@
 \chapter{Background}\label{chap:background}
-It brings together the domains of Process Science, Predictive Modeling and Deep Learning.
-This chapter gives insights into the parts of these topics that will be used and needed throughout the thesis.
-This work can be attributed to the domain of Predictive Process Monitoring, which will also be introduced.
-\todo[inline]{detaillierter und durch das gesamte kapitel motivierend einleiten, bis zu einer Seite sogar}
+The thesis brings together the domains of Process Science, Predictive Modeling and Deep Learning. This background chapter gives comprehensive insight into those parts of the domains which will be used and referenced in this thesis. It approaches these parts in a top-down fashion, starting with the high-level perspective from Process Science and how Process Mining distinguishes itself from Predictive Process Monitoring in \autoref{sec:process-science}. The section ends with information on how the used event logs usually come into existence and which requirements these logs need to fulfill to be used in a prediction scenario.
+With the data origin explained, \autoref{sec:predictive-modeling} introduces the KDD process, along which predictive model development usually takes place. Furthermore, it highlights the peculiarities encountered when dealing with sequential data and introduces popular approaches to deal with them.
+Finally, \autoref{sec:artificial-neural-networks} gives an in-depth look at neural networks and the components relevant to this thesis, especially stressing the importance of long short-term memory cells.
 
-\section{Process Science And Process Monitoring}
-\todo[inline]{Maybe replace process science with business process management}
+\section{Process Science And Process Monitoring}\label{sec:process-science}
 Process Science, as loosely defined by van der Aalst \cite{Aalst2016}, refers to the \textit{broader discipline that combines knowledge from information technology and knowledge from management sciences to improve and run operational processes}. This results in improvement approaches that tend to be driven by process models.
 
-\todo[inline]{Keine Annahme über Herkunft der Logs treffen, und stattdessen die Anforderungen an die Logs definieren. Event, lifecycle-step, maps to activity}
-Central to process science is Business Process Management (BPM) which is a field aimed at improving operational business performance through the optimization of business processes via their models \cite{panagacos2012ultimate}.
-Modeled e.g. with the Business Process Modeling Notation (BPMN) \cite{bpmn2.0}, these models are typically very rigid and permit little variation of the workflow. The central element of these notations are the individual steps of which a process is comprised, referred to as \textit{activities}, shown in \ref{fig:activity-introduction}. A running process is referred to as a case.
+Unsurprisingly, processes are central to process science, and are defined in a variety of modeling languages~\cite{panagacos2012ultimate}. Most languages, for example the Business Process Modeling Notation (BPMN) \cite{bpmn2.0}, model the process flow in steps, commonly referred to as \textit{activities}, and shown in \autoref{fig:activity-introduction}.
+
+Less rigid are the models found in Adaptive Case Management (ACM), where rigidity is traded for flexibility during process execution.
 
 \begin{figure}
     \centering
@@ -19,36 +17,37 @@ Modeled e.g. with the Business Process Modeling Notation (BPMN) \cite{bpmn2.0}, 
     \label{fig:activity-introduction}
 \end{figure}
 
-\todo[inline]{WMFS is nowadays business process manaagemt syste, business process execution system}
-With the help of workflow management systems (WFMS), it is possible to embed and enforce these structured processes in an organization, making them traceable via the logs that these systems generate. The existence of these process logs is key for any analysis and thus they are also indispensable for this thesis. The execution history of a process instance is sometimes referred to as trace.
+With the help of workflow management systems (WFMS), it became possible to embed and enforce structured processes in an organization, making them traceable via the logs that these systems generate. These logs gave rise to the disciplines of Process Mining and Predictive Process Monitoring, as their analyses rest on the information contained therein. \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast these very similar domains and how they can be distinguished. Finally, \autoref{sec:log-structure} formally defines the properties a log needs to fulfill to be considered useful for analysis.
+In the following, the execution history of a single case is referred to as \textit{trace}.
 
-Some processes do not work well together with such a rigid world view, however. Especially in the insurance and health-care sector, each instance tends to be very different from the next \cite{hewelt2016}. This led to the notion that the course of a case strongly depends on the information contained inside it.
-
-\subsection{Adaptive Case Management}
-\todo[inline]{Ist das überhaupt notwendig, vielleicht in Introduction motivierend verwenden, z.B. als Anwendungsfall darstellen?}
-In settings in which it is common to employ BPM, such as assembly line productions, there is little heterogeneity. As the latter increases, BPMN and other business process modeling notations result in complex and hardly understandable models and thus fail their purpose of being easily understandable. As previously mentioned, this tends to occur in domains where the case trajectory is highly dependant on information contained inside it.
-
-The fact that this type of process is data-driven led to the creation of the \textit{case folder} - a directory central to a case, describing its current state. In Adaptive Case Management (ACM), the process is driven through the data contained inside this folder. The person driving the case forward is referred toas case worker \cite{drucker1999}, who not only works with the information in the case but also the knowledge that he or she possesses. For this reason, case workers are often referred to as knowledge workers.
-
-In contrast to BPM, the formalization of Case Management and the subsequent creation of modeling languages has only just begun. Notable developments include the Case Management Modeling Notation \cite{web:cmmn} as well as the Chimera approach \cite{hewelt2016}.
-
-\begin{figure}[ht!]
+\begin{figure}
     \centering
     \includegraphics[width=.8\textwidth]{gfx/process-data-science.png}
     \caption{Process Mining can be understood as the bridge between Process Science and Data Science \cite[p.18]{Aalst2016}. The blue line symbolizes the subdomains that Predictive Process Monitoring brings together.}
     \label{fig:process-data-science}
 \end{figure}
 
-\subsection{Process Mining}
-The logs generated by the WFMS actions give rise to the discipline of Process Mining, which covers the three steps of model discovery, conformance checking and model enhancement \cite{Aalst2016}. These steps are enabled through the use of techniques from the area of Data Science, making it possible to understand Process Mining as the link between Data Science and Process Science as in \autoref{fig:process-data-science}. An exemplary log suited for analysis is depicted in figure \ref{fig:process-log}.
+\subsection{Process Mining}\label{sec:process-mining}
+Process Mining covers the three steps of process model discovery, conformance checking and process model enhancement \cite{Aalst2016} -  all enabled by the aforementioned process execution logs. These steps are enabled through the use of techniques from the area of Data Science, making it possible to understand Process Mining as a link between Data Science and Process Science as in \autoref{fig:process-data-science}. 
 
-A major problem in this domain is posed by \textit{spaghetti} and \textit{lasagna} models. Such overly complex and unreadable models are mined from process logs that contain highly variable execution traces. These traces often come from ACM executions.
+A major problem in this domain is posed by \textit{spaghetti} and \textit{lasagna} process models. Such overly complex and unreadable models are mined from process logs that contain highly variable execution traces. These traces often come from ACM executions.
 
-As Process Mining is concerned with data-driven process model discovery and optimization only on offline data, a possibility to act on case developments in real-time is desirable.
+Because Process Mining revolves around process models, their data-driven discovery and optimization based on historical data, a possibility to act on case developments in real-time without model-imposed restrictions is desirable.
 
-\subsection{Predictive Process Monitoring}
-A recent domain aiming at the use of online data to make statements about the progression of a running case is that of \textit{Predictive Process Monitoring}~\cite{francescomarino2015, schoenig2018}. The application of predictive analytics on running and thus incomplete case logs connects two subdomains of Process Science and Data Science, setting it apart from Process Mining in \autoref{fig:process-data-science}.
+\subsection{Predictive Process Monitoring}\label{sec:predictive-process-monitoring}
+A young domain aiming at the use of online data to make statements about the progression of a running case is that of \textit{Predictive Process Monitoring}~\cite{francescomarino2015, schoenig2018}, thus fulfilling the aforementioned need. The application of Predictive Analytics on incomplete traces connects two sub-domains of Process Science and Data Science, setting it apart from the model-focused Process Mining. This is also illustrated in \autoref{fig:process-data-science}.
 
+Instead of revolving around models, this discipline is concerned with predicting characteristics of running cases. This allows answering questions such as:
+
+\begin{enumerate}
+    \item Can the service level agreement still be met?
+    \item How long is this case still going to take?
+    \item What is going to be the next step in the case?
+\end{enumerate}
+
+The answers to these questions can give case workers the opportunity to intervene if a case takes an unwanted course or might fail to meet requirements or key performance indicators. Furthermore, this approach only requires sufficient amounts of historical case executions, but no model. While it can certainly be a useful addition, it is not needed. Especially the last point stands in strong connection to the rising popularity of ACM, since a process model previously dictated the possible choices for the next activity.
+
+\subsection{Process execution log requirements}\label{sec:log-structure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/process-log.png}
@@ -56,28 +55,24 @@ A recent domain aiming at the use of online data to make statements about the pr
     \label{fig:process-log}
 \end{figure}
 
-Instead of revolving around models, this discipline is concerned with predicting characteristics of running cases. This allows answering questions such as:
+An exemplary log suited for analysis is depicted in \autoref{fig:process-log}, which was extracted from an XES-formatted file.
+XES is an abbreviation for the \textit{eXtensible Event Stream} standard, commonly used for process event logs~\cite{gunther2013xes}. As the execution of a process activity can take a certain amount of time, process \textit{events} are used to distinguish between e.g. the start or end of an activity. These events are contained inside these logs, together forming a trace.
 
-\begin{enumerate}
-    \item Will I still meet my service level agreement?
-    \item Will we be able to deliver the package in within our 3-hour target?
-    \item How long is this case still going to take?
-    \item What is going to be the next step in the case?
-\end{enumerate}
+A log can be made up of any number of traces $t \in T$, whereas each trace $t$ represents a totally ordered number of events $e \in E$:
 
-The answers to these questions can give case workers the opportunity to intervene if a case takes an unwanted course or might fail to meet KPI requirements. Furthermore, this approach only requires sufficient amounts of historical case executions, but no model. While it can certainly be a useful addition, it is not needed. Especially the last point stands in strong connection to ACM, since a process model previously dictated the possible choices for the next activity.
+$$ t = \langle e_1, e_2, e_3 ... \rangle $$
 
-%\begin{figure}
-%	\centering
-%	\includegraphics[width=\textwidth]{gfx/acm-reasoning}
-%	\caption{https://acmisis.wordpress.com/what-is-adaptive-case-management-acm/}
-%	\label{fig:why-acm}
-%\end{figure}
+In turn, each event $e$ has certain attributes associated with it. It is assumed that in a log for a specific process, the type, number and name of these attributes does not change. An example for a type of such a data attribute is the activity name or the timestamp at which this event occurred. Thus, an event represents a set of attributes, in which only one attribute $d_i$ of a specific type $D_i$ occurs:
 
-\section{Predictive Modeling}
-Predictive modeling is a process that uses learned statistical properties of data to predict outcomes. The models used to arrive at these outcomes shall be referred to as predictive models, unrelated to process models. This section shall introduce a common process for predictive model generation and frame a problem that is fundamental to the thesis: that of next-element predictions in a sequence.
+$$ e = \{ d_1, d_2, d_3, ..., d_i\ |\ d_i \in D_i \}$$
+
+This type of log, easily transferrable into columns for attributes and rows for every event as in \autoref{fig:process-log}, lends itself for application in the context of Predictive Modeling, as the next chapter will show.
+
+\section{Predictive Modeling}\label{sec:predictive-modeling}
+Predictive Modeling is a method that uses learned statistical properties of data to predict outcomes. The models used to arrive at these outcomes are referred to as predictive models, unrelated to process models. This section introduces a common process for predictive model generation in \autoref{sec:predictive-model-development} and frame a problem in \autoref{sec:sequence-prediction} that is fundamental to the thesis: that of next-element predictions in a sequence.
 
 \subsection{Predictive model development}
+\label{sec:predictive-model-development} 
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{gfx/kdd_process.png}
@@ -88,7 +83,7 @@ Predictive modeling is a process that uses learned statistical properties of dat
 In 1996 Fayyad et al. published what came to be known as the Knowledge Discovery In Databases (KDD) process \cite{fayyad1996data}. Published 20 years ago and aimed at data mining, it is also applicable to predictive model building. It is illustrated in \autoref{fig:kdd_process}, and shall be explained step by step in the following with technical details relevant for this thesis. The process is highly iterative and jumps between every step are possible.
 
 \subsubsection*{Selection}
-Predictive models work on \textit{line items} comprised of a number of \textit{features}, which are variables that are likely to influence the prediction of the \textit{target variable}. In \autoref{fig:process-log}, each row is a line item and each column corresponds to a single feature. Features are sometimes also referred to as predictor variables.
+Predictive models work on \textit{line items} comprised of a number of \textit{features}, which are variables that are considered likely to influence the prediction of the \textit{target variable}. In \autoref{fig:process-log}, each row is a line item and each column corresponds to a single feature. Features are sometimes also referred to as predictor variables.
 
 During the selection step features are chosen as predictors based on differed criteria such as inter-variable correlations.
 
@@ -112,10 +107,14 @@ Typically, not all of the available data is used for training. Instead, it is sp
 The predictions for the test set are compared to the known values and used to assess model performance on unseen data.
 
 \subsection{Sequence prediction}
-\label{sec:background:sequence-prediction}
-In this section, a formal definition of sequences is presented, and then set in relation with the problem at hand\footnote{Definition adapted from \cite{pei2001prefixspan}}.  Let $I = \{i_1, i_2, ..., i_n\}$ be the set of all items. An \textit{itemset} is a subset of $I$. A \textit{sequence} is an ordered list of itemsets, such that in its notation $seq = \langle s_1s_2...s_l \rangle\ |\ \forall\ 0 \leq j \leq l: s_j \subseteq I$. Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items. For  subsequences, the notation $seq_{i,k}$ denotes the containment of the elements from index $i$ through $k$ from the original sequence: $seq_{1,2} = \langle s_1s_2 \rangle$.
+\label{sec:sequence-prediction}
+Traces are composed of sequential steps by nature. This section presents a formal definition of sequences, which will later be used to connect sequences with the process prediction problem at hand. Let $I = \{i_1, i_2, \cdots, i_n\}$ be the set of all items. An \textit{itemset} $s$ is a subset of $I$. A \textit{sequence} $seq$ is an ordered list of itemsets, such that it can be noted as follows:
 
-Assuming that a a sequence can be finished, consider the database of finished sequences $DS$. Under the assumption of the Markovian hypothesis that "the probability of each event depends only on the state attained in the previous event"\cite{gagniuc2017markov}, a predictive model can be trained on this database to predict the next sequence $nseq$ or itemset $s_k$ of an incomplete sequence $seq_{inc}$:
+$$seq = \langle s_1s_2\cdots s_l \rangle\ |\ \forall\ 0 \leq j \leq l: s_j \subseteq I$$
+
+Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items. For  subsequences, the notation $seq_{i,k}$ denotes the containment of the elements from index $i$ through $k$ from the original sequence: $seq_{1,2} = \langle s_1s_2 \rangle$.\\
+
+Assuming that a sequence finishes eventually, consider the database of finished sequences $DS$. Under the assumption of the Markovian hypothesis that "the probability of each event depends only on the state attained in the previous event"\cite{gagniuc2017markov}, a predictive model can be trained on this database to predict the next sequence $nseq$ or itemset $s_k$ of an incomplete sequence $seq_{inc}$:
 
 \begin{equation}
 \begin{split}
@@ -129,35 +128,35 @@ Sequence predictions are a common problem in the domains of machine translation 
 
 \begin{equation*}
 \begin{split}
-seq_{in} &= \langle<I>, < >, <am>, ... <thesis>\rangle\\
-seq_{out} &= \langle<Ich> ... <Masterarbeit>\rangle
+seq_{EN} &= \langle<I>, < >, <am>, ... <thesis>\rangle\\
+seq_{GER} &= \langle<Ich> ... <Masterarbeit>\rangle
 \end{split}
 \end{equation*}
 
-Referring to \autoref{eq:prediction-from-sequence}, $seq_{in}$ can be understood as the argument to $predict$ and $seq_{out}$ as $\widehat{nseq}$. This is a simple example of a \textit{sequence-to-sequence} prediction.
+Referring to \autoref{eq:prediction-from-sequence}, $seq_{EN}$ can be understood as the argument to $predict$, and $seq_{GER}$ as $\widehat{nseq}$. This is a simple example of a \textit{sequence-to-sequence} prediction.
 
-Next to this kind of prediction, there are also \textit{sequence-to-word} predictions, which can be used to generate text and even write simple novels~\cite{web:text-generation-machinelearningmastery, web:text-generation-freecodecamp}. The transfer of this general formulation onto the translation problem is easy to imagine, since the prediction target of a sequence need not be a word of an incomplete sentence - it could also be the name of an activity of an ongoing business process. The transfer of the formulation of sequence prediction to business processes shall be presented in \autoref{sec:contribution}.
+Next to this kind of prediction, there are also \textit{sequence-to-word} predictions, which can be used to generate text and even write simple novels~\cite{web:text-generation-machinelearningmastery, web:text-generation-freecodecamp}. The transfer of this general formulation onto the translation problem is easy to imagine, since the prediction target of a sequence need not be a word of an incomplete sentence - it could also be the name of an activity of an incomplete trace. The connection of the sequence definition to process logs is presented in \autoref{chap:contribution}.
 
-\section{Artificial Neural Networks}
-An artificial neural network (ANN) mimics the inner workings of a human brain in that it is made up of connected nodes referred to as neurons. These neurons are interconnected and act on the incoming signals from each connection. This section gives background on the architectural setup of a classic neural network and two of its enhancements, as both are integral parts of this thesis.
+\section{Artificial Neural Networks}\label{sec:artificial-neural-networks}
+An artificial neural network (ANN) mimics the inner workings of a human brain in that it is made up of connected nodes referred to as neurons. These neurons are interconnected and act on the incoming signals from each connection. This section first gives background on the general structure of a classic neural network in \autoref{sec:feedforward-networks} and then highlights two enhancements for sequence learning in \autoref{sec:recurrent-networks} and \autoref{sec:lstm}.
 
-\subsection{Feedforward neural networks}
-In typical ANN implementations, the signal at an edge between neurons is a number, and the output of each artificial neuron is computed by a function of the sum of its inputs. This function is called \textit{activation function}, as it decides whether the neuron emits a signal or not. Edges are weighted with the weights being adjusted as the learning proceeds. During learning, data is passed from layer to layer in synchronized steps. This is done in \textit{batches} - after each batch the weights are adjusted. The passing of all training data through the network once is called an \textit{epoch}.
-
-Furthermore, the nodes are organized in layers, with each neuron connecting to every neuron in the adjacent layers resulting in fully connected layers. The layers between the input and output layers are referred to as \textit{hidden layers} and  can be greater in number. \autoref{fig:feedforward-ann} showcases a simple ANN architecture and illustrates the inner workings of a neuron.
-
-\begin{figure}
+\subsection{Feedforward neural networks}\label{sec:feedforward-networks}
+\begin{figure}[ht!]
     \centering
     \includegraphics[width=.85\textwidth]{gfx/feedforward-neural-network.png}
-    \caption{A simple feed-forward ANN architecture with a single hidden layer. The networks takes the inputs $x_1$ to $x_m$ and passes them through edges that are weighted with weights $\beta_{ij}$. The illustration is taken from \cite{lessmannBADS}.}
+    \caption{A simple feed-forward ANN with a single hidden layer. The networks takes the inputs $x_1$ to $x_m$ and passes them through edges that are weighted with weights $\beta_{ij}$. Illustration taken from \cite{lessmannBADS}.}
     \label{fig:feedforward-ann}
 \end{figure}
 
-Classical ANNs are moving their internal signals in a single direction: toward the output layer. This behaviour is called feedforward and causes the network not to have any capacity for persisting what it has previously processed. Put simply, it is not able to \textit{remember}.
+In typical ANN implementations, the signal at an edge between neurons is a number, and the output of each artificial neuron is computed by a function of the sum of its inputs. This function is called \textit{activation function}, as it decides whether the neuron emits a signal or not. \autoref{fig:feedforward-ann} showcases the edges, their weights, and the activation function in a very simple ANN architecture. Edges are weighted with the weights being adjusted as the learning proceeds. During learning, data is passed from layer to layer in synchronized steps. This is done in \textit{batches} - after each batch the weights are adjusted. The passing of all training data through the network is called an \textit{epoch}.
 
-Recurrent neural networks have been created with this capacity in mind, long short-term memory enhancing it further.
+Furthermore, the nodes are organized in layers, with each neuron connecting to every neuron in the adjacent layers resulting in fully connected layers. The layers between the input and output layers are referred to as \textit{hidden layers} and  can be greater in number.
 
-\subsection{Recurrent neural networks}
+Feed-forward ANNs are moving their internal signals in a single direction: toward the output layer. This behaviour causes the network not to have any capacity for persisting what it has previously processed. Put simply, it is not able to \textit{remember}.
+
+Recurrent neural networks have been created with this capacity in mind, as the next chapter will show. Long short-term memory enhance this capacity further.
+
+\subsection{Recurrent neural networks}\label{sec:recurrent-networks}
 As the name suggests, recurrent neural networks (RNN) implement a feedback loop. This loop makes information from the output of a neuron available to that same neuron for the next step. In consideration of the time dimension, RNNs are often displayed in an unrolled fashion as in \autoref{fig:rnn-unrolled}. This form of illustration also reveals that recurrent neural networks are intimately related to sequences and lists.
 
 \begin{figure}
@@ -167,12 +166,12 @@ As the name suggests, recurrent neural networks (RNN) implement a feedback loop.
     \label{fig:rnn-unrolled}
 \end{figure}
 
-While the loop indeed allows recognizing short-term dependencies, the network as a whole still struggles with long-term dependencies when the gaps between related inputs simply become too great. This problem has been thoroughly explored by Hochreiter et al.~\cite{hochreiter1991untersuchungen} who also proposed a fix with so-called long short-term memory.
+While the loop indeed allows recognizing short-term dependencies, the network as a whole still struggles with long-term dependencies when the gaps between related inputs simply become too great. This problem has been thoroughly explored by Hochreiter et al.~\cite{hochreiter1991untersuchungen} who also proposed the long short-term memory fix presented in the following chapter.
 
-\subsection{Long short-term memory}
+\subsection{Long short-term memory}\label{sec:lstm}
 In recent years, RNNs were applied with great success to a variety of problems: speech recognition, language modeling or translation. This success can be attributed in part to the enhancement of RNNs with long short-term memory (LSTM) cells.
 
-Hochreiter \& Schmidhuber published this enhancement in 1997 \cite{hochreiter1997} which now sees wide application. Essentially, the repeating module of a RNN was equipped with a state, i.e. the capacity to remember. The cell state $C$ is managed through chaining together different operators, one of them also representing a capacity to forget. \autoref{fig:lstm} showcases an unwrapped LSTM layer with its internal architecture exposed. Variants of the original LSTM cell architecture exist, with most modifications made on the construction of the state $C$ - all exhibiting very similar performance \cite{greff2017lstm}.
+Hochreiter \& Schmidhuber published this enhancement in 1997 \cite{hochreiter1997} which now sees wide application. Essentially, the repeating module of a RNN was equipped with a state, i.e. the capacity to remember. The cell state $C$ is managed through chaining together different operators, one of them also representing a capacity to forget. \autoref{fig:lstm} showcases an unrolled LSTM layer with the cell architecture exposed. Variants of the original LSTM cell architecture exist, with most modifications made on the construction of the state $C$ - all exhibiting very similar performance \cite{greff2017lstm}.
 
 \begin{figure}[ht!]
     \centering
@@ -182,10 +181,12 @@ Hochreiter \& Schmidhuber published this enhancement in 1997 \cite{hochreiter199
 \end{figure}
 
 \section{Data preparation and feature engineering}
-To assist predictive models during training, most features need to be reformatted. This section shall highlight the relevant methods used in this thesis by illustrating how a feature set using this encoding would be constructed from a sequence.
+Data and preparation and feature engineering are the tasks in predictive model development who demand the most effort and have the greatest impact on prediction performance. To assist predictive models during training, most features need to be reformatted. This section shall highlight the relevant methods used for categorical variables in \autoref{sec:categorical-feature-engineering} and for sequential data in \autoref{sec:sequential-feature-engineering}, and illustrate how the following raw feature would be constructed the respective method:
+\todo[inline]{raw feature example}
 
 \subsection{Feature engineering for categorical features}
-While ordinal features are most often normalized, categorical features can be encoded in a variety of ways. Where one-hot and dictionary encoding are traditional approaches, word embeddings represent a relatively new and promising approach:
+\label{sec:categorical-feature-engineering}
+While ordinal features are most often normalized, categorical features can be encoded in a variety of ways. Categorical features are e.g. string like \textit{red} and \textit{black}, which have neither a numerical format nor any ordered relationship. Where one-hot and dictionary encodings are traditional approaches for these features, word embeddings represent a relatively new and promising approach:
 
 \subsubsection*{One-hot encoding}
 One-hot encoding is often used for features which have a small to medium-sized number of unique values. Using it, each line item of a feature is expanded to an $n$ column representation, where each $n$ represents the number a unique values of the original. The columns hold a boolean flag $b$, of which only one is true in any given row, hence the name. This type of encoding is also sometimes referred to as "dummy encoding".
@@ -219,7 +220,8 @@ A word embedding is the output of a neural network with a single hidden layer th
 A word embedding thus allows clustering of words by certain properties.
 Made popular by Google, the most extensively trained word embedding that is publicly available is word2vec~\cite{web:ahogrammer, goldberg2014word2vec}.
 
-\subsection{Feature engineering for variable-length sequences}
+\subsection{Feature engineering for sequences}
+\label{sec:sequential-feature-engineering}
 Predictive models take inputs of fixed size. As shown, sequences can be of arbitrary length, and thus the curse of dimensionality also appears in context with this problem. To bring variable length inputs into a usable format for predictive models, several methods of formatting have been invented. As some of their names names suggest, these come from the domain of Natural Language Processing (NLP), but can easily be transferred to the problem at hand. These shall be introduced in the following along with information on how each method can be use to construct a single line item.
 
 \subsubsection*{Sliding Window}

@@ -92,7 +92,7 @@ for i in range(0,len(t)):
 \section{Technical considerations}
 The prediction task at hand was framed as a multi-class classification problem with a time-component, as a class for the next activity needed to be predicted using a variable amount of input. Extensive use was made of Keras' LSTM layers, which led to the implementation decision in the following:\\
 
-As weights are updated after every batch, the batch size is an important parameter. Typical machine learning algorithm inputs are rows where each rows and its corresponding prediction target stand for themselves. In the case presented here, the time-steps of a sequence do build upon each other, and training on multiple unrelated sequences with variable timesteps makes a semantic separation of unrelated data, so that there is no
+As weights are updated after every batch, the batch size is an important parameter. Typical machine learning algorithm inputs are rows where each rows and its corresponding prediction target stand for themselves. In the case presented here, the time-steps of a sequence do build upon each other, and training on multiple unrelated sequences with variable timesteps makes a semantic separation of unrelated data, so that there is no?!?!
 
 This was achieved by leveraging three-dimensional vectors to feed data into the network. Each dimension can be understood as follows:
 
