@@ -97,7 +97,7 @@ During transformation, some features might be aggregated, normalized or differen
 Variable concatenations or complex aggregations might also be added as separate \textit{engineered} features \cite{schoenig2018}.
 
 \subsubsection*{Data Mining}
-The goal of predicting the next activity is a classification task. For this type of task, a wide array of applicable predictive models is available, such as linear regressions, decision trees, random forests, support vector machines (SVM) or artificial neural networks (ANN).
+The goal of predicting the next activity is a classification task. For this type of task, a wide array of applicable predictive models is available, such as decision trees, random forests, support vector machines (SVM) or artificial neural networks (ANN).
 
 The data prepared in the previous steps is used to \textit{train} the model. During this training phase, the model uses accuracy metrics to assess the quality of its predictions, learn the statistical properties of the data and adjust its internals accordingly. Certain input parameters of the model are adjusted during this phase as well, an activity referred to as \textit{hyper-parameter tuning}. Training the model can be a very time-consuming task, unless appropriate hardware is used. Such hardware might be specially designed for model learning (i.e. Google's Tensor Processing Units) or a simple Graphics Processing Unit (GPU).
 
@@ -182,8 +182,8 @@ Hochreiter \& Schmidhuber published this enhancement in 1997 \cite{hochreiter199
 \end{figure}
 
 \section{Data preparation and feature engineering}
-Data and preparation and feature engineering are the tasks in predictive model development who demand the most effort and have the greatest impact on prediction performance. To assist predictive models during training, most features need to be reformatted. This section shall highlight the relevant methods used for categorical variables in \autoref{sec:categorical-feature-engineering} and for sequential data in \autoref{sec:sequential-feature-engineering}, and illustrate how the following raw feature would be constructed the respective method:
-\todo[inline]{raw feature example}
+Data and preparation and feature engineering are the tasks in predictive model development that demand the most effort and have the greatest impact on prediction performance. To assist predictive models during training, most features need to be reformatted. This section shall highlight the relevant methods used for categorical variables in \autoref{sec:categorical-feature-engineering} and for sequential data in \autoref{sec:sequential-feature-engineering}, and illustrate how the following raw feature would be constructed the respective method:
+\todo[inline]{Arthur is the king. Maria wants to be the queen}
 
 \subsection{Feature engineering for categorical features}
 \label{sec:categorical-feature-engineering}
