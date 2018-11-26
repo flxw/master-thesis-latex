@@ -32,6 +32,7 @@ Klinkmüller et al. enrich their training dataset with markers that encode subse
 
 Approaching the process prediction in a different fashion are Böhmer et al. with predictions rooted in heuristic analysis \cite{boehmer2018probability}. Based on the fact that the black-box nature of ANNs makes their predictions and inner workings very hard to comprehend, they argue that the amount of trust that users put into their predictions results is limited. As potentially large organizational changes could be made due to the predictions, the authors perceive it of importance to explain alternative futures which were not classified as being most probable and explain the aspects which motivated specific prediction results.
 Böhmer et al. approximate trace similarities with the Damerau-Levenstein method and a custom cost function. Using this method, they filter historic traces to produce a set of similar executions. From this set, probability distributions are mined, with the most probable behaviour ultimately used as the final prediction \cite{boehmer2018probability}.
+\todo[inline]{End this chapter with an the very detailed Schoenig description. BTW Schönig did not use stratified 5-CV, which does not even exist}
 
 \section{Text modeling}
 Colocated with the International Conference in Grammatical Inference 2016 (ICGI) was a competition called SPiCE\ "about guessing the next element in a sequence" \cite{web:spice}. Most entries submitted to this competition made use of RNNs with LSTM cells to predict the next word of a sentence.
