@@ -135,7 +135,17 @@ Referring to \autoref{eq:prediction-from-sequence}, $seq_{EN}$ can be understood
 Next to this kind of prediction, there are also \textit{sequence-to-word} predictions, which can be used to generate text and even write simple novels~\cite{web:text-generation-machinelearningmastery, web:text-generation-freecodecamp}. The transfer of this general formulation onto the translation problem is easy to imagine, since the prediction target of a sequence need not be a word of an incomplete sentence - it could also be the name of an activity of an incomplete trace. The connection of the sequence definition to process logs is presented in \autoref{chap:contribution}.
 
 \subsection{The curse of dimensionality}
-...
+The curse of dimensionality is a term used across various domains such as combinatorics, sampling optimization and machine learning to describe phenomena that arise when working with data data in high-dimensional spaces.
+
+Common to all domains is the fact that an increase in dimensionality increases the volume of the space so fast that the data quickly becomes sparse. This eventually causes problems for algorithms which require statistic significance, which again would require an increase in the amount of data.
+Because of this, increasing the number of features for training a predictive model, only helps to a certain extent, as \autoref{fig:dimensionality-vs-performance} illustrates. With the number of training samples constant, adding features increases the predictive power only to a certain extent.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/dimensionality_vs_performance.png}
+    \caption{Caption}
+    \label{fig:dimensionality-vs-performance}
+\end{figure}
 
 \section{Artificial Neural Networks}\label{sec:artificial-neural-networks}
 An artificial neural network (ANN) mimics the inner workings of a human brain in that it is made up of connected nodes referred to as neurons. These neurons are interconnected and act on the incoming signals from each connection. This section first gives background on the general structure of a classic neural network in \autoref{sec:feedforward-networks} and then highlights two enhancements for sequence learning in \autoref{sec:recurrent-networks} and \autoref{sec:lstm}.
