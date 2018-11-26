@@ -1,22 +1,19 @@
 \chapter{Related Work}\label{chap:related-work}
+As this thesis aims at bringing together Predictive Process Monitoring with approaches from the area of sequence prediction, this chapter presents selected publications from both domains. To highlight the multitude of approaches and aforementioned obstacles to comparability, used technologies and datasets are quoted wherever possible.
+
+Publications related to Predictive Process Monitoring are presented in \autoref{sec:related-work-predictive-process-monitoring}, with the chapter ending in a detailed presentation of the works of Evermann et al.~\cite{evermann2016} and Schönig et al.~\cite{schoenig2018} Similarly, \autoref{sec:related-work-sequence-prediction} presents other sequence prediction approaches from NLP and ends with in-depth information on the publication from Shibata et al.~\cite{shibata2016bipartite} we took as an inspiration.
+
+\section{Predictive Process Monitoring}
+\label{sec:related-work-predictive-process-monitoring}
 Hauder et al. mention numerous research challenges in the domain of ACM, among them an active support system for knowledge workers \cite{hauder2014}.
 The need for such a system is emphasized by Francescomarino et al. in an extensive literature review, where it has been found that few prediction approaches target the next activity \cite{francescomarino2018}.\\
 
-This evident lack in this area has motivated this thesis. As shown in the previous chapters, it brings the domains of process science and data science together. In both, research has been published on sequence prediction. In the former in the context of processes and events and in the latter in the context of text modeling and NLP. Seperated by domain, the related works in these domains shall be presented in this chapter.
-
-\section{Process prediction}
 \marginpar{CoCaMa is an abbreviation for a project called Collaborative Case Management that appears to be retired: \href{http://archive.li/uZFnN}{archive.li/uZFnN}}
-An example for how a support system \cite{hauder2014} for case workers might look like is given by Huber, who has developed a next-step prediction and recommendation system  \cite{huber2015}. The system is prototypically implemented within CoCaMa, a case management application.
+An example for how a support system \cite{hauder2014} for case workers might look like, is given by Huber, who has developed a next-step prediction and recommendation system~\cite{huber2015}. The system is prototypically implemented within CoCaMa, a case management application.
 
 After gathering the training data from various sources via an extract, transform and load (ETL) process, several \textit{Next Models} are constructed. The Next Models are a collection of predictive models used to predict the next activity, focused on different criteria: remaining time, constraint violation, decisions based on case-specific data, and case outcome. The weighting of the predictions from these individual models is non-trivial and extensively discussed. Huber models the prediction as a classification problem and uses decision trees from the WEKA \cite{web:weka} machine learning toolkit to implement them. The system has been evaluated with 25 hand-made case logs \cite{huber2015}.\\
 
-Building upon each other are the works by Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}. Evermann et al. remark the lack of research on next event predictions and have successfully demonstrated the applicability of LSTM neural networks in the context of predicting the next activity. Using a neural network implemented with Tensorflow, precisions between $60\%$ to $90\%$ on the BPIC2012 and BPIC2013 datasets are achieved. Evermann et al. want their work to be understood as a "demonstration of the applicability of the approach and the potential for future work". The authors highlight that their work lacks use of data attributes during model training.
-
-Schönig et al. \cite{schoenig2018} picked up on Evermann's future work and demonstrated on BPIC datasets from 2017 that using data attributes does increase prediction accuracy. Schönig et al. implemented their solution with Keras and trained it using stratified 5-fold cross-validation. Their data was preprocessed with one-hot encoding for categorical variables and min-max-normalization for continuous features. Also, the work nicely demonstrates that an increasing number of included data attributes can continually improve accuracy \cite[p.5]{schoenig2018}, without referring to any of their statistical properties.
-
-The works of Evermann et al. and Schönig et al. represent important parts of Contribution and Evaluation, as they are similar to our approach and the source code for both works has been made available.\\
-
-Similar to Schönig et al., Polato et al. make use of data attributes in their work for improving the prediction of the remaining time of business process instances \cite{polato2014}. During feature engineering, their SVR training data is enriched with information about possible other activities. Their dataset is unfortunately relatively small at 5000 items and not public.\\
+Polato et al. make use of data attributes in their work for improving the prediction of the remaining time of business process instances \cite{polato2014}. During feature engineering, their SVR training data is enriched with information about possible other activities. Their dataset is unfortunately relatively small at 5000 items and not public.\\
 
 Metzger et al. predict constraint violation of a case by comparing fundamentally different prediction models and combining them into a model ensemble based on various criteria \cite{metzger2015}. They argue that late and precise or early and incorrect predictions are both worthless for interventions, leading them to establish that between $60\% - 85\%$ progress into the process, predictions become stable and precise.
 
@@ -28,13 +25,22 @@ Also aiming at predicate fulfilment were Francescomarino et al. when they they o
 
 Picking up on Francescomarinos approach and training a neural network for every cluster was heavily considered at the beginning of this thesis but foregone because of the possibility to use embedding layers which cause clustering inside the ANN.\\
 
-Klinkmüller et al. enrich their training dataset with markers that encode subsequence occurrence \cite{klinkmuller2018reliablemonitoring}. Doing so on a synthetic and undisclosed dataset, they are able to increase the accuracy of a random forest in comparison to a baseline that is not using the engineered subsequence features. This approach is similar to that of Shibata et al. \cite{shibata2016bipartite} two years earlier.\\
-
 Approaching the process prediction in a different fashion are Böhmer et al. with predictions rooted in heuristic analysis \cite{boehmer2018probability}. Based on the fact that the black-box nature of ANNs makes their predictions and inner workings very hard to comprehend, they argue that the amount of trust that users put into their predictions results is limited. As potentially large organizational changes could be made due to the predictions, the authors perceive it of importance to explain alternative futures which were not classified as being most probable and explain the aspects which motivated specific prediction results.
 Böhmer et al. approximate trace similarities with the Damerau-Levenstein method and a custom cost function. Using this method, they filter historic traces to produce a set of similar executions. From this set, probability distributions are mined, with the most probable behaviour ultimately used as the final prediction \cite{boehmer2018probability}.
 \todo[inline]{End this chapter with an the very detailed Schoenig description. BTW Schönig did not use stratified 5-CV, which does not even exist}
 
-\section{Text modeling}
+Klinkmüller et al. enrich their training dataset with markers that encode subsequence occurrence \cite{klinkmuller2018reliablemonitoring}. Doing so on a synthetic and undisclosed dataset, they are able to increase the accuracy of a random forest in comparison to a baseline that is not using the engineered subsequence features. This approach is similar to that of Shibata et al. \cite{shibata2016bipartite} two years earlier.\\
+
+
+
+Building upon each other are the works by Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}. Evermann et al. remark the lack of research on next event predictions and have successfully demonstrated the applicability of LSTM neural networks in the context of predicting the next activity. Using a neural network implemented with Tensorflow, precisions between $60\%$ to $90\%$ on the BPIC2012 and BPIC2013 datasets are achieved. Evermann et al. want their work to be understood as a "demonstration of the applicability of the approach and the potential for future work". The authors highlight that their work lacks use of data attributes during model training.
+
+Schönig et al. \cite{schoenig2018} picked up on Evermann's future work and demonstrated on BPIC datasets from 2017 that using data attributes does increase prediction accuracy. Schönig et al. implemented their solution with Keras and trained it using stratified 5-fold cross-validation. Their data was preprocessed with one-hot encoding for categorical variables and min-max-normalization for continuous features. Also, the work nicely demonstrates that an increasing number of included data attributes can continually improve accuracy \cite[p.5]{schoenig2018}, without referring to any of their statistical properties.
+
+The works of Evermann et al. and Schönig et al. represent important parts of Contribution and Evaluation, as they are similar to our approach and the source code for both works has been made available.\\
+
+\section{Sequence prediction}
+\label{sec:related-work-sequence-prediction}
 Colocated with the International Conference in Grammatical Inference 2016 (ICGI) was a competition called SPiCE\ "about guessing the next element in a sequence" \cite{web:spice}. Most entries submitted to this competition made use of RNNs with LSTM cells to predict the next word of a sentence.
 
 \begin{figure}
