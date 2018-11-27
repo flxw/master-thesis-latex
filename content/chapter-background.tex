@@ -68,7 +68,8 @@ $$ e = \{ d_1, d_2, d_3, ..., d_i\ |\ d_i \in D_i \}$$
 
 This type of log, easily transferrable into columns for attributes and rows for every event as in \autoref{fig:process-log}, lends itself for application in the context of Predictive Modeling, as the next chapter will show.
 
-\section{Predictive Modeling}\label{sec:predictive-modeling}
+\section{Predictive Modeling}
+\label{sec:predictive-modeling}
 Predictive Modeling is a domain that deals with creating models from learned statistical properties of data to predict outcomes. The models used to arrive at these outcomes are referred to as predictive models, and are unrelated to process models. This section introduces a common process for predictive model generation in \autoref{sec:predictive-model-development} and frame a problem in \autoref{sec:sequence-prediction} that is fundamental to the thesis: that of next-element predictions in a sequence.
 
 \subsection{Predictive model development}
@@ -83,7 +84,8 @@ Predictive Modeling is a domain that deals with creating models from learned sta
 In 1996 Fayyad et al. published what came to be known as the Knowledge Discovery In Databases (KDD) process \cite{fayyad1996data}. Published 20 years ago and aimed at data mining, it is also applicable to predictive model building. It is illustrated in \autoref{fig:kdd_process}, and shall be explained step by step in the following with technical details relevant for this thesis. The process is highly iterative and jumps between every step are possible.
 
 \subsubsection*{Selection}
-Predictive models work on \textit{line items} comprised of a number of \textit{features}, which are variables that are considered useful for the prediction of the \textit{target variable}. In \autoref{fig:process-log}, each row is a line item and each column corresponds to a single feature. Features are sometimes also referred to as predictor variables.
+Predictive models work on \textit{line items} comprised of a number of \textit{features}, which are variables that are considered useful for the prediction of the \textit{target variable}. The target variable may either be a continuous value or discrete. In the latter case, the output is referred to as classification - which is also the case for this thesis.
+In the examplary log in \autoref{fig:process-log}, each row is a line item and each column corresponds to a single feature. Features are sometimes also referred to as predictor variables.
 
 During the selection step features are chosen as predictors based on differed criteria such as their predictive power or inter-feature correlations.
 

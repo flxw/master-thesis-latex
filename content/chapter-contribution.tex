@@ -15,22 +15,6 @@ A contribution to current research is the direct comparison of differently desig
 \autoref{fig:schoenig-architecture} showcases the architecture used by Schönig et al.~\cite{schoenig2018}, which is heavily inspired by the version of Evermann. This architecture has been reverse-engineered in collaboration with the authors, too. Three subtle changes are visible: First, as data attributes are also used as an input in their work, the number of neurons in the hidden layers is a function of the number of input and output neurons. Second, the embedding layer has been removed. And third, the dropout rate has been increased to $30\%$.
 
 \begin{figure}
-\centering
-\subfloat[][Architecture used by Evermann et al. \cite{evermann2016}.]{
-    \includegraphics[width=0.3\textwidth]{gfx/evermann-network-architecture.png}
-    \label{fig:evermann-architecture}
-}
-\qquad
-\subfloat[][Architecture used by Schönig et al. \cite{schoenig2018}.]{
-    \includegraphics[width=0.3\textwidth]{gfx/schoenig-network-architecture.png}
-    \label{fig:schoenig-architecture}
-}
-\caption{An overview of the reverse-engineered networks that are used as a comparison in this thesis.}
-\label{fig:architectures}
-\end{figure}
-\todo[inline]{Put this into related work, as I did not produce it}
-
-\begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{gfx/sp2-network-architecture.png}
     \caption{The SP2 and PFS networks share the architecture but inject different features.}
