@@ -1,18 +1,27 @@
 \chapter{Contribution}\label{chap:contribution}
-This thesis shall be understood as an extension to the works of Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}, both of which were presented in the previous section. The two works have demonstrated the applicability of LSTM neural networks in Predictive Process Monitoring, but have left out general perspectives on the sequence prediction problem. Furthermore, the impact of adding engineered features to the training data was not investigated.\\
+This thesis shall be understood as an extension to the works of Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}, both of which were thoroughly presented in the previous section. The two works have demonstrated the applicability of LSTM neural networks in Predictive Process Monitoring, but have left out general perspectives on the sequence prediction problem.
+We want to introduce said general perspective through adapting of the approach of Shibata et al. \cite{shibata2016bipartite} for Predictive Process Monitoring in \autoref{sec:contrib:nlp-inspiration}. During development, we realized that there are highly divergent understandings regarding the data input of neural networks for next-element predictions with sequences. Our contribution in this area is described in \autoref{sec:contrib:input-formatting}. We tie both topics together by providing a simple training framework in \autoref{sec:contrib:training-framework}. With it, we hope to facilitate a step towards result comparability. 
 
-The thesis introduces said general perspective through the adaption of the approach of Shibata et al. \cite{shibata2016bipartite}. Their bipartite network architecture as well as the engineered SP-2 features have shown extraordinary performance in the SPiCE competition \cite{web:spice}. This transfer is made under the hypothesis that a case can exhibit properties similar to grammatical rules. Sub-sequence information as proposed by Klinkmüller et al. \cite{klinkmuller2018reliablemonitoring} are considered as an alternative to the SP-2 features. These sub-sequences are mined with PrefixSpan \cite{pei2001prefixspan}.
+This chapter shall begin in \autoref{sec:contrib:case-sequence-understanding} with the theoretic underpinning that enables the work mentioned above: the understanding of a case trace as a sequence.\\
 
-The two implementations are henceforth referred to as SP2 for the bipartite architecture using SP-2 features and PFS for the bipartite architecture using sub-sequence information mined with PrefixSpan. They are compared to the performance of implementations that mimic Evermann et al. and Schönig et al. Where original performance statistics were published, these are used additionally. The BPIC2011 \cite{BPIC2011} and BPIC2012 \cite{BPIC2012} datasets are used and preprocessed differently as per each approach.\\
+\section{Understanding a trace as a sequence}
+\label{sec:contrib:case-sequence-understanding} 
+The definition for sequences presented in \autoref{sec:background:sequence-prediction} needs to be extended so that a case trace can be understood as a sequence.
 
-The performance of the four different approaches is evaluated along different dimensions, which are explained at the end of this chapter.
+In the previous definition, the set $I$ had been used for \textit{items}, out of which itemsets are comprised. In this extension, an itemset represents a single row in a log. As such a row is made up of multiple different elements and adheres to a fixed schema, the definition needs to account for these two properties.\\
 
-\section{Contrasting the compared approaches}
-A contribution to current research is the direct comparison of differently designed networks that solve the same prediction problem. \autoref{fig:architectures} and \autoref{fig:sp2-pfs-architecture} show the four network architectures which are contrasted in \autoref{chap:evaluation}. In the following descriptions, $n$ denotes the number of neurons needed to read the input, while $m$ denotes the number of neurons needed to produce the one-hot-encoded next-activity output. Common to all architectures is the modeling of the problem as a multi-class classification problem, thus resulting in one-hot encoded output\\
+First, the set $I$ is now understood as a union of the sets $C_i$ which make up the distinct values inside one of the $n$ columns of a trace:
+$$I = \bigcup\limits_{i=1}^{n} C_{i}$$
 
-\autoref{fig:evermann-architecture} showcases the ANN architecture used by Evermann et al. \cite{evermann2016}. It has been reverse-engineered from the publicly available code-base \cite{web:evermann} in collaboration with Jörg Evermann. The network itself receives the input data in dictionary-encoded form so that it can be processed by the embedding layer. The embedding produces a 500-dimensional output, which is fed through two LSTM layers which also apply a dropout of $20\%$. Finally, the next activity is presented by a softmax-activated output layer.\\
+Second, each itemset $s$ needs to be bound by a specific schema. The schema needs to match the schema of the log and can be defined as such: $s = <i_1, i_2 ..., i_i>$ with $i_i \in C_i$. Thus, the original condition $s \subseteq I$ still holds true, but every item now has a fixed place in the itemset depending on which column it originates from.
 
-\autoref{fig:schoenig-architecture} showcases the architecture used by Schönig et al.~\cite{schoenig2018}, which is heavily inspired by the version of Evermann. This architecture has been reverse-engineered in collaboration with the authors, too. Three subtle changes are visible: First, as data attributes are also used as an input in their work, the number of neurons in the hidden layers is a function of the number of input and output neurons. Second, the embedding layer has been removed. And third, the dropout rate has been increased to $30\%$.
+\section{Taking inspiration from approaches in NLP}
+\label{sec:contrib:nlp-inspiration}
+Shibata et al.'s bipartite network architecture in combination with engineered SP-2 features has shown extraordinary performance in the SPiCE competition \cite{web:spice}. Under the hypothesis that a case can exhibit properties similar to grammatical rules, we want to test it in this domain. Furthermore, we consider sub-sequence information as proposed by Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} as an alternative to the SP-2 features. These sub-sequences are mined with PrefixSpan \cite{pei2001prefixspan}.
+
+The two variations are henceforth referred to as SP2 for the bipartite architecture using SP-2 features and PFS for the bipartite architecture using sub-sequence information mined with PrefixSpan. They shall be compared to the performance of implementations that mimic Evermann et al. and Schönig et al. Where original performance statistics were published, these will be used additionally. The BPIC2011 \cite{BPIC2011} and BPIC2012 \cite{BPIC2012} datasets are used and preprocessed differently as per each approach.\\
+
+In \autoref{fig:sp2-pfs-architecture}, the SP2 and PFS variations are displayed. While the general architecture has been adapted by Shibata et al., important details were taken from Schönig et al.
 
 \begin{figure}
     \centering
@@ -21,19 +30,51 @@ A contribution to current research is the direct comparison of differently desig
     \label{fig:sp2-pfs-architecture}
 \end{figure}
 
-Heavily inspired by these two architectures and the bipartite approach of Shibata et al. \cite{shibata2016bipartite}, Figures \ref{fig:sp2-pfs-architecture} present the injection of SP-2 or sub-sequence features at the top-level.
+Both SP2 and PFS models use $n$ units on the first input layer denoting the number of features for the encoded activities, timestamps and other event attributes. They put out the next activity in one-hot encoded form through $m$ units, thus modelling the task as a multi-classification problem.
 
-<ACTIVITY><DATA><ENGINEERED FEATURES>
+In contrast to Evermann et al. and Shibata et al., the number of units $m+n$ in the LSTM layers is a function of the input unit count and the output unit count. This follows general advice not to introduce bottlenecks in the hidden layers by using fewer units than required in the output layer. Furthermore, dropout layers have been introduced to prevent overfitting.
 
-\section{Understanding a trace as a sequence}
-The definition for sequences presented in \autoref{sec:background:sequence-prediction} needs to be extended so that a case trace can be understood as a sequence.
+The SP2 and PFS features are fed in higher up on the right side of the tree, passing through a ReLU-activated, fully-connected layer, before the intermediate values are concatenated.
 
-In the previous definition, the set $I$ had been used for \textit{items}, of which itemsets are comprised. An itemset represents a single row in the log. As such a row is made up of multiple different elements and adheres to a fixed schema, the definition needs to account for those two properties.\\
+TODO concatenation, dropout, ReLU, Softmax...
 
-First, the set $I$ is now understood as a union of the sets $C_i$ which make up the distinct values inside one of the $n$ columns of a trace:
-$$I = \bigcup\limits_{i=1}^{n} C_{i}$$
+\section{Contrasts among sequence input formats}
+\label{sec:contrib:input-formatting}
+We implemented the SP2 and PFS variants as well as the comparison models using Python and the Keras neural networks API running on top of Tensorflow. While doing so, a wide range of recommended approaches to sequence learning were noted on online platforms such as StackOverflow.
 
-Second, each itemset $s$ needs to be bound by a specific schema. The schema needs to match the schema of the log and can be defined as such: $s = <i_1, i_2 ..., i_i>$ with $i_i \in C_i$. Thus, the original condition $s \subseteq I$ still holds true, but every item now has a fixed place in the itemset depending on which column it originates from.
+While some recommend sliding window approaches, others deem it against the function of LSTM cells. Again others argue that padding sequences to equal length makes training faster and does not affect model performance. Furthermore, the batch size represents an important hyper-parameter, and no guidelines how to sort traces into batches were found.\\
+
+When using an LSTM in Keras, it is stateful \textit{during} a batch, and resets the internal state before the next one, unless specified otherwise. For the sake of simplicity, it is advisable to keep related data inside a single batch. Translated to traces, this means keeping a trace completely inside a batch.
+
+The Keras LSTM layers expect data to arrive in a three-dimensional array, where each dimension has a defined meaning:
+
+$$(n\_samples, n\_timesteps, n\_features)$$
+
+Each sample contains a number of timesteps $n\_timesteps$ containing a number of features $n\_feature$ (which is always the same). For each sample, the LSTM layer maintains a separate state, meaning that several traces can be trained with simultaneously\footnote{https://stackoverflow.com/questions/43882796/when-does-keras-reset-an-lstm-state}.
+
+This is possible if all samples have the same number of timesteps, while the number of samples and timesteps may vary between batches. This means that only traces of the same length can be trained together in a single batch. A look at a trace length distribution in \autoref{fig:bpic2011-length-distribution} reveals that grouped batching might bias toward longer traces who are smaller in number as they are trained in a batch of their own.
+
+Furthermore, there is the possibility of padding the number of time-steps in a sequence to the same length and use a Masking\footnote{\url{https://keras.io/layers/core/\#masking}} layer to then filter out the padded values during training. This is likely to incur a performance hit due to the higher memory requirements and processing overhead for filtering.
+
+To bring clarity, we compare four different input formats:
+\begin{itemize}
+    \item One trace per batch
+    \item Same-length traces per batch
+    \item Padded-to-length traces
+    \item Windowing...
+\end{itemize}
+
+Graphs about length distribution
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/frequency-distribution.png}
+    \caption{Distribution of trace lengths in the BPIC2011 training set.}
+    \label{fig:bpic2011-length-distribution}
+\end{figure}
+
+
+\section{A training framework}
+\label{sec:contrib:training-framework}
 
 \section{Evaluation criteria}
 Three metrics of the four aforementioned implementations shall be the focus of the evaluation of the results:

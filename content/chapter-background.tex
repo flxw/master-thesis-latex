@@ -106,7 +106,7 @@ The data prepared in the previous steps is used to \textit{train} the model. Dur
 \subsubsection*{Evaluation}
 Typically, not all of the available data is used for training. This is to make sure that the model generalizes well, i.e. predicts as good on data it is has not seen before as on the training data. If a model is not generalizing, it is said to be \textit{overfitting}. Overfitting happens when the model is strongly biased towards the training data too well and thus shows poor generalization performance. A simple and effective method to avoid biases is to divide the available data into three parts: 50\% of it to train the model, 25\% of it to calculate and improve the model during training and the remaining 25\% to finally test the model performance after training~\cite{kuhn2013applied, trevor2009elements}.
 
-\subsection{Sequence prediction}\label{sec:sequence-prediction}
+\subsection{Sequence prediction}\label{sec:background:sequence-prediction}
 A sequence is made up of individual steps. This section presents a formal definition of sequences, which will later be used to connect process traces with the process prediction problem at hand. Let $I = \{i_1, i_2, \cdots, i_n\}$ be the set of all items. An \textit{itemset} $s$ is a subset of $I$. A \textit{sequence} $seq$ is an ordered list of itemsets, such that it can be noted as follows:
 
 $$seq = \langle s_1s_2\cdots s_l \rangle\ |\ \forall\ 0 \leq j \leq l: s_j \subseteq I$$
