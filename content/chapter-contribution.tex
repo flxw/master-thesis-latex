@@ -54,17 +54,16 @@ Each sample contains a number of timesteps $n\_timesteps$ containing a number of
 
 This is possible if all samples have the same number of timesteps, while the number of samples and timesteps may vary between batches. This means that only traces of the same length can be trained together in a single batch. A look at a trace length distribution in \autoref{fig:bpic2011-length-distribution} reveals that grouped batching might bias toward longer traces who are smaller in number as they are trained in a batch of their own.
 
-Furthermore, there is the possibility of padding the number of time-steps in a sequence to the same length and use a Masking\footnote{\url{https://keras.io/layers/core/\#masking}} layer to then filter out the padded values during training. This is likely to incur a performance hit due to the higher memory requirements and processing overhead for filtering.
+Furthermore, there is the possibility of padding the number of time-steps in a sequence to the same length and use a Masking\footnote{\url{https://keras.io/layers/core/\#masking}} layer to then filter out the padded values during training. This is likely to incur a performance hit due to the higher memory requirements for padded samples and processing overhead for filtering.\\
 
-To bring clarity, we compare four different input formats:
+To bring clarity and understand the merits of each approach, we compare four different input formats:
 \begin{itemize}
     \item One trace per batch
-    \item Same-length traces per batch
+    \item Same-length traces in one batch
     \item Padded-to-length traces
-    \item Windowing...
+    \item Windowed samples, as used by Evermann et al. and Schönig et al.
 \end{itemize}
 
-Graphs about length distribution
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/frequency-distribution.png}
@@ -72,17 +71,12 @@ Graphs about length distribution
     \label{fig:bpic2011-length-distribution}
 \end{figure}
 
+To bring the four algorithms and four formatting options together, a training framework was implemented which turned out to be easily expandable. Thus we would like to propose it as way to facilitate comparability among prediction approaches.
 
-\section{A training framework}
+\section{A next-event predictive model training framework}
 \label{sec:contrib:training-framework}
+Data sets
 
-\section{Evaluation criteria}
-Three metrics of the four aforementioned implementations shall be the focus of the evaluation of the results:
+Model builder
 
-\begin{enumerate}
-    \item\textbf{Accuracy} - The share of correct next-activity predictions.
-    \item\textbf{Earliness} - Whether and how early the prediction accuracy begins to stabilize as the trace progresses; see Francescomarino~\cite{francescomarino2015}.
-    \item\textbf{Feature importance} - Whether network-internal metrics indicate that an added feature is valuable for making predictions.
-\end{enumerate}
-
-While the first two criteria target the usability of the results, the last one permits making a judgment about the usefulness of the added features. This allows making a more informed decision about the necessity of the increased resource consumption.
+Formatter

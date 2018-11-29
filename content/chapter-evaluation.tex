@@ -1,18 +1,15 @@
 \chapter{Evaluation}\label{chap:evaluation}
-The contribution of this thesis is the direct comparison of the network architectures presented in the previous section on data from the Business Process Intelligence Competitions 2011 and 2012~\cite{BPIC2011, BPIC2012}. The execution of this comparison in code, the preceding data preparation and transformation as well as the obtained results shall be presented in this chapter.
+Through the use of the framework described in the previous chapter, we evaluate four different algorithms for next-activity prediction: Two implementations that mimic Evermann et al. and Schönig et al, and the previously presented PFS and SP2. In doing so, we will analyze the different approaches for structuring the training data for performance differences.
 
-\section{Used Technologies}
-Anaconda~\cite{web:anaconda} was set up to create a stable working environment in which dependencies and libraries would not change.
-Then, the data was explored, prepared and cleansed in an iterative fashion using JupyterLab notebooks~\cite{web:jupyter}. Helpful libraries in the process were prefixspan-py~\cite{web:prefixspan-py} and OpyenXes~\cite{web:opyenxes}. Notebooks were also used to develop the ANN training code in Keras~\cite{web:keras}.
-
-As the codebase became more mature, Docker containers were built with the Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, the networks were trained on the GPU cluster infrastructure of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code is available for download at: \url{https://github.com/flxw/master-thesis-code}.
+As we follow the KDD process, this chapter briefly leads through the data processing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the SP-2 and subsequence features. Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation and discussion of the results in \autoref{sec:eval:results}. Used and relevant technologies are highlighted in the respective sections.
 
 \section{Data preprocessing}
-Following the KDD process~\cite{fayyad1996data}, the data was preprocessed to eliminate generally known properties that hinder machine learning model performance. Here, this encompassed two steps for both datasets:
+\label{sec:eval:data-preprocessing}
+In the first step of KDD process~\cite{fayyad1996data}, the data was preprocessed to eliminate generally known properties that hinder machine learning model performance. Here, this encompassed two steps for both datasets:
 
 \begin{enumerate}
     \item All columns which exhibited zero entropy, i.e. which were constituted of a single value, were dropped.
-    \item Features which correlated strongly were eliminated. To account for categorical ones, the bias-corrected version of Cramér's~V~\cite{bergsma2013bias} was used.
+    \item Features which correlated strongly were eliminated. To account for categorical correlation, the bias-corrected version of Cramér's~V~\cite{bergsma2013bias} was used.
 \end{enumerate}
 
 
@@ -34,16 +31,18 @@ In step 2, the bi-directional results in \autoref{fig:bpic2011-correlation-heatm
 \caption{Correlation heatmaps with values from Cramér's V.}
 \end{figure}
 
+The activities described above were conducted in JupyterLab notebooks~\cite{web:jupyter}, where Anaconda~\cite{web:anaconda} was used to create a stable development environment. The OpyenXes~\cite{web:opyenxes} library proved to be especially useful for parsing the raw XES logs from BPIC.
+
 \section{Data transformation}
+\label{sec:eval:data-transformation}
 Having removed unneeded features, the remaining ones were encoded following standard practice. Each numerical feature $x$ was normalized for with values specific to each trace using the min-max method:
 
 $$normalize(x) = \frac{x-min(x)}{max(x)-min(x)}$$
-\todo[inline]{Revisit this when benchmarks are through}
 
-Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermann's model, they were encoded with dictionary encoding, as this encoding is required for Embedding layers.
+Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for the Evermann model, they were encoded with dictionary encoding, as this is required for Embedding layers.
 
 \subsection*{SP-2 feature engineering}
-The SP-2 features were engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. For all following activities, the contents of the previous row inside \texttt{sp2\_df} are copied into the current one and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
+For every trace, SP-2 features mark whether an activity has occured yet. Thus, these features are engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. For all following activities, the contents of the previous row inside \texttt{sp2\_df} are copied into the current one and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
 
 \begin{lstlisting}[caption={SP-2 feature generation algorithm for a single trace},label={lst:sp2-generation}]
 sp2_df = pd.DataFrame(columns=activity_labels, index=range(0,len(t)), dtype=np.bool)
@@ -59,15 +58,15 @@ for i in range(1,len(t)):
 \end{lstlisting}
 
 \subsection*{Sub-sequence feature engineering}
-The sub-sequence features for the PFS model were created with the help of the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. As \autoref{lst:pfs-mining} shows, the library greatly facilitates obtaining closed sequences ranked by support and returns a two-dimensional array of sub-sequences. This array contains one array per sub-sequence.
-\todo[inline]{put closed sequences and support into background}
+The sub-sequence features for the PFS model were created with the help of the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. As \autoref{lst:pfs-mining} shows, the library greatly facilitates obtaining closed sequences ranked by support and returns a two-dimensional array of sub-sequences, containing one array per sub-sequence.
 
 \begin{lstlisting}[caption={Obtaining closed sequences using the \textit{prefixspan-py} library.}, label={lst:pfs-mining}]
 prefixspan_traces = PrefixSpan(encoded_traces)
 closed_sequences = prefixspan_traces.topk(25, closed=True)
 \end{lstlisting}
 
-After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. The activity at the current index is compared with the beginning of every subsequence in the list of subsequences. If they are equal, the foremost activity of that subsequence is popped. Should this depletes the list, the subsequence is consideres as completely occured and is marked as such. This continues until the end of every trace.
+\todo[inline]{This has to be rewritten, the algorithm is wrong}
+After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. The activity at the current index is compared with the beginning of every subsequence in the list of subsequences. If they are equal, the foremost activity of that subsequence is popped. Should this deplete the list, the subsequence is considered as occurred and is marked as such in the feature vector. This continues until the end of every trace.
 
 \begin{lstlisting}[caption={Creating the subsequence features.}, label={lst:subsequence-feature-creation}]
 col_prefix = "PFS_"
@@ -76,7 +75,7 @@ subseq_df = pd.DataFrame(columns=subseq_labels, index=range(0,len(t)))
 
 for col in subseq_df.columns: subseq_df[col].values[:] = 0
 for i in range(0,len(t)):
-    activity_code = t["concept:name"].iloc[i]
+    activity_code = t[target_column].iloc[i]
     
     for subseq_idx in range(0,len(ps)):
         if ps[subseq_idx] == []:
@@ -87,56 +86,46 @@ for i in range(0,len(t)):
                 subseq_df.values[i:,subseq_idx] = 1
 \end{lstlisting}
 
-\todo[inline]{Choosing a specific support for the PFS features...}
+\section{Test setup}
+\label{sec:eval:test-setup}
+To conduct the experiments, Docker containers were built with the Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-formatting combination was trained and evaluated on a single NVIDIA K80 GPU of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code is available on GitHub via \href{https://github.com/flxw/master-thesis-code}{flxw/master-thesis-code}.\\
 
-\section{Technical considerations}
-The prediction task at hand was framed as a multi-class classification problem with a time-component, as a class for the next activity needed to be predicted using a variable amount of input. Extensive use was made of Keras' LSTM layers, which led to the implementation decision in the following:\\
+Each model was saved when its validation loss hit a new record low. If the validation loss did not change for 10 epochs, the training was interrupted, also called \textit{early stopping}. \autoref{tab:network-info} illustrates information about the training setup of the networks side-by-side.
 
-As weights are updated after every batch, the batch size is an important parameter. Typical machine learning algorithm inputs are rows where each rows and its corresponding prediction target stand for themselves. In the case presented here, the time-steps of a sequence do build upon each other, and training on multiple unrelated sequences with variable timesteps makes a semantic separation of unrelated data, so that there is no?!?!
+\begin{table}[ht!]
+    \centering
+    \begin{tabular}{lcccc}
+        \textbf{Network} & Evermann & Schönig & SP2 & PFS\\
+        \hline
+        \textbf{Optimizer} & SGD\footnote{SGD stands for Stochastic Gradient Descent. Additionally setting the learning rate decay to $0.75$ at $25^{th}$ epoch.} & RMSprop  & RMSprop & RMSprop\\
+        \textbf{Loss}    & & & &\\
+        \textbf{Epochs}  & 50 & 100 & 100 & 100\\
+        \textbf{BPIC2011 features} & 1 & 655 & 655 + 625 & 655 + 25 \\
+        \textbf{BPIC2012 features} & 1 & 655 & 655 + 625 & 655 + 25 \\
+    \end{tabular}
+    \caption{Used hyper-parameters for each approach, the left two columns as chosen by the authors. The number of epochs is to be understood as the maximum number of epochs, as training may stop early.}
+    \label{tab:network-info}
+\end{table}
+\todo[inline]{similar table for formatters}
+\todo[inline]{K-Fold, pattern implementation}
 
-This was achieved by leveraging three-dimensional vectors to feed data into the network. Each dimension can be understood as follows:
+\section{Evaluation criteria}
+\label{sec:eval:criteria}
+Three metrics of the four aforementioned implementations shall be the focus of the evaluation of the results:
 
 \begin{enumerate}
-    \item Number of sequences per batch
-    \item Number of time-steps per sequence
-    \item Number of variables per time-step
+    \item\textbf{Accuracy} - The share of correct next-activity predictions.
+    \item\textbf{Earliness} - Whether and how early the prediction accuracy begins to stabilize as the trace progresses; see Francescomarino~\cite{francescomarino2015}.
+    \item\textbf{Resource consumption} - The amount of time and memory required during training.
 \end{enumerate}
 
-This definition demands a design choice as Keras requires the number of time-steps inside batch to be constant. Three approaches are thinkable:\\
-
-First, padding all sequences to the same length with null values which RNNs were supposed to be capable of understanding as such. Several forums suggest doing so, but as no hard evidence could be found, this approach was forgone.
-
-Secondly, grouping training traces by length and thus modifying the first dimension of the input vector, the number of sequences per batch. This would reduce the number of batches from 900 to 310 on the BPIC2011 training set, leveraging the power-law distribution in trace lengths, clearly evidenced in \autoref{fig:bpic2011-length-distribution}.
-
-Third and most straightforward, training one sequence per batch. These last two approaches shall be evaluated for impact on each network.
-
-\section{Test setup}
-Dropping the embedding layer if results are really bad
-Iterative way of working, these are the ultimate results
-Making embedding layer optional
-
-\begin{table}[]
-    \centering
-    \begin{tabular}{c|cccc}
-        Network & Evermann et al. & Schönig et al. & SP2 & PFS\\
-        \hline
-        Optimizer & self-built & RMSprop  & \\
-        Epochs  & 50    & 100 & \\
-        Training time\\
-        Prediction time\\
-        Accuracy\\
-    \end{tabular}
-    \caption{Caption}
-    \label{tab:my_label}
-\end{table}
+While the first two criteria target the usability of the results, the last one permits making a judgment about the usefulness of the added features. This allows making a more informed decision about the necessity of the increased resource consumption.
 
 \section{Results}
+\label{sec:eval:results}
+
 
 \subsection*{Accuracy}
 \subsection*{Earliness}
-\subsection*{Feature importances}
+\subsection*{Resource consumption}
 
-\section{Discussion}
-Is the hassle worth it?
-Increase in memory, training time...?
-Compare with Evermanns etc results
