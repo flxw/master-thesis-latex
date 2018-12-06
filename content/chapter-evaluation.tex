@@ -20,15 +20,15 @@ In step 2, the bi-directional results in \autoref{fig:bpic2011-correlation-heatm
 \begin{figure}
 \centering
 \subfloat[][BPIC2011 Cramér's V heatmap]{
-    \includegraphics[width=0.5\textwidth]{gfx/bpic2011-correlation-matrix.png}
+    \includegraphics[width=0.7\textwidth]{gfx/bpic2011-correlation-matrix.png}
     \label{fig:bpic2011-correlation-heatmap}
 }
 \qquad
 \subfloat[][BPIC2012 Cramér's V heatmap]{
-    \includegraphics[width=0.35\textwidth]{gfx/bpic2012-correlation-matrix.png}
+    \includegraphics[width=0.7\textwidth]{gfx/bpic2012-correlation-matrix.png}
     \label{fig:bpic2012-correlation-heatmap}
 }
-\caption{Correlation heatmaps with values from Cramér's V.}
+\caption{Correlation heatmaps obtained from Cramér's~V.}
 \end{figure}
 
 The activities described above were conducted in JupyterLab notebooks~\cite{web:jupyter}, where Anaconda~\cite{web:anaconda} was used to create a stable development environment. The OpyenXes~\cite{web:opyenxes} library proved to be especially useful for parsing the raw XES logs from BPIC.
@@ -44,60 +44,51 @@ Categorical features without ordinal properties, which were all of them, were en
 \subsection*{SP-2 feature engineering}
 For every trace, SP-2 features mark whether an activity has occured yet. Thus, these features are engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. For all following activities, the contents of the previous row inside \texttt{sp2\_df} are copied into the current one and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
 
-\begin{lstlisting}[caption={SP-2 feature generation algorithm for a single trace},label={lst:sp2-generation}]
+\begin{figure}
+\begin{minted}
 sp2_df = pd.DataFrame(columns=activity_labels, index=range(0,len(t)), dtype=np.bool)
 for col in sp2_df.columns: sp2_df[col].values[:] = 0
-sp2_df["{0}{1}".format(sp2_prefix, t["concept:name"][0])].values[0]  = 1
+  sp2_df["{0}{1}".format(sp2_prefix,
+                          t["concept:name"][0])].values[0]  = 1
 
-for i in range(1,len(t)):
+  for i in range(1,len(t)):
     first_activity_name = t["concept:name"].iloc[i]
     col = "{0}{1}".format(sp2_prefix,first_activity_name)
-    
+  
     sp2_df.values[i] = sp2_df.values[i-1]
     sp2_df[col].values[i] = 1
-\end{lstlisting}
+\end{minted}
+\caption{exemplary listing}
+\label{lst:sp2-generation}
+\end{figure}
 
 \subsection*{Sub-sequence feature engineering}
 The sub-sequence features for the PFS model were created with the help of the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. As \autoref{lst:pfs-mining} shows, the library greatly facilitates obtaining closed sequences ranked by support and returns a two-dimensional array of sub-sequences, containing one array per sub-sequence.
 
-\begin{lstlisting}[caption={Obtaining closed sequences using the \textit{prefixspan-py} library.}, label={lst:pfs-mining}]
+\begin{figure}
+\begin{minted}{python}
 prefixspan_traces = PrefixSpan(encoded_traces)
 closed_sequences = prefixspan_traces.topk(25, closed=True)
-\end{lstlisting}
+\end{minted}
+\caption{Obtaining closed sequences using the \textit{prefixspan-py} library.}
+\label={lst:pfs-mining}
+\end{figure}
 
 \todo[inline]{This has to be rewritten, the algorithm is wrong}
 After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. The activity at the current index is compared with the beginning of every subsequence in the list of subsequences. If they are equal, the foremost activity of that subsequence is popped. Should this deplete the list, the subsequence is considered as occurred and is marked as such in the feature vector. This continues until the end of every trace.
-
-\begin{lstlisting}[caption={Creating the subsequence features.}, label={lst:subsequence-feature-creation}]
-col_prefix = "PFS_"
-subseq_labels = [ "{0}{1}".format(col_prefix,ss_idx) for ss_idx, ss in enumerate(ps) ]
-subseq_df = pd.DataFrame(columns=subseq_labels, index=range(0,len(t)))
-
-for col in subseq_df.columns: subseq_df[col].values[:] = 0
-for i in range(0,len(t)):
-    activity_code = t[target_column].iloc[i]
-    
-    for subseq_idx in range(0,len(ps)):
-        if ps[subseq_idx] == []:
-            continue
-        if ps[subseq_idx][0] == activity_code:
-            ps[subseq_idx].pop(0)
-            if ps[subseq_idx] == []:
-                subseq_df.values[i:,subseq_idx] = 1
-\end{lstlisting}
 
 \section{Test setup}
 \label{sec:eval:test-setup}
 To conduct the experiments, Docker containers were built with the Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-formatting combination was trained and evaluated on a single NVIDIA K80 GPU of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code is available on GitHub via \href{https://github.com/flxw/master-thesis-code}{flxw/master-thesis-code}.\\
 
-Each model was saved when its validation loss hit a new record low. If the validation loss did not change for 10 epochs, the training was interrupted, also called \textit{early stopping}. \autoref{tab:network-info} illustrates information about the training setup of the networks side-by-side.
+Each model was saved when its validation loss hit a new record low. If the validation loss did not change for 10 epochs, the training was interrupted, also called \textit{early stopping}. \autoref{tab:network-info} illustrates information about the training setup of the networks side-by-side. As Evermann et al. made use of a version of Tensorflow that is deprecated by now, our implementation in Keras can only be understood as an approximation. Their "unrolled LSTM" can not be implemented in the same way in Keras.
 
 \begin{table}[ht!]
     \centering
     \begin{tabular}{lcccc}
         \textbf{Network} & Evermann & Schönig & SP2 & PFS\\
         \hline
-        \textbf{Optimizer} & SGD\footnote{SGD stands for Stochastic Gradient Descent. Additionally setting the learning rate decay to $0.75$ at $25^{th}$ epoch.} & RMSprop  & RMSprop & RMSprop\\
+        \textbf{Optimizer} & SGD\footnote{SGD stands for Stochastic Gradient Descent. Additionally setting the learning rate decay to $0.75$ at the $25^{th}$ epoch.} & RMSprop  & RMSprop & RMSprop\\
         \textbf{Loss}    & & & &\\
         \textbf{Epochs}  & 50 & 100 & 100 & 100\\
         \textbf{BPIC2011 features} & 1 & 655 & 655 + 625 & 655 + 25 \\
