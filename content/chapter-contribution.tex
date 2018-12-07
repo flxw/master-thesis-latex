@@ -17,11 +17,11 @@ Second, each itemset $s$ needs to be bound by a specific schema. The schema need
 
 \section{Taking inspiration from approaches in NLP}
 \label{sec:contrib:nlp-inspiration}
-Shibata et al.'s bipartite network architecture in combination with engineered SP-2 features has shown extraordinary performance in the SPiCE competition \cite{web:spice}. Under the hypothesis that a case can exhibit properties similar to grammatical rules, we want to test it in this domain. Furthermore, we consider sub-sequence information as proposed by Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} as an alternative to the SP-2 features. These sub-sequences are mined with PrefixSpan \cite{pei2001prefixspan}.
+Shibata et al.'s bipartite network architecture in combination with engineered SP-2 features has shown extraordinary performance in the SPiCE competition \cite{web:spice}. Under the hypothesis that a case can exhibit properties similar to grammatical rules, we test it in the business process domain. Furthermore, we consider sub-sequence information as proposed by Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} as an alternative to the SP-2 features.
 
-The two variations are henceforth referred to as SP2 for the bipartite architecture using SP-2 features and PFS for the bipartite architecture using sub-sequence information mined with PrefixSpan. They shall be compared to the performance of implementations that mimic Evermann et al. and Schönig et al. Where original performance statistics were published, these will be used additionally. The BPIC2011 \cite{BPIC2011} and BPIC2012 \cite{BPIC2012} datasets are used and preprocessed differently as per each approach.\\
+The two variations are henceforth referred to as SP2 for the bipartite architecture using SP-2 features and PFS for the bipartite architecture using sub-sequence information. They are compared to the performance of implementations that mimic Evermann et al. and Schönig et al. Where original performance statistics were published, these are used additionally. The BPIC2011 \cite{BPIC2011} and BPIC2017 \cite{BPIC2017} datasets are used and preprocessed differently as per each approach.\\
 
-In \autoref{fig:sp2-pfs-architecture}, the SP2 and PFS variations are displayed. While the general architecture has been adapted by Shibata et al., important details were taken from Schönig et al.
+In \autoref{fig:sp2-pfs-architecture}, the SP2 and PFS architecture is displayed. While the general architecture has been adapted by Shibata et al., important details were taken from Schönig et al.
 
 \begin{figure}
     \centering
@@ -30,38 +30,38 @@ In \autoref{fig:sp2-pfs-architecture}, the SP2 and PFS variations are displayed.
     \label{fig:sp2-pfs-architecture}
 \end{figure}
 
-Both SP2 and PFS models use $n$ units on the first input layer denoting the number of features for the encoded activities, timestamps and other event attributes. They put out the next activity in one-hot encoded form through $m$ units, thus modelling the task as a multi-classification problem.
+Both SP2 and PFS models use $n$ units on the first input layer denoting the number of features for the encoded activities, timestamps and other event attributes. Both put out the next activity in one-hot encoded form through $m$ units, thus modelling the task as a multi-classification problem.
 
 In contrast to Evermann et al. and Shibata et al., the number of units $m+n$ in the LSTM layers is a function of the input unit count and the output unit count. This follows general advice not to introduce bottlenecks in the hidden layers by using fewer units than required in the output layer. Furthermore, dropout layers have been introduced to prevent overfitting.
 
-The SP2 and PFS features are fed in higher up on the right side of the tree, passing through a ReLU-activated, fully-connected layer, before the intermediate values are concatenated.
-
-TODO concatenation, dropout, ReLU, Softmax...
+The SP2 and PFS features are fed in higher up on the right side of the tree, passing through a ReLU-activated, fully-connected layer, before the intermediate values are concatenated. Finally, the concatenated vectors are processed by fully-connected layers, with the commonly used Softmax activation function producing the final classification.
 
 \section{Contrasts among sequence input formats}
 \label{sec:contrib:input-formatting}
-We implemented the SP2 and PFS variants as well as the comparison models using Python and the Keras neural networks API running on top of Tensorflow. While doing so, a wide range of recommended approaches to sequence learning were noted on online platforms such as StackOverflow.
+We implemented the SP2 and PFS variants as well as the comparison models using Python and the Keras neural networks API. While doing so, a wide range of recommended approaches to training the models were noted in relevant publications and on online platforms such as StackOverflow.\\
 
-While some recommend sliding window approaches, others deem it against the function of LSTM cells. Again others argue that padding sequences to equal length makes training faster and does not affect model performance. Furthermore, the batch size represents an important hyper-parameter, and no guidelines how to sort traces into batches were found.\\
+While some recommend sliding window approaches, others deem it against the function of LSTM cells. Especially, Klinkmüller et al. argue against it: "[...]the popular strategy of cutting traces to certain preﬁx lengths to learn prediction models for ongoing instances is prone to yield unreliable models"~\cite{klinkmuller2018reliablemonitoring}. Again others argue that padding sequences to equal length makes training faster and does not affect accuracy. Furthermore, the batch size represents an important hyper-parameter, and no guidelines how to sort traces into batches were found. We believe that the understanding of the merits of each approach is of general value to any application of sequence prediction and make it part of our contribution.\\
 
-When using an LSTM in Keras, it is stateful \textit{during} a batch, and resets the internal state before the next one, unless specified otherwise. For the sake of simplicity, it is advisable to keep related data inside a single batch. Translated to traces, this means keeping a trace completely inside a batch.
+When using Keras' implementation of LSTM, it is stateful \textit{during} a batch, and resets the internal state before the next one, unless specified otherwise. For the sake of simplicity, it is advisable to keep related data inside a single batch. Translated to traces, this means keeping a trace completely inside a batch. The Keras LSTM layers expect data to arrive in a three-dimensional array, where each dimension has a defined meaning:
 
-The Keras LSTM layers expect data to arrive in a three-dimensional array, where each dimension has a defined meaning:
+$$(n_{samples}, n_{timesteps}, n_{features})$$
 
-$$(n\_samples, n\_timesteps, n\_features)$$
+Each sample contains a number of timesteps $n_{timesteps}$ containing a number of features $n_{features}$, which is a constant. For each sample, the LSTM layer maintains a separate state, meaning that several traces can be trained on simultaneously~\cite{web:keras-lstm-state}. This definition opens up a range of possibilities, four of which we are investigating here.\\
 
-Each sample contains a number of timesteps $n\_timesteps$ containing a number of features $n\_feature$ (which is always the same). For each sample, the LSTM layer maintains a separate state, meaning that several traces can be trained with simultaneously\footnote{https://stackoverflow.com/questions/43882796/when-does-keras-reset-an-lstm-state}.
+First and easiest, one trace can be trained per batch.
 
-This is possible if all samples have the same number of timesteps, while the number of samples and timesteps may vary between batches. This means that only traces of the same length can be trained together in a single batch. A look at a trace length distribution in \autoref{fig:bpic2011-length-distribution} reveals that grouped batching might bias toward longer traces who are smaller in number as they are trained in a batch of their own.
+Secondly, \textit{some} traces can be trained inside a single batch. This is possible if all traces inside one batch have the same number of timesteps, i.e. have the same length. The number of samples and timesteps may vary between batches. A look at a trace length distribution in \autoref{fig:bpic2011-length-distribution} reveals that grouped batching might bias the model toward longer traces who are smaller in number as they are trained batches of their own.
 
-Furthermore, there is the possibility of padding the number of time-steps in a sequence to the same length and use a Masking\footnote{\url{https://keras.io/layers/core/\#masking}} layer to then filter out the padded values during training. This is likely to incur a performance hit due to the higher memory requirements for padded samples and processing overhead for filtering.\\
+Third, there is the possibility of padding the number of time-steps in a sequence to the same length and use a Masking\footnote{\url{https://keras.io/layers/core/\#masking} (last visited on December 12, 2018)} layer to then filter out the padded values during training. This is likely to incur a performance hit due to the higher memory requirements for padded samples and processing overhead for filtering.
 
-To bring clarity and understand the merits of each approach, we compare four different input formats:
+Fourth and finally, there is also the possibility to split the trace into samples by sliding a window along it. This results in $l-w+1$ samples for a trace of length $l$ and a window width $w$. Taking \autoref{tab:sliding-window} in \autoref{sec:background:feature-engineering} as an example, the window would be two timesteps wide. While this approach solves the problem of unequal sample lengths and facilitates batch construction, the model can only use a maximum of $w$ timesteps per sample for training, thus losing potential long-term dependencies. As both Evermann et al.~\cite{evermann2016} and Schönig et al.~\cite{schoenig2018} use this format and it directly opposes the findings of Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}, we investigate it. Furthermore, we believe that a windowed training data format misses out on LSTM potential.\\
+
+The four different input formats are labelled in the order of the preceding description for easier reference in the next chapter:
 \begin{itemize}
-    \item One trace per batch
-    \item Same-length traces in one batch
-    \item Padded-to-length traces
-    \item Windowed samples, as used by Evermann et al. and Schönig et al.
+    \item\textbf{Individual}: One trace per batch
+    \item\textbf{Grouped}: Same-length traces in one batch
+    \item\textbf{Padded}: Padded-to-length traces
+    \item\textbf{Windowed}: Windowed samples, as used by Evermann and Schönig
 \end{itemize}
 
 \begin{figure}
@@ -71,10 +71,11 @@ To bring clarity and understand the merits of each approach, we compare four dif
     \label{fig:bpic2011-length-distribution}
 \end{figure}
 
-To bring the four algorithms and four formatting options together, a training framework was implemented which turned out to be easily expandable. Thus we would like to propose it as way to facilitate comparability among prediction approaches.
-
 \section{A next-event predictive model training framework}
 \label{sec:contrib:training-framework}
+\todo[inline]{If Bock and Time}
+To bring the four algorithms and four formatting options together, a training framework was implemented which turned out to be easily expandable. Thus we would like to propose it as way to facilitate comparability among prediction approaches.
+
 Data sets
 
 Model builder
