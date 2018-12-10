@@ -5,16 +5,24 @@ was to increase manual worker productivity fifty-fold.\\
 The most important contribution of management in the 21st century\\
 will be to increase knowledge worker productivity\\
 — hopefully by the same percentage} \\ \medskip
---- Peter Drucker~\cite{drucker1999}
+--- Peter F. Drucker~\cite{drucker1999}
 \end{flushright}
 
-When Peter Drucker became aware that the automation of manual labour was progressing faster than that of knowledge work, he said these words at the end of the $20^{th}$ century in 1999. Between both types of work lies a pronounced difference: The course of manual work is determined by physical laws, is often very structured and thus offers great potential for easy automation. Knowledge work requires one to "think for a living" and is thus shaped by the individuality of the knowledge worker. As each worker has a different knowledge background and uses information differently, this type of work is very flexible and often no process is ever executed exactly the same. This flexibility incurs making many decisions, as small as they may be - all of which need to be made by the knowledge worker based upon information. A popular example of a knowledge worker is an insurance company employee who handles multiple insurance claims. Each claim requires a different course of action, since the information contained in each differs.
+When Drucker realized that the automation of manual labour was progressing faster than that of knowledge work, he said these words at the end of the $20^{th}$ century in 1999. Now, 20 years later, the automation of semi-structured knowledge work has picked up speed due to the general adaption of data and adaption of machine learning techniques around business processes~\cite{boehmer2018probability, klinkmuller2018reliablemonitoring}.
+In this thesis, we apply machine learning to business process log data to predict the next step in a business process, given its history. This chapter gives motivating reasons to do so in \autoref{sec:intro:motivation}, and highlights the resulting contribution to current research in \autoref{sec:intro:contribution}. The chapter ends in \autoref{sec:intro:outline} with a description of the thesis outline.
 
-Now, 20 years later, numerous knowledge repositories and assistance systems for knowledge workers exist, helping make decisions more informed and faster. From these systems, logs can be extracted which document the course of a process instance from its beginning to its completion. Instances of a process are referred to as cases in the following.
+\section{Motivation} \label{sec:intro:motivation}
+The course of manual labour is determined by physical laws, is often very structured, and thus offers great potential for easy automation - like work at an assembly line. Knowledge work requires workers to "think for a living", and is thus shaped by the individuality of the thoughts and habits of each knowledge worker~\cite{drucker1999}. As each worker has a different knowledge background, and uses information differently, this type of work is very flexible and often no process is executed exactly the same~\cite{hewelt2016}. A popular example for knowledge work are insurance claims, handled by several employees. Each claim requires a different course of action, since the information contained in each case differs.\\
+%If the case takes an unwanted course, a possibility for early intervention is useful.\\
 
-These logs are a valuable source of data as they can reveal best practices that knowledge workers use in certain situations. If this data were processed, such best practices could be recommended by an auxiliary system or the case management system itself. These knowledge worker assistance systems have been called for multiple times in recent literature reviews~\cite{hauder2014, francescomarino2018}, but have only been implemented prototypically until now.
+Forecasting the course of a running process, henceforth referred to as case or process instance, is of interest to both types of work. Manual labour is often dominated by questions of time and outcome~\cite{rogge2013} because the course of work is clear - natural interests in a world of distributed supply chains and just-in-time production~\cite{web:economist:jit}. The course itself can become an object of interest in the case of unstructured knowledge work~\cite{francescomarino2015}. Knowing about the development of a case presents case managers with the opportunity to intervene if it progresses in an unwanted fashion.
 
-One of the challenges that lie in the way of creating of such a system is the task of anticipating the development of a case, especially that of the next activity. In this area, we want to make a contribution to ongoing research by applying predictive analytics using neural networks on process execution logs. The result will be an approach with which to predict the next-step of an incomplete case through the use of the case history, as \autoref{fig:next-activity-prediction} shows. This next step could then be processed further by the aforementioned assistance system, e.g. to propose intervention if a case takes an unwanted course.\\
+In the 20 years since Drucker's statement, the analog tools of knowledge workers have evolved into a plethora of digital systems and applications. These knowledge repositories and assistance systems for knowledge workers help make their decisions more informed and faster. These systems also track work progress, resulting in logs which document the trace of a case.\\
+
+The logs are a valuable source of data as they can reveal best practices that knowledge workers use in certain situations. If this data were processed, such best practices could be recommended by an auxiliary system. Knowledge worker assistance systems have been called for multiple times in recent literature reviews~\cite{hauder2014, francescomarino2018}, but have only been implemented prototypically until now. The following chapter lays out the exact challenges we have identified in the literature and how we tackle them.
+
+\section{Contribution}\label{sec:intro:contribution}
+One of the challenges that lie in the way of creating assistance systems is the task of anticipating the development of a case, especially that of the next activity. In this area, we make a contribution to ongoing research by applying predictive analytics using neural networks on process execution logs. Through the use of its trace, the prediction of the next step of an incomplete case is then possible, as \autoref{fig:next-activity-prediction} shows. This next step could then be processed further by the aforementioned assistance system, e.g. to propose an intervention if a case takes an unwanted course. The application of Predictive Analytics on business processes is fairly new, and is now commonly referred to as Predictive Process Monitoring. \\
 
 \begin{figure}
     \centering
@@ -23,25 +31,30 @@ One of the challenges that lie in the way of creating of such a system is the ta
     \label{fig:next-activity-prediction}
 \end{figure}
 
-The application of Predictive Analytics in Process Science is fairly new, and is now commonly referred to as Predictive Process Monitoring. A preliminary definition is delivered along with comprehensive information in \autoref{chap:background}. Furthermore this chapter provides information on Predictive Model Development as well as details on the inner workings of the used type of neural networks.
-
-Then, \autoref{chap:related-work} gives an overview of current approaches to the prediction task at hand, highlighting the achievements and technicalities of each publication. Furthermore it presents work that was done on the problem of sequence prediction in the field of Natural Language Processing (NLP).
-
-While working with the literature, we realized that the ongoing research in this young domain of Predictive Process Monitoring is lacking in three areas:
+While working with the literature, we realized that the current research in this young domain can be improved in three areas:
 
 \begin{enumerate}
     \item The prediction approaches are not easily comparable, as the published performance measures are based on different datasets. There is only a tendency to make use of the datasets of the Business Process Intelligence Competition (BPIC)~\cite{BPIC2011, BPIC2012, BPIC2017}.
-    \item Low technical depth of the publicized approaches makes it unnecessarily hard to reproduce the published results.
-    \item A case log is essentially a sequence, but little inspiration has been taken from NLP, where sequence prediction is common.
+    \item Divergent approaches to train the prediction models and low technical depth make it hard to reproduce the published results.
+    \item A case log is essentially a sequence, but little inspiration has been taken from Natural Language Processing (NLP), where sequence prediction is common.
 \end{enumerate}
 
-\marginpar{Maybe we can also use 2016/2017 and give a recommendation what might be a good dataset?\dots}
-We want to address these shortcomings in \autoref{chap:contribution} by proposing a revised prediction model that was inspired by predictive models applied in the area of Natural Language Processing (NLP) and stems from injecting engineered features on an intermediate network layer. The approach is tested on the datasets of BPIC 2011 and 2012 and compared to two implementations reverse-engineered from the following publications, thus allowing for a direct comparison:
+We want to add value in these three areas by modifying a successful sequence prediction approach from a NLP competition and applying it on business process log data. To allow for a direct comparison, we test it on the datasets of BPIC 2011 and 2017 and compare it to two implementations that we reverse-engineered from the following publications:
 
 \begin{enumerate}
     \item \textit{A Deep Learning Approach for Predicting Process Behaviour at Runtime} by Evermann et al.~\cite{evermann2016} \item\textit{Deep Learning Process Prediction with Discrete and Continuous Data Features} by Schönig et al.~\cite{schoenig2018}.
 \end{enumerate}
 
-Over the course of reverse-engineering the comparison models and the subsequent evaluation, widely divergent understandings and approaches with regard to the structure of sequential data input for neural networks were uncovered. To contribute to a better understanding in this area, a comparison of the perceived possibilities was incorporated into the evaluation. These findings are presented along with implementation details and performance measures in \autoref{chap:evaluation}. As we can not propose a new standard dataset, but want to enable other researchers to more easily compare their work, we implemented the benchmarking system in a modularized way. This allows for easy replacement of the dataset, input formatters and neural networks to enable fast side-by-side comparisons of prediction approaches under similar conditions.
+Over the course of reverse-engineering the comparison models and the subsequent evaluation, widely divergent understandings and approaches with regard to the structure of sequential data input for neural networks were uncovered. To contribute to a better understanding in this area, a comparison of the perceived possibilities was incorporated into the evaluation of the models. While typical model evaluations only measure total accuracy, we believe that a stable accuracy across the whole execution of the process is key for putting trust into the model~\cite{francescomarino2015, boehmer2018probability}. These measurements form the second part of our evaluation. In the third part, we investigate the resource consumption of the various data formatting approaches.
 
-The thesis ends with \autoref{chap:conclusion}, which summarizes the findings and the accomplishments of this work that began in September 2018. Furthermore it gives pointers with which to improve and continue the work in this active field.
+\section{Thesis Outline}\label{sec:intro:outline}
+A preliminary definition of Predictive Process Monitoring and how it differs from Process Mining is delivered in \autoref{chap:background}. Furthermore this chapter provides information on Predictive Model Development as well as details on the inner workings of the used type of neural networks.
+
+Then, \autoref{chap:related-work} gives an overview of current approaches to the prediction task at hand, highlighting the achievements and technicalities of each publication. Furthermore it presents work that was done on the problem of sequence prediction in the field of Natural Language Processing (NLP). For each publication used as comparison, the work is presented with implementation details and performance measures.
+
+In \autoref{chap:contribution}, we present how sequences relate to business processes. Then, we show how we adapted the winning approach from a NLP sequence prediction competition for Predictive Process Monitoring, and highlight the different training approaches.
+\todo[inline]{Training framework?}
+
+\autoref{chap:evaluation} presents the implementation of the evaluation of these models, as well as the insights gained from the measurements. As mentioned in the previous chapter, we not only focus on total model accuracy, but also stability of the predictions as a case progresses and more history becomes available.
+
+The thesis ends with \autoref{chap:conclusion}, which summarizes the findings and the accomplishments of this thesis. Furthermore we gives pointers with which to improve and carry Predictive Process Monitoring forward.
