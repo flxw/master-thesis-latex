@@ -77,7 +77,7 @@ closed_sequences = prefixspan_traces.topk(25, closed=True)
 \label{lst:pfs-mining}
 \end{figure}
 
-After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. For each index \verb=i= it is checked whether any of the mined subsequences starts at that position. This is checked by peeking ahead of \verb=i= for the length of the subsequence. As with the SP-2 features, the occurence of a subsequence is marked with a boolean flag from the row that it occured in onwards.
+After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. For each index \verb=i= it is checked whether any of the mined subsequences starts at that position. This is checked by peeking ahead of \verb=i= for the length of the subsequence. As in the case of the SP-2 features, the occurence of a subsequence is marked with a boolean flag from the row that it occured in onwards.
 
 \begin{figure}
 \begin{minted}{python}
@@ -104,15 +104,15 @@ for i in range(0, tlen):
 
     # if subseq took place, subsequence_found is still true
     if subsequence_found:
-      subseq_df.values[j:,subseq_idx] = True
+      subseq_df.values[j+i:,subseq_idx] = True
 \end{minted}
-\caption{Enriching a trace \texttt{t} with sub-sequence features by detecting those contained inside it.}
+\caption{Enriching a trace \texttt{t} with sub-sequence features by detecting those that are contained inside it.}
 \label{lst:subsequence-feature-creation}
 \end{figure}
 
 \section{Test setup}
 \label{sec:eval:test-setup}
-To conduct the experiments, Docker containers were built with the Anaconda environment used for development inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-formatting combination was trained and evaluated on a single NVIDIA K80 GPU of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code used in this thesis is available on GitHub at \href{https://github.com/flxw/master-thesis-code}{flxw/master-thesis-code}.\\
+To conduct the experiments, Docker containers were built with the same Anaconda environment that was used for development inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-formatting combination was trained and evaluated on a single NVIDIA K80 GPU of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code used in this thesis is available on GitHub at \href{https://github.com/flxw/master-thesis-code}{flxw/master-thesis-code}.\\
 
 Both datasets were split into training and test sets of complete traces. While $25\%$ of the traces were used for validation and testing, the remaining $75\%$ were used for training purposes. The sets were shuffled and stratified to contain an approximately similar number of equal-length traces.
 
@@ -121,7 +121,7 @@ Each model implementation was trained successively with each data formatting var
 \begin{table}[ht!]
     \centering
     \begin{tabular}{lcccc}
-        \textbf{Network} & Evermann & Schönig & SP2 & PFS\\
+        \textbf{Network} & \textbf{Evermann} & \textbf{Schönig} & \textbf{SP2} & \textbf{PFS}\\
         \hline
         \textbf{Optimizer} & SGD\footnote{SGD stands for Stochastic Gradient Descent. Additionally setting the learning rate decay to $0.75$ at the $25^{th}$ epoch.} & RMSprop  & RMSprop & RMSprop\\
         \textbf{Loss}    &\multicolumn{4}{c}{Categorical crossentropy}\\
@@ -135,12 +135,12 @@ Each model implementation was trained successively with each data formatting var
 
 \section{Evaluation criteria}
 \label{sec:eval:criteria}
-Three metrics of the four aforementioned implementations shall be the focus of the evaluation of the results:
+The following three metrics are the focus in the evaluation of the sixteen model-formatting combinations:
 
 \begin{enumerate}
     \item\textbf{Accuracy} - The share of correct next-activity predictions.
     \item\textbf{Resource consumption} - The amount of time and memory required during training.
-    \item\textbf{Earliness} - Whether and how early the prediction accuracy begins to stabilize as the trace progresses; see Francescomarino~\cite{francescomarino2015}.
+    \item\textbf{Stability} - Whether the prediction accuracy begins to change as the trace progresses~\cite{francescomarino2015}.
 \end{enumerate}
 
 While the first two criteria target the usability of the results, the last one permits making a judgment about the stability of the predictions. This allows better insights into how prediction accuracy develops over time, and facilitates building trust in the model, as indicated in the introduction of the thesis.
@@ -205,7 +205,7 @@ While the first two criteria target the usability of the results, the last one p
     \label{tab:resources_bpic2017}
 \end{table}
 
-\subsection*{Earliness}
+\subsection*{Stability}
 \begin{figure}
     \centering
     \includegraphics{}
