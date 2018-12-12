@@ -1,31 +1,36 @@
 \chapter{Evaluation}\label{chap:evaluation}
-Through the use of the framework described in the previous chapter, we evaluate four different algorithms for next-activity prediction: Two implementations that mimic Evermann et al. and Schönig et al, and the previously presented PFS and SP2. In doing so, we will analyze the different approaches for structuring the training data for performance differences.
+Through the use of the framework described in the previous chapter, we evaluate four different algorithms for next-activity prediction side-by-side: Two implementations that mimic Evermann et al. and Schönig et al, and the previously presented PFS and SP2. In doing so, we will analyze the different approaches for structuring the training data for performance differences.
 
-As we follow the KDD process, this chapter briefly leads through the data processing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the SP-2 and subsequence features. Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation and discussion of the results in \autoref{sec:eval:results}. Used and relevant technologies are highlighted in the respective sections.
+As we follow the KDD process, this chapter briefly leads through the data processing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the SP-2 and subsequence features. Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in the respective sections.
 
 \section{Data preprocessing}
 \label{sec:eval:data-preprocessing}
-In the first step of the KDD process~\cite{fayyad1996data}, the data is preprocessed to eliminate generally known properties that hinder machine learning model performance. In our case, this encompassed two steps for both BPIC2011 and BPIC2017 datasets:
+In the first step of the KDD process~\cite{fayyad1996data}, the data is preprocessed to eliminate generally known properties that hinder machine learning model performance. In our case, this encompassed two steps for both BPIC11 and BPIC17 datasets:
 
 \begin{enumerate}
     \item All columns which exhibited zero entropy, i.e. which contained a single value, were dropped.
     \item Features which correlated strongly were eliminated. To account for categorical correlation, the bias-corrected version of Cramér's~V~\cite{bergsma2013bias} was used.
 \end{enumerate}
 
-\todo[inline]{adapt to bpic2017}
-In step 1, one column was dropped in BPIC2011 and two were dropped in BPIC2017.
-In step 2, the bi-directional results in \autoref{fig:bpic2011-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlate strongly with many others in the BPIC2011 dataset. Thus, these were dropped. As evidenced in \autoref{fig:bpic2012-correlation-heatmap}, the BPIC2017 dataset with its small number of features did not require any removals.
+\todo[inline]{add bpic11, bpic17}
+In step 1, one column was dropped in BPIC11 and two were dropped in BPIC17.
+In step 2, the bi-directional results in \autoref{fig:BPIC11-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlate strongly with many others in the BPIC11 dataset. Thus, these were dropped. As evidenced in \autoref{fig:BPIC17-correlation-heatmap}, the BPIC17 dataset with its small number of features did not require any removals.
 
 \begin{figure}
 \centering
-\subfloat[][BPIC2011 Cramér's V heatmap]{
-    \includegraphics[width=0.7\textwidth]{gfx/bpic2011-correlation-matrix.png}
-    \label{fig:bpic2011-correlation-heatmap}
+\subfloat[][BPIC11 Cramér's V heatmap]{
+    \includegraphics[width=\textwidth]{gfx/BPIC11-correlation-matrix.png}
+    \label{fig:BPIC11-correlation-heatmap}
 }
 \qquad
-\subfloat[][BPIC2012 Cramér's V heatmap]{
-    \includegraphics[width=0.7\textwidth]{gfx/bpic2012-correlation-matrix.png}
-    \label{fig:bpic2012-correlation-heatmap}
+\subfloat[][BPIC12 Cramér's V heatmap]{
+    \includegraphics[width=\textwidth]{gfx/BPIC12-correlation-matrix.png}
+    \label{fig:BPIC12-correlation-heatmap}
+}
+\qquad
+\subfloat[][BPIC17 Cramér's V heatmap]{
+    \includegraphics[width=\textwidth]{gfx/BPIC17-correlation-matrix.png}
+    \label{fig:BPIC17-correlation-heatmap}
 }
 \caption{Correlation heatmaps obtained from Cramér's~V.}
 \end{figure}
@@ -43,7 +48,7 @@ $$normalize(x) =
 \end{cases}
 $$
 
-Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermanns model, only the activity name was encoded with dictionary encoding, as this is required for Embedding layers.
+Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermanns model, only the concatenation of activity name and resource id was encoded with dictionary encoding, as demonstrated in his paper~\cite{evermann2016}.
 
 \subsection*{SP-2 feature engineering}
 For every trace, SP-2 features mark whether an activity has occured yet. Thus, these features are engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. For all following activities, the contents of the previous row inside \texttt{sp2\_df} are copied into the current one and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
@@ -144,8 +149,9 @@ Each model implementation was trained successively with each data formatting var
     \begin{tabular}{lcccc}
         \textbf{Network} & \textbf{Evermann} & \textbf{Schönig} & \textbf{SP2} & \textbf{PFS}\\
         \hline
-        \textbf{BPIC2011 vector dimensions} & 1 & 655 & 655 + 625 & 655 + 25 \\
-        \textbf{BPIC2017 vector dimensions} & 1 & X & X + X & X + X \\
+        \textbf{BPIC11 vector dimensions} & 1 & 655 & 655 + 625 & 655 + 25 \\
+        \textbf{BPIC12 vector dimensions} & 1 & X & X + X & X + X \\
+        \textbf{BPIC17 vector dimensions} & 1 & X & X + X & X + X \\
     \end{tabular}
     \caption{Used hyper-parameters for each model, the left two columns as chosen by the authors. The number of epochs is to be understood as the maximum number of epochs, as training may stop early.}
     \label{tab:network-info}
@@ -171,9 +177,27 @@ While the first two criteria target the usability of the models, the last one pe
 \subsection*{Resource consumption}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gfx/bpic2011-training-timings.jpg}
-    \caption{Training times per epoch for each model-formatting combination, measured on the BPIC2011~\cite{BPIC2011} dataset.}
-    \label{fig:timings_bpic2011}
+    \includegraphics[width=\textwidth]{gfx/BPIC11-training-timings.jpg}
+    \caption{Training times per epoch for each model-formatting combination, measured on the BPIC11~\cite{BPIC11} dataset.}
+    \label{fig:timings_BPIC11}
 \end{figure}
 
 \subsection*{Stability}
+
+\section{Discussion}
+\begin{table}[]
+    \centering
+    \begin{tabular}{l|rrr}
+    \textbf{Trace length} & \textbf{BPIC11} & \textbf{BPIC12} &  \textbf{BPIC17} \\
+    \hline
+    Minimum trace length & 1 & 3 & 3\\
+    Maximum trace length & 1 814 & 96 & 5\\
+    Mean trace length & 131.49 & 12.56 & 4.51\\
+    Number of Traces & 1 143 & 1 3087 & 42 995\\
+    Number of events & 150 291 & 164 506 & 193 849\\
+    Number of activities & 524 & 23 & 8\\
+    Used data attributes & \\
+    \end{tabular}
+    \caption{Dataset properties}
+    \label{tab:my_label}
+\end{table}

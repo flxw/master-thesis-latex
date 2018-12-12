@@ -1,9 +1,8 @@
 \chapter{Contribution}\label{chap:contribution}
-\todo[inline]{Revisit pain points from introduction here}
-This thesis shall be understood as an extension to the works of Evermann et al. \cite{evermann2016} and Schönig et al. \cite{schoenig2018}, both of which were thoroughly presented in the previous section. The two works have demonstrated the applicability of LSTM neural networks in Predictive Process Monitoring, but have left out general perspectives on the sequence prediction problem.
-We want to introduce said general perspective through adapting of the approach of Shibata et al. \cite{shibata2016bipartite} for Predictive Process Monitoring in \autoref{sec:contrib:nlp-inspiration}. During development, we realized that there are highly divergent understandings regarding the data input of neural networks for next-element predictions with sequences. Our contribution in this area is described in \autoref{sec:contrib:input-formatting}. We tie both topics together by providing a simple training framework in \autoref{sec:contrib:training-framework}. With it, we hope to facilitate a step towards result comparability. 
+While a sufficient number of works have demonstrated the applicability of LSTM neural networks in Predictive Process Monitoring, most have left out general perspectives on the sequence prediction problem from NLP.
+In this chapter we outline our contributions, with which we aim to help improve the points mentioned in \autoref{sec:intro:contribution}. In doing so, we provide a high-level overview over the contributions which will be implemented and evaluated in the next chapter.
 
-This chapter shall begin in \autoref{sec:contrib:case-sequence-understanding} with the theoretic underpinning that enables the work mentioned above: the understanding of a case trace as a sequence.\\
+We connect process prediction to sequence prediction by harmonizing its definition in \autoref{sec:contrib:case-sequence-understanding}. This delivers the underpinning for introducing a NLP-inspired perspective on the problem. We achieve this through adapting the approach of Shibata et al.~\cite{shibata2016bipartite} for Predictive Process Monitoring in \autoref{sec:contrib:nlp-inspiration}. During development, we realized that there are highly divergent understandings regarding the data input of neural networks for next-element predictions with sequences. The different data input formats which are evaluated in the next chapter are described in \autoref{sec:contrib:input-formatting}. Finally, we aim at both technical understanding and reproducibility issues by providing a simple training framework in \autoref{sec:contrib:training-framework} that could be easily expanded by future researchers.
 
 \section{Understanding a trace as a sequence}
 \label{sec:contrib:case-sequence-understanding} 
@@ -18,15 +17,16 @@ Second, each itemset $s$ needs to be bound by a specific schema. The schema need
 
 \section{Taking inspiration from approaches in NLP}
 \label{sec:contrib:nlp-inspiration}
-Shibata et al.'s bipartite network architecture in combination with engineered SP-2 features has shown extraordinary performance in the SPiCE competition \cite{web:spice}. Under the hypothesis that a case can exhibit properties similar to grammatical rules, we test it in the business process domain. Furthermore, we consider sub-sequence information as proposed by Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} as an alternative to the SP-2 features.
+Shibata et al.'s bipartite network architecture in combination with engineered SP-2 features has shown extraordinary performance in the SPiCE competition \cite{web:spice}. Under the hypothesis that a case can exhibit properties similar to grammatical rules, we adapt it for use in the business process domain. Furthermore, we consider sub-sequence information as proposed by Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} as an alternative to the SP-2 features.
 
-The two variations are henceforth referred to as SP2 for the bipartite architecture using SP-2 features and PFS for the bipartite architecture using sub-sequence information. They are compared to the performance of implementations that mimic Evermann et al. and Schönig et al. Where original performance statistics were published, these are used additionally. The BPIC2011 \cite{BPIC2011} and BPIC2017 \cite{BPIC2017} datasets are used and preprocessed differently as per each approach.\\
+The two variations are henceforth referred to as SP2 for the bipartite architecture using SP-2 features and PFS for the bipartite architecture using sub-sequence information. 
+%They are compared to the performance of implementations that mimic Evermann et al. and Schönig et al. Where original performance statistics were published, these are used additionally. The BPIC2011 \cite{BPIC2011} and BPIC2017 \cite{BPIC2017} datasets are used and preprocessed differently as per each approach.\\
 
 In \autoref{fig:sp2-pfs-architecture}, the SP2 and PFS architecture is displayed. While the general architecture has been adapted by Shibata et al., important details were taken from Schönig et al.
 
-\begin{figure}
+\begin{figure}[ht]
     \centering
-    \includegraphics[width=0.7\textwidth]{gfx/sp2-network-architecture.png}
+    \includegraphics[width=0.8\textwidth]{gfx/sp2-network-architecture.png}
     \caption{The SP2 and PFS networks share the architecture but inject different features.}
     \label{fig:sp2-pfs-architecture}
 \end{figure}
@@ -43,17 +43,17 @@ We implemented the SP2 and PFS variants as well as the comparison models using P
 
 While some recommend sliding window approaches, others deem this against the concept of LSTM cells. Especially, Klinkmüller et al. argue against it: "[...]the popular strategy of cutting traces to certain prefix lengths to learn prediction models for ongoing instances is prone to yield unreliable models"~\cite{klinkmuller2018reliablemonitoring}. Again others argue that padding sequences to equal length makes training faster and does not affect accuracy. Furthermore, the batch size represents an important hyper-parameter, and no guidelines how to sort traces into batches were found. We believe that the understanding of the merits of each approach is of general value to any application of sequence prediction and make it part of our contribution.\\
 
-When using Keras' implementation of LSTM, it is stateful \textit{during} a batch, and resets the internal state before the next one, unless specified otherwise. For the sake of simplicity, it is advisable to keep related data inside a single batch. Translated to traces, this means keeping a trace completely inside a batch. The Keras LSTM layers expect data to arrive in a three-dimensional array, where each dimension has a defined meaning:
+When using Keras' implementation of LSTM, it is stateful \textit{during} a batch, and resets the internal state before the next one, unless specified otherwise. For the sake of simplicity, it is advisable to keep related data inside a single batch. Translated to traces, this means keeping a trace completely inside a batch. The Keras LSTM layers expect data to arrive in a three-dimensional array of fixed size for every batch, where each dimension has a defined meaning:
 
 $$(n_{samples}, n_{timesteps}, n_{features})$$
 
-Each sample contains a number of timesteps $n_{timesteps}$ containing a number of features $n_{features}$, which is a constant. For each sample, the LSTM layer maintains a separate state, meaning that several traces can be trained on simultaneously~\cite{web:keras-lstm-state}. This definition opens up a range of possibilities, four of which we are investigating here.\\
+Each sample contains a number of timesteps $n_{timesteps}$ containing a number of features $n_{features}$, which is a constant. For each sample, the LSTM layer maintains a separate state, meaning that several traces can be trained on simultaneously~\cite{web:keras-lstm-state}. As the batches themselves need not to have the same dimensions, this definition opens up a range of possibilities, four of which we are comparing in the next chapter. To the best of our knowledge, these have not been compared in this context yet.\\
 
-First and easiest, one trace can be trained per batch.
+First and most straightforward, one trace can be trained per batch. This fulfills the requirement of constant dimensions, since only a single sample is used.
 
-Secondly, \textit{some} traces can be trained inside a single batch. This is possible if all traces inside one batch have the same number of timesteps, i.e. have the same length. The number of samples and timesteps may vary between batches. A look at a trace length distribution in \autoref{fig:bpic2011-length-distribution} reveals that grouped batching might bias the model toward longer traces who are smaller in number as they are trained batches of their own.
+Secondly, \textit{some} traces can be trained inside a single batch. This is possible if all traces inside one batch have the same number of timesteps, i.e. have the same length. The number of samples and timesteps may vary between batches. A look at a trace length distribution in \autoref{fig:bpic2011-length-distribution} reveals that grouped batching might bias the model toward longer traces that are smaller in number as they are trained in batches of their own.
 
-Third, there is the possibility of padding the number of time-steps in a sequence to the same length and use a Masking\footnote{\url{https://keras.io/layers/core/\#masking} (last visited on December 12, 2018)} layer to then filter out the padded values during training. This is likely to incur a performance hit due to the higher memory requirements for padded samples and processing overhead for filtering.
+Third, there is the possibility of padding the number of time-steps in a sequence to the same length and using a Masking\footnote{\url{https://keras.io/layers/core/\#masking} (last visited on December 12, 2018)} layer to then filter out the padded values during training. This is likely to incur a performance hit due to the higher memory requirements for padded samples and processing overhead for filtering out the padding values during training.
 
 Fourth and finally, there is also the possibility to split the trace into samples by sliding a window along it. This results in $l-w+1$ samples for a trace of length $l$ and a window width $w$. Taking \autoref{tab:sliding-window} in \autoref{sec:background:feature-engineering} as an example, the window would be two timesteps wide. While this approach solves the problem of unequal sample lengths and facilitates batch construction, the model can only use a maximum of $w$ timesteps per sample for training, thus losing potential long-term dependencies. As both Evermann et al.~\cite{evermann2016} and Schönig et al.~\cite{schoenig2018} use this format and it directly opposes the findings of Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}, we investigate it. Furthermore, we believe that a windowed training data format misses out on LSTM potential.\\
 
@@ -65,20 +65,58 @@ The four different input formats are labelled in the order of the preceding desc
     \item\textbf{Windowed}: Windowed samples, as used by Evermann and Schönig
 \end{itemize}
 
-\begin{figure}
+\begin{figure}[ht!]
     \centering
-    \includegraphics[width=\textwidth]{gfx/frequency-distribution.png}
+    \includegraphics[width=.9\textwidth]{gfx/frequency-distribution.png}
     \caption{Distribution of trace lengths in the BPIC2011 training set.}
     \label{fig:bpic2011-length-distribution}
 \end{figure}
 
 \section{A next-event predictive model training framework}
 \label{sec:contrib:training-framework}
-\todo[inline]{If Bock and Time}
-To bring the four algorithms and four formatting options together, a training framework was implemented which turned out to be easily expandable. Thus we would like to propose it as way to facilitate comparability among prediction approaches.
+We realize that making different process prediction approaches comparable is not only a technical but also a data challenge - no established benchmarking datasets for Predictive Process Monitoring exist yet.
+To mitigate this situation, we designed the software framework that helped us compare the sixteen total model-formatting combinations on three different datasets in an extensible way. Doing so enables future researchers to build upon this framework and publish performance numbers from models that were trained on the same data.\\
 
-Data sets
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/training-framework-classes.png}
+    \caption{A Unified Modeling Language (UML) diagram of the abstract base class inheritance structure of Builders and Formatters.}
+    \label{fig:trainig-framework-classes}
+\end{figure}
 
-Model builder
+The framework distinguishes between two important concepts: Builders and Formatters. To allow for easy building with these concepts, \autoref{fig:trainig-framework-classes} shows that abstract base classes were introduced.
 
-Formatter
+Builders construct Keras models and also define the structure of the training and test sets. This is important as models may not only have one input layer, but two or more. These pre-formatted data sets are not structured into batches yet. One such Builder is implemented for every model type by inheriting from the abstract base class \verb=AbstractBuilder=.
+
+Formatters take the pre-formatted data sets and structure them into batches. For each batch format, one class inherits from the abstract base class \verb=AbstractFormatter=.\\
+
+A frontend named \verb=model_runner= ties these concepts together, and provides a basic command-line interface for directing model training to a specific GPU, the saving directory for the output files and the location of the input files. It is shown in \autoref{fig:framework-frontend}
+\begin{figure}
+\centering
+\begin{verbatim}
+usage: model_runner.py [-h] [--gpu GPU]
+                       [--output OUTPUT]
+                       {evermann,schoenig,sp2,pfs}
+                       {padded,grouped,individual,windowed}
+                       datapath
+
+The network training framework script for Felix Wolff's master's thesis!
+
+positional arguments:
+  {evermann,schoenig,sp2,pfs}
+                        Which type of model to train.
+  {padded,grouped,individual,windowed}
+                        Which mode to use for feeding
+                        the data into the model.
+  datapath              Path of dataset to use for training.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --gpu GPU             CUDA ID of which GPU the model
+                        should be placed on to
+  --output OUTPUT       Target directory to put model
+                        and training statistics
+\end{verbatim}
+\caption{The \verb=model_runner= command-line frontend for the training framework.}
+\label{fig:framework-frontend}
+\end{figure}
