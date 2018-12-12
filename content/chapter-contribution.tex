@@ -90,7 +90,7 @@ Builders construct Keras models and also define the structure of the training an
 
 Formatters take the pre-formatted data sets and structure them into batches. For each batch format, one class inherits from the abstract base class \verb=AbstractFormatter=.\\
 
-A frontend named \verb=model_runner= ties these concepts together, and provides a basic command-line interface for directing model training to a specific GPU, the saving directory for the output files and the location of the input files. It is shown in \autoref{fig:framework-frontend}
+A frontend named \verb=model_runner= ties these concepts together, and provides a basic command-line interface for directing model training to a specific GPU, the saving directory for the output files and the location of the input files. It is shown in \autoref{fig:framework-frontend}.
 \begin{figure}
 \centering
 \begin{verbatim}
@@ -117,6 +117,6 @@ optional arguments:
   --output OUTPUT       Target directory to put model
                         and training statistics
 \end{verbatim}
-\caption{The \verb=model_runner= command-line frontend for the training framework.}
+\caption{The \texttt{model\_runner} command-line frontend for the training framework. TODO improve the wording here}
 \label{fig:framework-frontend}
 \end{figure}
