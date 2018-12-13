@@ -84,7 +84,9 @@ To mitigate this situation, we designed the software framework that helped us co
     \label{fig:trainig-framework-classes}
 \end{figure}
 
-The framework distinguishes between two important concepts: Builders and Formatters. To allow for easy building with these concepts, \autoref{fig:trainig-framework-classes} shows that abstract base classes were introduced.
+The framework distinguishes between two important concepts:
+Builders and Formatters.
+To allow for easy building with these concepts, \autoref{fig:trainig-framework-classes} shows that abstract base classes were introduced.
 
 Builders construct Keras models and also define the structure of the training and test sets. This is important as models may not only have one input layer, but two or more. These pre-formatted data sets are not structured into batches yet. One such Builder is implemented for every model type by inheriting from the abstract base class \verb=AbstractBuilder=.
 
