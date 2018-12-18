@@ -54,9 +54,10 @@
 
 \refstepcounter{dummy}
 %\addcontentsline{toc}{chapter}{\lstlistlistingname} % Uncomment if you would like the list of listings to appear in the table of contents
-\pdfbookmark[1]{\lstlistlistingname}{lol} % Bookmark name visible in a PDF viewer
+\renewcommand\listoflistingscaption{List of source codes}
+\pdfbookmark[1]{\listoflistingscaption}{lol} % Bookmark name visible in a PDF viewer
 
-\lstlistoflistings 
+\listoflistings 
 
 \vspace{8ex}
 \newpage
@@ -82,7 +83,7 @@
 \acro{DFA}{Deterministic Finite Automaton}
 \acro{LSTM}{Long Short-Term Memory}
 \acro{SGD}{Stochastic Gradient Descent}
-\acro{RMSprop}{}
+\acro{UML}{Unified Modeling Language}
 \end{acronym}  
                    
 \endgroup

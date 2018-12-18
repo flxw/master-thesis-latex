@@ -1,0 +1,47 @@
+\chapter{Sequence prediction for running cases}
+\label{chap:taking-inspiration}
+While a number of works have demonstrated the applicability of LSTM neural networks to Predictive Process Monitoring, most have left out general perspectives on the sequence prediction problem from Natural Language Processing (NLP). In this chapter we outline how we take inspiration from sequence prediction in NLP, and thus address one of the improvement points from \autoref{sec:intro:contribution}.
+
+We establish the connection between processes and sequences by connectin their definitions in \autoref{sec:contrib:case-sequence-understanding}. This provides the underpinning for introducing two NLP-inspired approaches for predicting the next activity in a case. These are presented in \autoref{sec:contrib:sp2-inspiration} and \autoref{sec:contrib:pfs-inspiration}. 
+
+\section{Understanding a trace as a sequence}
+\label{sec:contrib:case-sequence-understanding} 
+The definition for sequences presented in \autoref{sec:background:sequence-prediction} is a general one and needs to be specialized so that a case trace can be understood as a sequence.
+
+In the definition of a sequence, the set $I=\{i_1, i_2, \dots, i_n\}$ is used for \textit{items}, out of which itemsets $s \subset I$ are comprised. To understand a process trace as a sequence, an itemset needs to be perceived as a single row in a log. As such a row is made up of multiple different elements and adheres to a fixed schema, the definition needs to account for these two properties.\\
+% https://www.youtube.com/watch?v=D9ioyEvdggk
+\noindent First, the set $I$ is redefined as a union of the sets $C_i$. Each $C$ makes up the distinct values inside one of the $n$ columns of a trace:
+
+$$I = \bigcup\limits_{i=1}^{n} C_{i}$$
+
+Secondly, an itemset $s$ needs to be bound by a specific schema. This schema needs to match the schema of the log and can be defined as such: $s =\ <i_1, i_2, ..., i_i>$ with $i_i \in C_i$. With this subdivision, the original condition $s \subseteq I$ still holds true, but every item now has a fixed place in the itemset depending on which column it originates from. Furthermore this definition of an itemset resembles exactly that of an event in \autoref{sec:log-structure}.
+
+\section{Adapting a competition submission}
+\label{sec:contrib:sp2-inspiration}
+Shibata et al.'s bipartite network architecture has shown outstanding performance in the SPiCE competition~\cite{web:spice}. Under the assumption that a case exhibits properties similar to sentences, we adapt it for use in the business process domain. 
+
+\autoref{fig:sp2-architecture} displays how the original architecture was adapted. The word embedding layers were removed on the sequence data input and replaced with a fully-connected Dense layer on the right. Furthermore, the hidden layer dimensions were adapted following the example by Schönig et al.~\cite{schoenig2018}. The model will be trained on whole events and SP-2 features, whereas the latter is fed in on the right input layer. This approach will be referred to as SP2 in the following.\\
+
+The model uses $n$ units on the first input layer, denoting the dimensionality of the input vector with its encoded activity name, timestamps and other event attributes. It puts out the next activity in one-hot encoded form through $m$ units, thus modelling the task as a multi-classification problem.
+
+In contrast to Evermann et al. and Shibata et al., the number of units $m+n$ in the hidden layers is a function of the input unit count and the output unit count. This follows general advice not to introduce bottlenecks in the hidden layers by using fewer units than required in the output layer. Furthermore, dropout layers have been introduced to prevent overfitting. Another contrast to Shibata et al. is the removal of the embedding layers above the inputs. We opted for this strategy since the dimensionality of activity names is typically a lot lower than it would be for words in a sentence.
+
+The SP-2 features are fed in higher up on the right side of the tree, passing through a ReLU-activated, fully-connected layer, before concatenation with the LSTM output. Finally, the concatenated vectors are processed by fully-connected layers, with the commonly used Softmax activation function producing the classification.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{gfx/sp2-network-architecture.png}
+    \caption{The SP2 network architecture and its internal dimensions}
+    \label{fig:sp2-architecture}
+\end{figure}
+
+\section{Encoding sub-sequence occurrence}
+\label{sec:contrib:pfs-inspiration}
+Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} compared different feature representations and found that sub-trace occurence features help the model cover a broader variety of relationships. While they found this to be true for random forests, we want to investigate the applicability of such features for LSTM neural networks since we established the similarity of traces and sequences. As SP-2 features already encode history and sub-sequence encodings do the same on a higher level of abstraction, we take the SP2 model architecture and inject different features in place of the SP-2 features. Said features and the corresponding architecture will henceforth be referred to as PFS, as illustrated in \autoref{fig:pfs-architecture}. The acronym PFS originates from the word PrefixSpan, which is the name of the algorithm used in \autoref{chap:evaluation} to mine the sub-sequences.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{gfx/pfs-network-architecture.png}
+    \caption{The PFS network architecture and its internal dimensions}
+    \label{fig:pfs-architecture}
+\end{figure}

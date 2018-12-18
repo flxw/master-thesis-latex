@@ -1,5 +1,5 @@
 \chapter{Background}\label{chap:background}
-The thesis brings together the domains of Process Science, Predictive Modeling and Deep Learning. This background chapter gives comprehensive insight into those parts of the domains which will be used and referenced in this thesis. It approaches these parts in a top-down fashion, starting with the high-level perspective from Process Science and how Process Mining distinguishes itself from Predictive Process Monitoring in \autoref{sec:process-science}. The section ends with information on how the used event logs usually come into existence and which requirements these logs need to fulfill to be used in a prediction scenario.
+The thesis brings together the domains of Process Science, Predictive Modeling and Deep Learning. This background chapter gives comprehensive insight into those parts of said domains which will be used and referenced in this thesis. The chapter approaches them in a top-down fashion, starting with the high-level perspective from Process Science and how Process Mining distinguishes itself from Predictive Process Monitoring in \autoref{sec:process-science}. The section ends with information on how the used event logs usually come into existence and which requirements these logs need to fulfill to be used in a prediction scenario.
 With the data origin explained, \autoref{sec:predictive-modeling} introduces the KDD process, along which predictive model development usually takes place.
 \autoref{sec:artificial-neural-networks} gives an in-depth look at neural networks and the components relevant to this thesis, especially stressing the importance of long short-term memory cells.
 Finally, \autoref{sec:background:feature-engineering} highlights the peculiarities encountered when dealing with sequential data and introduces popular approaches to deal with them.
@@ -7,9 +7,7 @@ Finally, \autoref{sec:background:feature-engineering} highlights the peculiariti
 \section{Process Science And Process Monitoring}\label{sec:process-science}
 Process Science, as loosely defined by van der Aalst \cite{Aalst2016}, refers to the \textit{broader discipline that combines knowledge from information technology and knowledge from management sciences to improve and run operational processes}. This results in improvement approaches that tend to be driven by process models.
 
-Unsurprisingly, processes are central to process science, and are defined in a variety of modeling languages~\cite{panagacos2012ultimate}. Most languages, for example the Business Process Modeling Notation (BPMN) \cite{bpmn2.0}, model the process flow in steps, commonly referred to as \textit{activities}, and shown in \autoref{fig:activity-introduction}.
-
-Less rigid are the models found in Adaptive Case Management (ACM), where rigidity is traded for flexibility during process execution.
+These models can be defined in a variety of modeling languages~\cite{panagacos2012ultimate}. Most languages, for example the Business Process Modeling Notation (BPMN)~\cite{bpmn2.0}, model the process flow in steps, commonly referred to as \textit{activities}, and shown in \autoref{fig:activity-introduction}. Less rigid are the models found in Adaptive Case Management (ACM), where rigidity is traded for flexibility during process execution.
 
 \begin{figure}
     \centering
@@ -18,7 +16,7 @@ Less rigid are the models found in Adaptive Case Management (ACM), where rigidit
     \label{fig:activity-introduction}
 \end{figure}
 
-With the help of workflow management systems (WFMS), it became possible to embed and enforce structured processes in an organization, making them traceable via the logs that these systems generate. These logs gave rise to the disciplines of Process Mining and Predictive Process Monitoring, as their analyses rest on the information contained therein. \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast these very similar domains and how they can be distinguished. Finally, \autoref{sec:log-structure} formally defines the properties a log needs to fulfill to be considered useful for analysis.
+With the help of workflow management systems (WFMS), it is possible to embed and enforce structured processes in an organization, making them traceable via the logs that these systems generate. These logs give rise to the disciplines of Process Mining and Predictive Process Monitoring, as their analyses rest on the information contained therein. \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast these very similar domains and how they can be distinguished. Finally, \autoref{sec:log-structure} formally defines the properties a log needs to fulfill to be considered useful for analysis.
 In the following, the execution history of a single case is referred to as \textit{trace}.
 
 \begin{figure}
@@ -63,11 +61,11 @@ A log can be made up of any number of traces $t \in T$, where each trace $t$ rep
 
 $$ t = \langle e_1, e_2, e_3 \dots \rangle $$
 
-In turn, each event $e$ has certain attributes associated with it. It is assumed that in a log for a specific process, the type, number and name of these attributes does not change. An example for a type of such a data attribute is the activity name or the timestamp at which this event occurred. Thus, an event represents a set of attributes, in which only one attribute $d_i$ of a specific type $D_i$ occurs:
+In turn, each event $e$ has certain attributes associated with it. It is assumed that in a log for a specific process, the type, number and name of these attributes does not change. An example for a type of such a data attribute is the activity name or the timestamp at which this event occurred. Thus, an event represents a set of attributes, in which only one attribute $d_i$ of a specific type $C_i$ occurs:
 
-$$ e = \{ d_1, d_2, d_3, ..., d_i\ |\ d_i \in D_i \}$$
+$$ e = \{ d_1, d_2, d_3, ..., d_i\ |\ d_i \in C_i \}$$
 
-This type of log, easily transferrable into columns for attributes and rows for every event as in \autoref{fig:process-log}, lends itself for application in the context of Predictive Modeling, as the next chapter will show.
+In this formulation, each $C_i$ maps onto a column like in \autoref{fig:process-log}, and each $e$ onto a row. With this structure, a log lends itself for application in the context of Predictive Modeling, as the next section will show.
 
 \section{Predictive Modeling}
 \label{sec:predictive-modeling}
@@ -85,13 +83,13 @@ Predictive Modeling is a domain that deals with creating models from learned sta
 In 1996 Fayyad et al. published what came to be known as the Knowledge Discovery In Databases (KDD) process \cite{fayyad1996data}. Published 20 years ago and aimed at data mining, it is also applicable to predictive model building. It is illustrated in \autoref{fig:kdd_process}, and shall be explained step by step in the following with technical details relevant for this thesis. The process is highly iterative and jumps between every step are possible.
 
 \subsubsection*{Selection}
-Predictive models work on \textit{line items} comprised of a number of \textit{features}, which are variables that are considered useful for the prediction of the \textit{target variable}. The target variable may either be a continuous value or discrete. In the latter case, the output is referred to as classification - which is also the case for this thesis.
-In the examplary log in \autoref{fig:process-log}, each row is a line item and each column corresponds to a single feature. Features are sometimes also referred to as predictor variables.
+Predictive models work on \textit{line items} comprised of a number of \textit{features}, which are variables that are considered useful for the prediction of the \textit{target variable}. The target variable may either be a continuous value or discrete. In the latter case, the output is referred to as classification. Activities are discrete, and this thesis will deal with classification.
+In the exemplary log in \autoref{fig:process-log}, each row is a line item and each column corresponds to a single feature. Features are sometimes also referred to as predictor variables.
 
 During the selection step features are chosen as predictors based on differed criteria such as their predictive power or inter-feature correlations.
 
 \subsubsection*{Pre-processing}
-Some features may be sparse or contain data of low-quality. With methods from the area of data cleansing, these issues are resolved and appropriate values imputed for missing features. As we use already pre-processed data from BPIC \cite{BPIC2011, BPIC2012, BPIC2017}, this step is mentioned for the sake of completeness only.
+Some features may be sparse or contain data of low-quality. With methods from the area of data cleansing, these issues are resolved and appropriate values imputed for missing features. When using event logs, it is important to only use those parts that belong to a specific process. Furthermore, concept drift needs to be taken into account.
 
 \subsubsection*{Transformation}
 \label{sec:predictive-model-development:transformation}
@@ -140,13 +138,13 @@ Next to this kind of prediction, there are also \textit{sequence-to-word} predic
 \subsection{The curse of dimensionality}
 The curse of dimensionality is a term used across various domains such as combinatorics, sampling optimization and machine learning to describe phenomena that arise when working with data data in high-dimensional spaces.
 
-Common to all domains is the fact that an increase in dimensionality increases the volume of the space so fast that the data quickly becomes sparse. This eventually causes problems for algorithms which require statistic significance, which again would require an increase in the amount of data.
-Because of this, increasing the number of features for training a predictive model, only helps to a certain extent, as \autoref{fig:dimensionality-vs-performance} illustrates. With the number of training samples constant, adding features increases the predictive power only to a certain extent.
+Common to all domains is the fact that an increase in dimensionality increases the volume of the solution space so fast that the data quickly becomes sparse. This eventually causes problems for algorithms which require statistic significance, which again would require an increase in the amount of data to produce.
+Because of this, increasing the number of features for training a predictive model, only helps to a certain extent when the number of training samples is constant, as \autoref{fig:dimensionality-vs-performance} illustrates.
 
 \begin{figure}
     \centering
     \includegraphics[width=.75\textwidth]{gfx/dimensionality_vs_performance.png}
-    \caption{Increasing the feature space does not improve classifier performance indefinitely.}
+    \caption{Increasing the feature space does not improve classifier performance indefinitely}
     \label{fig:dimensionality-vs-performance}
 \end{figure}
 
@@ -279,7 +277,7 @@ The sliding window format is very common in the areas of NLP and Time Series For
         be & the\\
         the & queen
     \end{tabular}
-    \caption{Encoded sequences with the sliding window method: $seq1$ and $seq2$ with $c=2$.}
+    \caption{Windows created from $seq1$ and $seq2$ with $c=2$}
     \label{tab:sliding-window}
 \end{table}
 

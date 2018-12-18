@@ -1,38 +1,37 @@
 \chapter{Evaluation}\label{chap:evaluation}
-Through the use of the framework described in the previous chapter, we evaluate four different algorithms for next-activity prediction side-by-side: Two implementations that mimic Evermann et al. and Schönig et al, and the previously presented PFS and SP2. In doing so, we will analyze the different approaches for structuring the training data for performance differences.
+Through the use of the framework described in the previous chapter, we evaluate four different algorithms for next-activity prediction side-by-side: Two implementations that mimic Evermann et al. and Schönig et al, and the PFS and SP2 approaches presented in \autoref{chap:taking-inspiration}. For each model, we will analyze the four different approaches for structuring the training data for performance differences from \autoref{chap:training-framework}.
 
-As we follow the KDD process, this chapter briefly leads through the data processing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the SP-2 and subsequence features. Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in the respective sections.
+As we follow the KDD process, this chapter leads through the data processing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the SP-2 and PFS features. Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in the respective sections.
 
 \section{Data preprocessing}
 \label{sec:eval:data-preprocessing}
-In the first step of the KDD process~\cite{fayyad1996data}, the data is preprocessed to eliminate generally known properties that hinder machine learning model performance. In our case, this encompassed two steps for both BPIC11 and BPIC17 datasets:
+In the first step of the KDD process~\cite{fayyad1996data}, the data is preprocessed to eliminate generally known properties that hinder machine learning model performance. In our case, this encompassed two steps for the three BPIC11, BPIC12 and BPIC17 datasets:
 
 \begin{enumerate}
-    \item All columns which exhibited zero entropy, i.e. which contained a single value, were dropped.
-    \item Features which correlated strongly were eliminated. To account for categorical correlation, the bias-corrected version of Cramér's~V~\cite{bergsma2013bias} was used.
+    \item Drop all columns which exhibit zero entropy, i.e. which contain a single value
+    \item Eliminate features which correlate strongly. To account for categorical correlation, the bias-corrected version of Cramér's~V~\cite{bergsma2013bias} is used.
 \end{enumerate}
 
-\todo[inline]{add bpic11, bpic17}
 In step 1, one column was dropped in BPIC11 and two were dropped in BPIC17.
-In step 2, the bi-directional results in \autoref{fig:BPIC11-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlate strongly with many others in the BPIC11 dataset. Thus, these were dropped. As evidenced in \autoref{fig:BPIC17-correlation-heatmap}, the BPIC17 dataset with its small number of features did not require any removals.
+In step 2, the bi-directional results in \autoref{fig:BPIC11-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlate strongly with many others in the BPIC11 dataset. Thus, these were dropped. As evidenced in \autoref{fig:BPIC12-correlation-heatmap}, the BPIC12 dataset with its small number of features did not require any removals. In the BPIC17 dataset, \texttt{EventID} and \texttt{OfferID} were removed for being identifiers, and \texttt{Action} for its perfect correlation with \texttt{concept:name}. The correlation measurements are on display in \autoref{fig:BPIC17-correlation-heatmap}.
 
 \begin{figure}
 \centering
-\subfloat[][BPIC11 Cramér's V heatmap]{
-    \includegraphics[width=\textwidth]{gfx/bpic11-correlation-matrix.png}
+\subfloat[][Heatmap of correlating values within the BPIC11 dataset]{
+    \includegraphics[width=.9\textwidth]{gfx/bpic11-correlation-matrix.png}
     \label{fig:BPIC11-correlation-heatmap}
 }
 \qquad
-\subfloat[][BPIC12 Cramér's V heatmap]{
-    \includegraphics[width=\textwidth]{gfx/bpic12-correlation-matrix.png}
+\subfloat[][Heatmap of correlating values within the BPIC12 dataset]{
+    \includegraphics[width=.7\textwidth]{gfx/bpic12-correlation-matrix.png}
     \label{fig:BPIC12-correlation-heatmap}
 }
 \qquad
-\subfloat[][BPIC17 Cramér's V heatmap]{
-    \includegraphics[width=\textwidth]{gfx/bpic17-correlation-matrix.png}
+\subfloat[][Heatmap of correlating values within the BPIC17 dataset]{
+    \includegraphics[width=.8\textwidth]{gfx/bpic17-correlation-matrix.png}
     \label{fig:BPIC17-correlation-heatmap}
 }
-\caption{Correlation heatmaps obtained from Cramér's~V.}
+\caption{Correlation heatmaps obtained from Cramér's~V}
 \end{figure}
 
 The activities described above were conducted in JupyterLab notebooks~\cite{web:jupyter}, where Anaconda~\cite{web:anaconda} was used to create a stable development environment. The OpyenXes~\cite{web:opyenxes} library proved to be especially useful for parsing the raw XES logs from BPIC.
@@ -48,12 +47,12 @@ $$normalize(x) =
 \end{cases}
 $$
 
-Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermanns model, only the concatenation of activity name and resource id was encoded with dictionary encoding, as demonstrated in his paper~\cite{evermann2016}.
+Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermanns model, the concatenation of activity name and resource id was encoded with dictionary encoding, as demonstrated in his paper~\cite{evermann2016}.
 
 \subsection*{SP-2 feature engineering}
 For every trace, SP-2 features mark whether an activity has occured yet. Thus, these features are engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. For all following activities, the contents of the previous row inside \texttt{sp2\_df} are copied into the current one and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
 
-\begin{figure}
+\begin{listing}[ht]
 \begin{minted}{python}
 # Dataframe initialization with zeroes
 sp2_df = pd.DataFrame(columns=activity_labels,
@@ -65,7 +64,8 @@ for col in sp2_df.columns: sp2_df[col].values[:] = 0
 cname = "{0}{1}".format(sp2_prefix, t[target_col][0])
 sp2_df[cname].values[0]  = 1
 
-# copy over values from last row and set activity labels accordingly
+# copy over values from last row and
+# set activity labels accordingly
 for i in range(1,len(t)):
     first_activity_name = t["concept:name"].iloc[i]
     col = "{0}{1}".format(sp2_prefix,first_activity_name)
@@ -75,23 +75,23 @@ for i in range(1,len(t)):
 \end{minted}
 \caption{Generating SP-2 features for a single trace \texttt{t} and a specific target column \texttt{target\_col}.}
 \label{lst:sp2-generation}
-\end{figure}
+\end{listing}
 
 \subsection*{Sub-sequence feature engineering}
-The sub-sequence features for the PFS model were created with the help of the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. As \autoref{lst:pfs-mining} shows, the library greatly facilitates obtaining closed sequences ranked by support and returns a two-dimensional array of sub-sequences, containing one array per sub-sequence. The sequences are mined from the entirety of traces.
+The sub-sequence features for the PFS model were created with the help of the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. As \autoref{lst:pfs-mining} shows, the library greatly facilitates obtaining closed sub-sequences ranked by support, returning a two-dimensional array of sub-sequences, with one array per sub-sequence. The sequences are mined from the entirety of traces.
 
-\begin{figure}
+\begin{listing}[ht]
 \begin{minted}{python}
 prefixspan_traces = PrefixSpan(encoded_traces)
 closed_sequences = prefixspan_traces.topk(25, closed=True)
 \end{minted}
 \caption{Obtaining closed sequences using the \textit{prefixspan-py} library.}
 \label{lst:pfs-mining}
-\end{figure}
+\end{listing}
 
 After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. For each index \verb=i= it is checked whether any of the mined subsequences starts at that position. This is checked by peeking ahead of \verb=i= for the length of the subsequence. As in the case of the SP-2 features, the occurence of a subsequence is marked with a boolean flag from the row that it occured in onwards.
 
-\begin{figure}
+\begin{listing}[ht]
 \begin{minted}{python}
 subseq_df = pd.DataFrame(columns=subseq_labels,
                          index=range(0,len(t)),
@@ -120,41 +120,33 @@ for i in range(0, tlen):
 \end{minted}
 \caption{Enriching a trace \texttt{t} with sub-sequence features by detecting those that are contained inside it.}
 \label{lst:subsequence-feature-creation}
-\end{figure}
+\end{listing}
+
+\subsection*{Target construction}
+For each itemset $i_t$ at a given timestep $t$, the prediction target $a_t$ was constructed. While the itemset could also contain data attributes, the prediction target solely consisted of the activity name. For the target of the last $t$ of a trace, a marker for denoting the end of the sequence, \verb=EOS=, was introduced.
+As the goal is to predict the next activity, the column containing this information needed to be identified in the data. For all three datasets, this turned out to be \verb=concept:name=.
 
 \section{Test setup}
 \label{sec:eval:test-setup}
-To conduct the experiments, Docker containers were built with the same Anaconda environment that was used for development inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-formatting combination was trained and evaluated on a single NVIDIA K80 GPU of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code used in this thesis is available on GitHub at \href{https://github.com/flxw/master-thesis-code}{flxw/master-thesis-code}.\\
+To conduct the experiments, Docker containers were built with the development Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-batch-formatting combination was trained and evaluated on a single NVIDIA K80 GPU of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code used for evaluation is publicly available on GitHub at \href{https://github.com/flxw/master-thesis-code}{flxw/master-thesis-code}.\\
 
-Both datasets were split into training and test sets of complete traces. While $25\%$ of the traces were used for validation and testing, the remaining $75\%$ were used for training purposes. The sets were shuffled and stratified to contain an approximately similar number of equal-length traces.
+All three datasets were split into training and test sets of complete traces. While $25\%$ of the traces were used for validation and testing, the remaining $75\%$ were used for training purposes. The sets were shuffled and stratified to contain an approximately similar distribution of trace lengths.
 
-Each model implementation was trained successively with each data formatting variant on a single GPU. A model was saved when its validation loss, calculated on the test set, hit a new record low. If the validation loss did not change for 10 epochs, the training was interrupted, also referred to as early stopping. \autoref{tab:training-setup} illustrates information about the training setup of the networks side-by-side. As Evermann et al. made use of a version of Tensorflow that is deprecated as of the time of writing, our implementation in Keras can only be understood as an approximation. Evermann's implementation of an "unrolled LSTM" can only be approximated in Keras.
+Each model implementation was trained successively with each data formatting variant on a single GPU. A model was saved when its validation loss, calculated on the test set, hit a new record low. If the validation loss did not improved for 10 epochs, the training was interrupted. This is commonly referred to as early stopping. \autoref{tab:training-setup} illustrates information about the training setup of the networks side-by-side. As Evermann et al. made use of a version of Tensorflow that is deprecated as of the time of writing, our implementation in Keras can only be understood as an approximation. Evermann's implementation of an "unrolled LSTM" can only be approximated in Keras.
 
 \begin{table}[ht!]
     \centering
     \begin{tabular}{lcccc}
-        \textbf{Network} & \textbf{Evermann} & \textbf{Schönig} & \textbf{SP2} & \textbf{PFS}\\
+        \textbf{Network}   & \textbf{Evermann} & \textbf{Schönig} & \textbf{SP2} & \textbf{PFS}\\
         \hline
-        \textbf{Optimizer} & SGD\footnote{SGD stands for Stochastic Gradient Descent. Additionally setting the learning rate decay to $0.75$ at the $25^{th}$ epoch.} & RMSprop  & RMSprop & RMSprop\\
-        \textbf{Loss}    &\multicolumn{4}{c}{Categorical crossentropy}\\
-        \textbf{Weight initialization} & Zeros & None & \multicolumn{2}{c}{Glorot normal}\\
-        \textbf{Epochs}  & 50 & 100 & 150 & 150\\
+        \textbf{Optimizer} & SGD\footnote{SGD stands for Stochastic Gradient Descent. Additionally setting the learning rate decay to $0.75$ at the $25^{th}$ epoch.} & \multicolumn{3}{c}{RMSprop} \\
+        \textbf{Loss}      &\multicolumn{4}{c}{Categorical crossentropy}\\
+        \textbf{Weight initializer} & Zeros & None & \multicolumn{2}{c}{Glorot normal}\\
+        \textbf{Epochs}    & 50 & 100 & 150 & 150\\
+        \textbf{Features}  & \makecell{Activity +\\Resource} & \multicolumn{3}{c}{All usable data attributes}\\
     \end{tabular}
-    \caption{Used hyper-parameters for each model, the left two columns as chosen by the authors. The number of epochs is to be understood as the maximum number of epochs, as training may stop early.}
+    \caption{Used hyper-parameters for each model, with the number of epochs to be understood as the maximum number of epochs, as training may stop early}
     \label{tab:training-setup}
-\end{table}
-\todo[inline]{Side-by-side comparison of model and fed-in attributes}
-\begin{table}[ht!]
-    \centering
-    \begin{tabular}{lcccc}
-        \textbf{Network} & \textbf{Evermann} & \textbf{Schönig} & \textbf{SP2} & \textbf{PFS}\\
-        \hline
-        \textbf{BPIC11 vector dimensions} & 1 & 655 & 655 + 625 & 655 + 25 \\
-        \textbf{BPIC12 vector dimensions} & 1 & X & X + X & X + X \\
-        \textbf{BPIC17 vector dimensions} & 1 & X & X + X & X + X \\
-    \end{tabular}
-    \caption{Used hyper-parameters for each model, the left two columns as chosen by the authors. The number of epochs is to be understood as the maximum number of epochs, as training may stop early.}
-    \label{tab:network-info}
 \end{table}
 
 \section{Evaluation criteria}
@@ -177,14 +169,30 @@ While the first two criteria target the usability of the models, the last one pe
 \subsection*{Resource consumption}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gfx/bpic11-training-timings.jpg}
-    \caption{Training times per epoch for each model-formatting combination, measured on the BPIC11~\cite{BPIC11} dataset.}
-    \label{fig:timings_BPIC11}
+    
+    \subfloat[][Training times measured on the BPIC11~\cite{bpic2011} dataset]{
+        \includegraphics[width=\textwidth]{gfx/bpic11-training-timings.jpg}
+        \label{fig:BPIC11-training-timings}
+    }
+    \qquad
+    \subfloat[][Training times measured on the BPIC12~\cite{BPIC2012} dataset]{
+        \includegraphics[width=\textwidth]{gfx/bpic11-training-timings.jpg}
+        \label{fig:BPIC12-training-timings}
+    }
+    \qquad
+    \subfloat[][Training times measured on the BPIC17~\cite{bpic2017} dataset]{
+        \includegraphics[width=\textwidth]{gfx/bpic11-training-timings.jpg}
+        \label{fig:BPIC17-training-timings}
+    }
+    
+    \caption{Training times per epoch for each model-formatting combination, listed per dataset}
+    \label{fig:training-timings}
 \end{figure}
 
 \subsection*{Stability}
 
-\section{Discussion}
+\section{Discussion}\label{sec:eval:discussion}
+\todo[inline]{Is this really needed? Maybe discuss directly with the results?}
 \begin{table}[]
     \centering
     \begin{tabular}{l|rrr}
@@ -198,6 +206,22 @@ While the first two criteria target the usability of the models, the last one pe
     Number of activities & 524 & 23 & 8\\
     Used data attributes & \\
     \end{tabular}
-    \caption{Dataset properties}
+    \caption{Dataset trace properties and used data attributes}
     \label{tab:my_label}
+\end{table}
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{lcccc}
+\textbf{Dataset} & \textbf{Evermann et al.} & \textbf{Schönig et al.} & \textbf{SP2} & \textbf{PFS}\\
+\hline
+\hline
+\textbf{BPIC11} & 1 & \makecell{n=655\\m=625} & \makecell{n=655\\m=625} & \makecell{n=655\\m=625\\ l=25} \\
+\hline
+\textbf{BPIC12} & 1 & \makecell{n=655\\m=625} & \makecell{n=655\\m=625} & \makecell{n=655\\m=625\\ l=25} \\
+\hline
+\textbf{BPIC17} & 1 & \makecell{n=655\\m=625} & \makecell{n=655\\m=625} & \makecell{n=655\\m=625\\ l=25} \\
+\end{tabular}
+\caption{Input and output vector dimensionalities for each dataset}
+\label{tab:network-info}
 \end{table}

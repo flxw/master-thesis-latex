@@ -32,7 +32,7 @@
 %----------------------------------------------------------------------------------------
 
 % Remove drafting to get rid of the '[ Date - classicthesis version 4.0 ]' text at the bottom of every page
-\PassOptionsToPackage{eulerchapternumbers,listings,drafting, pdfspacing, subfig,beramono,eulermath,parts}{classicthesis}
+\PassOptionsToPackage{eulerchapternumbers,drafting, pdfspacing, subfig,beramono,eulermath,parts}{classicthesis}
 % Available options: drafting parts nochapters linedheaders eulerchapternumbers beramono eulermath pdfspacing minionprospacing tocaligned dottedtoc manychapters listings floatperchapter subfig
 
 \newcommand{\myTitle}{Deep Learning Next Event Prediction With Subsequence-Enrichted Input Data}
@@ -72,9 +72,8 @@
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 \usepackage{multicol}
+\usepackage{makecell}
 \usepackage{subfig}
-\usepackage{listings}
-\lstset{language=Python}
 
 %------------------------------------------------
 
@@ -116,7 +115,7 @@ natbib=true % natbib compatibility mode (\citep and \citet still work)
 
 %------------------------------------------------
 
-\usepackage{scrhack} % Fix warnings when using KOMA with listings package  
+%\usepackage{scrhack} % Fix warnings when using KOMA with listings package  
 
 %------------------------------------------------
 
@@ -163,6 +162,7 @@ natbib=true % natbib compatibility mode (\citep and \citet still work)
     autogobble=true,
     breaklines=true
     linenos=true}
+\providecommand*{\listingautorefname}{Listing}
 
 %----------------------------------------------------------------------------------------
 %	HYPERREFERENCES
