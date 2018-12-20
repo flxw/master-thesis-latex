@@ -1,7 +1,43 @@
 \chapter{Evaluation}\label{chap:evaluation}
 Through the use of the framework described in the previous chapter, we evaluate four different algorithms for next-activity prediction side-by-side: Two implementations that mimic Evermann et al. and Schönig et al, and the PFS and SP2 approaches presented in \autoref{chap:taking-inspiration}. For each model, we will analyze the four different approaches for structuring the training data for performance differences from \autoref{chap:training-framework}.
 
-As we follow the KDD process, this chapter leads through the data processing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the SP-2 and PFS features. Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in the respective sections.
+First we justify our choice of datasets in \autoref{sec:dataset-choice}. As we follow the KDD process, we then lead through the data preprocessing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the SP-2 and PFS features. Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in the respective sections.
+
+\section{Choice of dataset}
+\label{sec:dataset-choice}
+In \autoref{sec:intro:contribution}, we highlight the great variety of datasets used to evaluate approaches in Predictive Process Monitoring. While we can not establish a standard, we ensure comparability to a variety of works by evaluating the four models on eight datasets in total, coming from the following sources:
+
+\begin{itemize}
+    \item BPIC11, an event log from cases in a Gynaecology department a Dutch Academic Hospital~\cite{BPIC2011}
+    \item BPIC12, an event log for loan and overdraft applications from a Dutch Financial Institute~\cite{BPIC2012}
+    \item BPIC15~\cite{BPIC2015} provides logs by five Dutch municipalities. It contains all building permit applications over a period of approximately four years. It is divided into one dataset per municipality, referred to as BPIC15-1 to BPIC15-5 in the following.
+    \item Helpdesk Log, TODO TODO TODO
+\end{itemize}
+\todo[inline]{Check out the helpdesk log and see if it's worth it...}
+
+We picked the the three BPIC datasets as we believe that they cover a spectrum of process complexity. While BPIC12 is a loan application process from financial institution with a small variance in trace length and a very small number of different activities, BPIC11 covers patient treatments in a hospital. This healthcare log results in longer traces and an especially high number of distinct activities.
+BPIC15 resides relatively in the middle of the two, as \autoref{tab:dataset-characteristics} illustrates.
+
+While process models were easily mined for BPIC12\footnote{Citation needed}, they were more complex for BPIC15~\cite{van2015benchmarking}, and barely obtained for BPIC11. Furthermore we take the increasing number of distinct activities to be a measure of complexity.
+
+\todo[inline]{Mention what enables comparison with which dataset!}
+
+\begin{table}[]
+    \centering
+    \begin{tabular}{l|rrr}
+    \textbf{Trace length} & \textbf{BPIC11} & \textbf{BPIC12} &  \textbf{BPIC15} \\
+    \hline
+    Minimum trace length & 1 & 3 & ?\\
+    Maximum trace length & 1 814 & 96 & ?\\
+    Mean trace length & 131.49 & 12.56 & ?\\
+    Number of Traces & 1 143 & 1 3087 & ?\\
+    Number of events & 150 291 & 164 506 & ?\\
+    Number of activities & 524 & 23 & ?\\
+    Used data attributes & ? & ? & ?\\
+    \end{tabular}
+    \caption{Dataset trace properties and used data attributes}
+    \label{tab:dataset-characteristics}
+\end{table}
 
 \section{Data preprocessing}
 \label{sec:eval:data-preprocessing}
@@ -47,10 +83,10 @@ $$normalize(x) =
 \end{cases}
 $$
 
-Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermanns model, the concatenation of activity name and resource id was encoded with dictionary encoding, as demonstrated in his paper~\cite{evermann2016}.
+Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermanns model, the concatenation of activity name and resource ID was encoded with dictionary encoding, as demonstrated in his paper~\cite{evermann2016}.
 
 \subsection*{SP-2 feature engineering}
-For every trace, SP-2 features mark whether an activity has occured yet. Thus, these features are engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. For all following activities, the contents of the previous row inside \texttt{sp2\_df} are copied into the current one and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
+For every trace, SP-2 features mark whether an activity has occured yet. Thus, these features are engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. Now, a loop begins over the remaining steps, where the respective previous row inside \texttt{sp2\_df} is copied into the currently indexed row and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
 
 \begin{listing}[ht]
 \begin{minted}{python}
@@ -130,9 +166,9 @@ As the goal is to predict the next activity, the column containing this informat
 \label{sec:eval:test-setup}
 To conduct the experiments, Docker containers were built with the development Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-batch-formatting combination was trained and evaluated on a single NVIDIA K80 GPU of the HPI FutureSOC Lab~\cite{web:fsoc}. The complete source code used for evaluation is publicly available on GitHub at \href{https://github.com/flxw/master-thesis-code}{flxw/master-thesis-code}.\\
 
-All three datasets were split into training and test sets of complete traces. While $25\%$ of the traces were used for validation and testing, the remaining $75\%$ were used for training purposes. The sets were shuffled and stratified to contain an approximately similar distribution of trace lengths.
+All datasets were split into training and test sets of complete traces. While $25\%$ of the traces were used for validation and testing, the remaining $75\%$ were used for training purposes. The sets were shuffled and stratified to contain an approximately similar distribution of trace lengths.
 
-Each model implementation was trained successively with each data formatting variant on a single GPU. A model was saved when its validation loss, calculated on the test set, hit a new record low. If the validation loss did not improved for 10 epochs, the training was interrupted. This is commonly referred to as early stopping. \autoref{tab:training-setup} illustrates information about the training setup of the networks side-by-side. As Evermann et al. made use of a version of Tensorflow that is deprecated as of the time of writing, our implementation in Keras can only be understood as an approximation. Evermann's implementation of an "unrolled LSTM" can only be approximated in Keras.
+Each model implementation was trained successively with each data formatting variant on a single GPU. A model was saved when its validation loss, calculated on the test set, hit a new record low. If the validation loss did not improve for 10 epochs, the training was interrupted. This is commonly referred to as early stopping. \autoref{tab:training-setup} illustrates information about the training setup of the networks side-by-side. As Evermann et al. made use of a version of Tensorflow that is deprecated as of the time of writing, our implementation in Keras can only be understood as an approximation. Evermann's implementation of an "unrolled LSTM" can only be approximated in Keras.
 
 \begin{table}[ht!]
     \centering
@@ -170,7 +206,7 @@ While the first two criteria target the usability of the models, the last one pe
 \begin{figure}
     \centering
     
-    \subfloat[][Training times measured on the BPIC11~\cite{bpic2011} dataset]{
+    \subfloat[][Training times measured on the BPIC11~\cite{BPIC2011} dataset]{
         \includegraphics[width=\textwidth]{gfx/bpic11-training-timings.jpg}
         \label{fig:BPIC11-training-timings}
     }
@@ -180,7 +216,7 @@ While the first two criteria target the usability of the models, the last one pe
         \label{fig:BPIC12-training-timings}
     }
     \qquad
-    \subfloat[][Training times measured on the BPIC17~\cite{bpic2017} dataset]{
+    \subfloat[][Training times measured on the BPIC17~\cite{BPIC2017} dataset]{
         \includegraphics[width=\textwidth]{gfx/bpic11-training-timings.jpg}
         \label{fig:BPIC17-training-timings}
     }
@@ -193,22 +229,6 @@ While the first two criteria target the usability of the models, the last one pe
 
 \section{Discussion}\label{sec:eval:discussion}
 \todo[inline]{Is this really needed? Maybe discuss directly with the results?}
-\begin{table}[]
-    \centering
-    \begin{tabular}{l|rrr}
-    \textbf{Trace length} & \textbf{BPIC11} & \textbf{BPIC12} &  \textbf{BPIC17} \\
-    \hline
-    Minimum trace length & 1 & 3 & 3\\
-    Maximum trace length & 1 814 & 96 & 5\\
-    Mean trace length & 131.49 & 12.56 & 4.51\\
-    Number of Traces & 1 143 & 1 3087 & 42 995\\
-    Number of events & 150 291 & 164 506 & 193 849\\
-    Number of activities & 524 & 23 & 8\\
-    Used data attributes & \\
-    \end{tabular}
-    \caption{Dataset trace properties and used data attributes}
-    \label{tab:my_label}
-\end{table}
 
 \begin{table}[ht!]
 \centering
