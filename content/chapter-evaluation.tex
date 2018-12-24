@@ -5,22 +5,33 @@ First we justify our choice of datasets in \autoref{sec:dataset-choice}. As we f
 
 \section{Choice of dataset}
 \label{sec:dataset-choice}
-In \autoref{sec:intro:contribution}, we highlight the great variety of datasets used to evaluate approaches in Predictive Process Monitoring. While we can not establish a standard, we ensure comparability to a variety of works by evaluating the four models on eight datasets in total, coming from the following sources:
+In \autoref{sec:intro:contribution}, we criticized the great variety of datasets used to evaluate approaches in Predictive Process Monitoring. While we can not establish a standard, we ensure comparability of our results to a variety of works by evaluating the four models on eight datasets in total, coming from the following sources:
 
 \begin{itemize}
     \item BPIC11, an event log from cases in a Gynaecology department a Dutch Academic Hospital~\cite{BPIC2011}
     \item BPIC12, an event log for loan and overdraft applications from a Dutch Financial Institute~\cite{BPIC2012}
-    \item BPIC15~\cite{BPIC2015} provides logs by five Dutch municipalities. It contains all building permit applications over a period of approximately four years. It is divided into one dataset per municipality, referred to as BPIC15-1 to BPIC15-5 in the following.
+    \item BPIC15 provides logs by five Dutch municipalities. It contains all building permit applications over a period of approximately four years. It is divided into one dataset per municipality, referred to as BPIC15-1 to BPIC15-5 in the following~\cite{BPIC2015}
     \item Helpdesk Log, TODO TODO TODO
 \end{itemize}
 \todo[inline]{Check out the helpdesk log and see if it's worth it...}
 
-We picked the the three BPIC datasets as we believe that they cover a spectrum of process complexity. While BPIC12 is a loan application process from financial institution with a small variance in trace length and a very small number of different activities, BPIC11 covers patient treatments in a hospital. This healthcare log results in longer traces and an especially high number of distinct activities.
-BPIC15 resides relatively in the middle of the two, as \autoref{tab:dataset-characteristics} illustrates.
+We picked the three BPIC datasets as we believe that they cover a spectrum of process complexity. The least complex end of it is marked by BPIC12, which covers a loan application process from a financial institution with a small variance in trace length and a very small number of different activities. The complex end is marked by BPIC11, which covers patient treatments in a hospital. This results in logs of longer traces and an especially high number of distinct activities. BPIC15 resides relatively in the middle of the two, as \autoref{tab:dataset-characteristics} indicates.
 
 While process models were easily mined for BPIC12\footnote{Citation needed}, they were more complex for BPIC15~\cite{van2015benchmarking}, and barely obtained for BPIC11. Furthermore we take the increasing number of distinct activities to be a measure of complexity.
 
-\todo[inline]{Mention what enables comparison with which dataset!}
+Furthermore, these datasets allow us to compare our findings to the following works, which also worked on next-element predictions. When comparing, it is important to differentiate between the works that focused on case-specific predictions like us and those that focused on whole event streams:
+
+\begin{itemize}
+    \item Predicting the next element in a stream, not specific to a case
+    \begin{itemize}
+        \item BPI12: Tax et al.~\cite{tax2018interdisciplinary, tax2017}
+        \item BPI12: Evermann et al.~\cite{evermann2016}
+    \end{itemize}
+    \item Predicting the next element for a specific case
+    \begin{itemize}
+        \item BPI12: Böhmer et al.~\cite{boehmer2018probability}
+    \end{itemize}
+\end{itemize}
 
 \begin{table}[]
     \centering
@@ -41,15 +52,16 @@ While process models were easily mined for BPIC12\footnote{Citation needed}, the
 
 \section{Data preprocessing}
 \label{sec:eval:data-preprocessing}
-In the first step of the KDD process~\cite{fayyad1996data}, the data is preprocessed to eliminate generally known properties that hinder machine learning model performance. In our case, this encompassed two steps for the three BPIC11, BPIC12 and BPIC17 datasets:
+In the first step of the KDD process~\cite{fayyad1996data}, the data is preprocessed to eliminate generally known properties that hinder machine learning model performance. In our case, this encompassed three steps for all datasets:
 
 \begin{enumerate}
-    \item Drop all columns which exhibit zero entropy, i.e. which contain a single value
+    \item Drop all columns which exhibit zero entropy, i.e. which contain only a single value
     \item Eliminate features which correlate strongly. To account for categorical correlation, the bias-corrected version of Cramér's~V~\cite{bergsma2013bias} is used.
 \end{enumerate}
 
 In step 1, one column was dropped in BPIC11 and two were dropped in BPIC17.
 In step 2, the bi-directional results in \autoref{fig:BPIC11-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlate strongly with many others in the BPIC11 dataset. Thus, these were dropped. As evidenced in \autoref{fig:BPIC12-correlation-heatmap}, the BPIC12 dataset with its small number of features did not require any removals. In the BPIC17 dataset, \texttt{EventID} and \texttt{OfferID} were removed for being identifiers, and \texttt{Action} for its perfect correlation with \texttt{concept:name}. The correlation measurements are on display in \autoref{fig:BPIC17-correlation-heatmap}.
+\todo[inline]{create table with features, and indicate which ones were removed}
 
 \begin{figure}
 \centering
