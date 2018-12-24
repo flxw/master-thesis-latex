@@ -34,20 +34,20 @@ Furthermore, these datasets allow us to compare our findings to the following wo
 \end{itemize}
 
 \begin{table}[]
-    \centering
-    \begin{tabular}{l|rrr}
-    \textbf{Trace length} & \textbf{BPIC11} & \textbf{BPIC12} &  \textbf{BPIC15} \\
-    \hline
-    Minimum trace length & 1 & 3 & ?\\
-    Maximum trace length & 1 814 & 96 & ?\\
-    Mean trace length & 131.49 & 12.56 & ?\\
-    Number of Traces & 1 143 & 1 3087 & ?\\
-    Number of events & 150 291 & 164 506 & ?\\
-    Number of activities & 524 & 23 & ?\\
-    Used data attributes & ? & ? & ?\\
-    \end{tabular}
-    \caption{Dataset trace properties and used data attributes}
-    \label{tab:dataset-characteristics}
+\centering
+\begin{tabular}{lrrrrrrr}
+\textbf{Dataset} & \textbf{min TL} & \textbf{max TL} &  \textbf{mean TL} & \textbf{\# Traces} & \textbf{\# Events} & \textbf{\# Activities} \\
+\hline
+\textbf{BPIC11} & 1 & 1 814 & 131.49 & 1 143 & 150 291 & 524\\
+\textbf{BPIC12} & 3 & 96 & 12.56 & 13 087 & 164 506 & 23\\
+\textbf{BPIC15-1} & 2 & 101 & 43.55 & 1199 & 52 217 & 398\\
+\textbf{BPIC15-2} & 1 & 132 & 53.31 & 832 & 44 354 & 410\\
+\textbf{BPIC15-3} & 3 & 124 & 42.35 & 1409 & 59 681 & 383\\
+\textbf{BPIC15-4} & 1 & 116 & 44.91 & 1053 & 47 293 & 356\\
+\textbf{BPIC15-5} & 6 & 154 & 51.10 & 1156 & 59 083 & 389\\
+\end{tabular}
+\caption{Properties of the traces contained in the used datasets. TL abbreviates trace length.}
+\label{tab:dataset-characteristics}
 \end{table}
 
 \section{Data preprocessing}
@@ -60,27 +60,8 @@ In the first step of the KDD process~\cite{fayyad1996data}, the data is preproce
 \end{enumerate}
 
 In step 1, one column was dropped in BPIC11 and two were dropped in BPIC17.
-In step 2, the bi-directional results in \autoref{fig:BPIC11-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlate strongly with many others in the BPIC11 dataset. Thus, these were dropped. As evidenced in \autoref{fig:BPIC12-correlation-heatmap}, the BPIC12 dataset with its small number of features did not require any removals. In the BPIC17 dataset, \texttt{EventID} and \texttt{OfferID} were removed for being identifiers, and \texttt{Action} for its perfect correlation with \texttt{concept:name}. The correlation measurements are on display in \autoref{fig:BPIC17-correlation-heatmap}.
+In step 2, the bi-directional results in \autoref{fig:BPIC11-correlation-heatmap} from Cramér's V revealed that the variables \texttt{Producer code}, \texttt{Activity code} and \texttt{Specialism code} correlate strongly with many others in the BPIC11 dataset. Thus, these were dropped. As evidenced in \autoref{fig:BPIC12-correlation-heatmap}, the BPIC12 dataset with its small number of features did not require any removals. In the BPIC17 dataset, \texttt{EventID} and \texttt{OfferID} were removed for being identifiers, and \texttt{Action} for its perfect correlation with \texttt{concept:name}. The correlation measurements are on display in gdskjl
 \todo[inline]{create table with features, and indicate which ones were removed}
-
-\begin{figure}
-\centering
-\subfloat[][Heatmap of correlating values within the BPIC11 dataset]{
-    \includegraphics[width=.9\textwidth]{gfx/bpic11-correlation-matrix.png}
-    \label{fig:BPIC11-correlation-heatmap}
-}
-\qquad
-\subfloat[][Heatmap of correlating values within the BPIC12 dataset]{
-    \includegraphics[width=.7\textwidth]{gfx/bpic12-correlation-matrix.png}
-    \label{fig:BPIC12-correlation-heatmap}
-}
-\qquad
-\subfloat[][Heatmap of correlating values within the BPIC17 dataset]{
-    \includegraphics[width=.8\textwidth]{gfx/bpic17-correlation-matrix.png}
-    \label{fig:BPIC17-correlation-heatmap}
-}
-\caption{Correlation heatmaps obtained from Cramér's~V}
-\end{figure}
 
 The activities described above were conducted in JupyterLab notebooks~\cite{web:jupyter}, where Anaconda~\cite{web:anaconda} was used to create a stable development environment. The OpyenXes~\cite{web:opyenxes} library proved to be especially useful for parsing the raw XES logs from BPIC.
 

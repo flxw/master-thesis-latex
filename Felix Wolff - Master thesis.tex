@@ -96,11 +96,11 @@
 %----------------------------------------------------------------------------------------
 
 \appendix
-
-\part{Appendix} % New part of the thesis for the appendix
-
-\include{content/appendix-a}
-\include{content/appendix-b}
+\part*{Appendix}
+\renewcommand{\thefigure}{A.\arabic{figure}}
+\input{content/appendix-a}
+\renewcommand{\thefigure}{B.\arabic{figure}}
+\input{content/appendix-b}
 
 %----------------------------------------------------------------------------------------
 %	POST-CONTENT THESIS PAGES
