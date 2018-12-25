@@ -1,7 +1,7 @@
 \chapter{Evaluation}\label{chap:evaluation}
 Through the use of the framework described in the previous chapter, we evaluate four different algorithms for next-activity prediction side-by-side: Two implementations that mimic Evermann et al. and Schönig et al, and the PFS and SP2 approaches presented in \autoref{chap:taking-inspiration}. For each model, we will analyze the four different approaches for structuring the training data for performance differences from \autoref{chap:training-framework}.
 
-First we justify our choice of datasets in \autoref{sec:dataset-choice}. As we follow the KDD process, we then lead through the data preprocessing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the SP-2 and PFS features. Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in the respective sections.
+First we justify our choice of datasets in \autoref{sec:dataset-choice}. As we follow the KDD process, we then lead through the data preprocessing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the SP-2 and PFS features. Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in each sections.
 
 \section{Choice of dataset}
 \label{sec:dataset-choice}
@@ -79,7 +79,7 @@ $$
 Categorical features without ordinal properties, which were all of them, were encoded using one-hot encoding if possible. In the case of the input for Evermanns model, the concatenation of activity name and resource ID was encoded with dictionary encoding, as demonstrated in his paper~\cite{evermann2016}.
 
 \subsection*{SP-2 feature engineering}
-For every trace, SP-2 features mark whether an activity has occured yet. Thus, these features are engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. Now, a loop begins over the remaining steps, where the respective previous row inside \texttt{sp2\_df} is copied into the currently indexed row and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
+For every trace, SP-2 features mark whether an activity has occured yet. Thus, these features are engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new data frame \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. Now, a loop begins over the remaining steps, where each previous row inside \texttt{sp2\_df} is copied into the currently indexed row and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
 
 \begin{listing}[ht]
 \begin{minted}{python}
@@ -185,21 +185,49 @@ The following three metrics are the focus in the evaluation of the sixteen model
 \begin{enumerate}
     \item\textbf{Accuracy} - The share of correct next-activity predictions.
     \item\textbf{Resource consumption} - The amount of time and memory required during training.
-    \item\textbf{Stability} - Whether the prediction accuracy begins to change as the trace progresses.
+    \item\textbf{Stability} - Whether the prediction accuracy changes as the trace progresses.
 \end{enumerate}
 
 While the first two criteria target the usability of the models, the last one permits making a judgment about the stability of the predictions. It is inspired by the works of Francescomarino et al.~\cite{francescomarino2015} and Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}. This allows better insights into how prediction accuracy develops over time, and facilitates building trust in the model, as indicated in the introduction of the thesis.
 
 \section{Results}\label{sec:eval:results}
+The three aforementioned criteria were applied to each model-batching combination on each dataset, and the results are presented in this section. By criterion, we go through the measurements. Most of the corresponding figures can be found in the Appendix, marked by the letter B at the beginning of the figure name, referring to \autoref{appendix:evaluation-measurements}. \autoref{tab:network-info} lists dimensions which can have an impact on performance and will be referred to throughout the following subsections.
 
+\begin{table}[htb!]
+\centering
+\begin{tabular}{lcccc}
+\textbf{Dataset} & \textbf{Evermann et al.} & \textbf{Schönig et al.} & \textbf{SP2} & \textbf{PFS}\\
+\hline
+\hline
+\textbf{BPIC11} & 1 & \makecell{n=655\\m=625} & \makecell{n=655\\m=625} & \makecell{n=655\\m=625\\ l=25} \\
+\hline
+\textbf{BPIC12} & 1 & \makecell{n=655\\m=625} & \makecell{n=655\\m=625} & \makecell{n=655\\m=625\\ l=25} \\
+\hline
+\textbf{BPIC17} & 1 & \makecell{n=655\\m=625} & \makecell{n=655\\m=625} & \makecell{n=655\\m=625\\ l=25} \\
+\end{tabular}
+\caption{Input and output vector dimensionalities for each dataset}
+\label{tab:network-info}
+\end{table}
 
 \subsection*{Accuracy}
-\todo[inline]{insert table with accuracies on datasets here}
+The overall accuracy is a good indicator of the prediction performance of a sequence-prediction model. As indicated by \autoref{fig:max-accuracies-bpic2011} to \autoref{fig:max-accuracies-bpic2015-5}, the model performances differ strongly and react very differently to each batching strategy.
 
-\subsection*{Resource consumption}
+Looking at the performance of the reimplementation of Evermann et al., across all datasets, it quickly becomes apparent that it does not perform well, especially in comparison to the other models. Its performance on the BPIC12 datasets represents an exception. We trace the models performance back to the application of an Embedding layer, which we suspect to require more data than included in most datasets to improve its internal data representation. The performance jump on the BPIC12 dataset corresponds nicely to the small number of activities and large number of traces in \autoref{tab:dataset-characteristics}.
+
 \begin{figure}
     \centering
-    
+    \includegraphics{g}
+    \caption{Caption}
+    \label{fig:my_label}
+\end{figure}
+
+
+
+\FloatBarrier
+\subsection*{Resource consumption}
+wasd
+\begin{figure}[!htb]
+    \centering
     \subfloat[][Training times measured on the BPIC11~\cite{BPIC2011} dataset]{
         \includegraphics[width=\textwidth]{gfx/bpic11-training-timings.jpg}
         \label{fig:BPIC11-training-timings}
@@ -219,23 +247,9 @@ While the first two criteria target the usability of the models, the last one pe
     \label{fig:training-timings}
 \end{figure}
 
+\FloatBarrier
 \subsection*{Stability}
+wasd
 
 \section{Discussion}\label{sec:eval:discussion}
 \todo[inline]{Is this really needed? Maybe discuss directly with the results?}
-
-\begin{table}[ht!]
-\centering
-\begin{tabular}{lcccc}
-\textbf{Dataset} & \textbf{Evermann et al.} & \textbf{Schönig et al.} & \textbf{SP2} & \textbf{PFS}\\
-\hline
-\hline
-\textbf{BPIC11} & 1 & \makecell{n=655\\m=625} & \makecell{n=655\\m=625} & \makecell{n=655\\m=625\\ l=25} \\
-\hline
-\textbf{BPIC12} & 1 & \makecell{n=655\\m=625} & \makecell{n=655\\m=625} & \makecell{n=655\\m=625\\ l=25} \\
-\hline
-\textbf{BPIC17} & 1 & \makecell{n=655\\m=625} & \makecell{n=655\\m=625} & \makecell{n=655\\m=625\\ l=25} \\
-\end{tabular}
-\caption{Input and output vector dimensionalities for each dataset}
-\label{tab:network-info}
-\end{table}
