@@ -210,18 +210,58 @@ The three aforementioned criteria were applied to each model-batching combinatio
 \end{table}
 
 \subsection*{Accuracy}
-The overall accuracy is a good indicator of the prediction performance of a sequence-prediction model. As indicated by \autoref{fig:max-accuracies-bpic2011} to \autoref{fig:max-accuracies-bpic2015-5}, the model performances differ strongly and react very differently to each batching strategy.
+The overall accuracy is a good indicator of the prediction performance of a sequence-prediction model. As indicated by \autoref{fig:max-accuracies-bpic2011} to \autoref{fig:max-accuracies-bpic2015-5}, only three models perform well consistently and all react very differently to each batching strategy.
 
-Looking at the performance of the reimplementation of Evermann et al., across all datasets, it quickly becomes apparent that it does not perform well, especially in comparison to the other models. Its performance on the BPIC12 datasets represents an exception. We trace the models performance back to the application of an Embedding layer, which we suspect to require more data than included in most datasets to improve its internal data representation. The performance jump on the BPIC12 dataset corresponds nicely to the small number of activities and large number of traces in \autoref{tab:dataset-characteristics}.
+Looking at the performance of the EVM model across all datasets, it quickly becomes apparent that it does not perform well, especially in comparison to the other models. Its performance on the BPIC12 datasets represents an exception. We trace this lack of performance back to the application of an Embedding layer, which we suspect to require more data than included in most datasets to improve its internal data representation. The performance jump on the BPIC12 dataset corresponds nicely to the small number of activities and large number of traces in \autoref{tab:dataset-characteristics}, which help improve the Embedding.
+
+Unsurprisingly, the individual batching strategy often results in slightly worse accuracies than the grouped batching strategy, with the exception of the BPIC12 dataset. We trace this back to the frequent adjustment of weights that might lead the loss optimization into local minima. In the trace length distributions in \autoref{appendix:trace-length-distributions}, the explanation for the high accuracy on BPIC12 with the individual batching strategy can be found. As this dataset has the highest number of traces and a relatively even distribution of lengths, the batches become too large, leading to lost optimization opportunities. With this knowledge, the strategy should be enhanced to split batch if they exceed a certain size threshold.
+
+The padded strategy leads to consistently good results throughout the datasets and only loses accuracy on the BPIC11 datasets where the training set had to be shrunk because traces exceeded the length threshold.
+
+While the batching strategies that provide the whole history to the model consistently see the SCH, SP2 and PFS models on par with at most $0.1$ difference, the windowed batching strategy leads to very different results depending on the dataset and the model. With the window size set to three, the model does not have many timesteps to learn from in any given sample. However, this loss of information does not impact the SP2 model. We assume that its SP-2 features encode the history that is cut away and thus help it come close to the general maximum accuracy of the dataset with the exception of BPIC11.
 
 \begin{figure}
     \centering
-    \includegraphics{g}
-    \caption{Caption}
-    \label{fig:my_label}
+    \includegraphics[width=\textwidth]{gfx/bpic2011/accuracies.png}
+    \caption{Best accuracies obtained on the validation set on the BPI11 data}
+    \label{fig:max-accuracies-bpic2011}
 \end{figure}
-
-
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2012/accuracies.png}
+    \caption{Best accuracies obtained on the validation set on the BPI12 data}
+    \label{fig:max-accuracies-bpic2012}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2015_1/accuracies.png}
+    \caption{Best accuracies obtained on the validation set on the BPI15-1 data}
+    \label{fig:max-accuracies-bpic2015-1}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2015_2/accuracies.png}
+    \caption{Best accuracies obtained on the validation set on the BPI15-2 data}
+    \label{fig:max-accuracies-bpic2015-2}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2015_3/accuracies.png}
+    \caption{Best accuracies obtained on the validation set on the BPI15-3 data}
+    \label{fig:max-accuracies-bpic2015-3}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2015_4/accuracies.png}
+    \caption{Best accuracies obtained on the validation set on the BPI15-4 data}
+    \label{fig:max-accuracies-bpic2015-4}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2015_5/accuracies.png}
+    \caption{Best accuracies obtained on the validation set on the BPI15-5 data}
+    \label{fig:max-accuracies-bpic2015-5}
+\end{figure}
 
 \FloatBarrier
 \subsection*{Resource consumption}
