@@ -188,10 +188,10 @@ The following three metrics are the focus in the evaluation of the sixteen model
     \item\textbf{Stability} - Whether the prediction accuracy changes as the trace progresses.
 \end{enumerate}
 
-While the first two criteria target the usability of the models, the last one permits making a judgment about the stability of the predictions. It is inspired by the works of Francescomarino et al.~\cite{francescomarino2015} and Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}. This allows better insights into how prediction accuracy develops over time, and facilitates building trust in the model, as indicated in the introduction of the thesis.
+While the first two criteria target the general usability of each model, the last one permits making a judgment about the stability of the predictions. It is inspired by the works of Francescomarino et al.~\cite{francescomarino2015} and Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}. This allows better insights into how prediction accuracy develops over time, and facilitates building trust in the model, as indicated in the introduction of the thesis.
 
 \section{Results}\label{sec:eval:results}
-The three aforementioned criteria were applied to each model-batching combination on each dataset, and the results are presented in this section. By criterion, we go through the measurements. Most of the corresponding figures can be found in the Appendix, marked by the letter B at the beginning of the figure name, referring to \autoref{appendix:evaluation-measurements}. \autoref{tab:network-info} lists dimensions which can have an impact on performance and will be referred to throughout the following subsections.
+The three aforementioned criteria were applied to each model-batching combination on each dataset, and the results are presented in this section. By evaluation criterion, we go through the measurements. Most of the corresponding figures can be found in the Appendix, due to space reasons. \autoref{tab:network-info} lists dimensions which can have an impact on performance and will be referred to throughout the following subsections.
 
 \begin{table}[htb!]
 \centering
@@ -212,9 +212,9 @@ The three aforementioned criteria were applied to each model-batching combinatio
 \subsection*{Accuracy}
 The overall accuracy is a good indicator of the prediction performance of a sequence-prediction model. In this section we will go over the model performances per batching strategy and explain the results. In \autoref{fig:max-accuracies-bpic2011} to \autoref{fig:max-accuracies-bpic2015-5}, the model performances per dataset are presented, grouped by batching strategy. The plots make apparent that only three models perform well consistently and that all react very differently to each batching strategy.
 
-Looking at the performance of the EVM model across all datasets, it is evident that it is consistently outperformed. Its performance on the BPIC12 datasets represents an exception. We trace this lack of performance back to the application of an Embedding layer, which we suspect to require more data than included in most datasets to improve its internal data representation. The performance jump on the BPIC12 dataset corresponds nicely to the small number of activities and large number of traces in \autoref{tab:dataset-characteristics}, which help improve the Embedding.
+Looking at the performance of the EVM model across all datasets, it is evident that it is consistently outperformed. Its performance on the BPIC12 datasets represents an exception. We trace this lack of performance back to the application of an Embedding layer, which we suspect to require more data than included in most datasets to improve its internal data representation. The performance jump on the BPIC12 dataset corresponds nicely to the small number of activities and large number of traces in \autoref{tab:dataset-characteristics}, which helps the Embedding learn better.
 
-Unsurprisingly, the individual batching strategy often results in slightly worse accuracies than the grouped batching strategy, with the exception of the BPIC12 dataset. We trace this back to the frequent adjustment of weights that might lead the loss optimization into local minima. In the trace length distributions in \autoref{appendix:trace-length-distributions}, the explanation for the high accuracy on BPIC12 with the individual batching strategy can be found. As this dataset has the highest number of traces and a relatively even distribution of lengths, the batches become too large, leading to lost optimization opportunities. With this knowledge, the strategy should be enhanced to split batch if they exceed a certain size threshold.
+Unsurprisingly, the individual batching strategy often results in slightly worse accuracies than the grouped batching strategy, with the exception of the BPIC12 dataset. We trace this back to the frequent adjustment of weights that might lead the loss optimization into local minima. In the trace length distributions in \autoref{appendix:trace-length-distributions}, the explanation for the high accuracy on BPIC12 with the individual batching strategy can be found. As this dataset has the highest number of traces and a relatively even distribution of lengths, the batches become too large, leading to lost optimization opportunities. With this knowledge, the strategy should be enhanced to split batches if they exceed a certain size threshold.
 
 The padded strategy leads to consistently good results throughout the datasets and only loses accuracy on the BPIC11 datasets where the training set had to be shrunk because traces exceeded the length threshold.
 
@@ -264,12 +264,12 @@ While the batching strategies that provide the whole history to the model consis
 \end{figure}
 
 \FloatBarrier
-\subsection*{Resource consumption}
-wasd
+\subsection*{Training times}
+The batch size is an important hyper-parameter, and since it directly corresponds to the number of weight adjustments per epoch, it also impacts the time that the training of an epoch requires. 
 \begin{figure}[!htb]
     \centering
     \subfloat[][Training times measured on the BPIC11~\cite{BPIC2011} dataset]{
-        \includegraphics[width=\textwidth]{gfx/bpic11-training-timings.jpg}
+        \includegraphics[width=\textwidth]{gfx/bpic2011/train_timings.png}
         \label{fig:BPIC11-training-timings}
     }
     \qquad
