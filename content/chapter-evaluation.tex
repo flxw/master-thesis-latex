@@ -178,6 +178,23 @@ Each model implementation was trained successively with each data formatting var
     \label{tab:training-setup}
 \end{table}
 
+\begin{table}[]
+\centering
+\begin{tabular}{c|rrrr}
+Dataset & Individual & Grouped & Padded & Windowed \\
+\hline
+BPIC11    & 1 & & 7 & 1054\\
+BPIC 12   & 1 & & 103 & 939\\
+BPIC 15-1 & 1 & & 727 & 365\\
+BPIC 15-2 & 1 & & & 316\\
+BPIC 15-3 & 1 & & & 414\\
+BPIC 15-4 & 1 & & & 334\\
+BPIC 15-5 & 1 & & & 420\\
+\end{tabular}
+\caption{Batch sizes for the different datasets and batching strategies}
+\label{tab:batch-sizes}
+\end{table}
+
 \section{Evaluation criteria}
 \label{sec:eval:criteria}
 The following three metrics are the focus in the evaluation of the sixteen model-formatting combinations:
@@ -262,10 +279,9 @@ While the batching strategies that provide the whole history to the model consis
     \caption{Best accuracies obtained on the validation set on the BPI15-5 data}
     \label{fig:max-accuracies-bpic2015-5}
 \end{figure}
-
 \FloatBarrier
+
 \subsection*{Training times}
-\todo[inline]{Batch size table}
 The batch size is an important hyper-parameter, and since it directly corresponds to the number of weight adjustments per epoch, it also impacts the time that the training of an epoch requires. \autoref{fig:BPIC11-training-timings} to \autoref{fig:BPIC15-5-training-timings} illustrate the mean time required for training a model for an epoch, grouped by batching strategy.
 In this section we will go over the training times per batching strategy and explain the results.
 
@@ -275,7 +291,7 @@ The grouped batching strategy leads to significant reductions in training times,
 
 With the padded strategy it is possible to overcome the limit imposed by trace lengths and construct batches out of any number of traces. This makes it easier to optimize the batch size, and can thus lead to faster training times. That this does not always lead to better accuracies was shown in the previous chapter, as e.g. this strategy leads to lost samples on BPIC11.
 
-Finally, the windowing strategy is the fastest by far. It produces a constant number of timesteps and allows arbitrary batch sizes.
+Finally, the windowing strategy is the fastest by far. It produces a constant number of timesteps and allows for arbitrary batch sizes.
 
 \begin{figure}
     \centering
@@ -322,7 +338,9 @@ Finally, the windowing strategy is the fastest by far. It produces a constant nu
 
 \FloatBarrier
 \subsection*{Stability}
-wasd
+As we stressed in the introduction, the stability of a prediction model along the life of a case is important for user trust. \autoref{appendix:evaluation-measurements} contains the figures that illustrate the stability of each model and batching strategy, grouped by dataset.
+
+
 
 \section{Discussion}\label{sec:eval:discussion}
 \todo[inline]{Is this really needed? Maybe discuss directly with the results?}
