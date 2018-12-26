@@ -265,26 +265,59 @@ While the batching strategies that provide the whole history to the model consis
 
 \FloatBarrier
 \subsection*{Training times}
-The batch size is an important hyper-parameter, and since it directly corresponds to the number of weight adjustments per epoch, it also impacts the time that the training of an epoch requires. 
-\begin{figure}[!htb]
+\todo[inline]{Batch size table}
+The batch size is an important hyper-parameter, and since it directly corresponds to the number of weight adjustments per epoch, it also impacts the time that the training of an epoch requires. \autoref{fig:BPIC11-training-timings} to \autoref{fig:BPIC15-5-training-timings} illustrate the mean time required for training a model for an epoch, grouped by batching strategy.
+In this section we will go over the training times per batching strategy and explain the results.
+
+Unsurprisingly, the individual batching strategy leads to the longest epochs overall. With regard to the dataset characteristics in \autoref{tab:dataset-characteristics}, it becomes apparent that this strategy causes hundreds of weight adjustments per epoch.
+
+The grouped batching strategy leads to significant reductions in training times, depending on how diverse the trace lengths are. \autoref{tab:dataset-characteristics} explains why the reduction is not as big with BPIC11: It exhibits up to 1814 different lengths, while the other datasets only exhibit $5\%$ to $10\%$ of this number.
+
+With the padded strategy it is possible to overcome the limit imposed by trace lengths and construct batches out of any number of traces. This makes it easier to optimize the batch size, and can thus lead to faster training times. That this does not always lead to better accuracies was shown in the previous chapter, as e.g. this strategy leads to lost samples on BPIC11.
+
+Finally, the windowing strategy is the fastest by far. It produces a constant number of timesteps and allows arbitrary batch sizes.
+
+\begin{figure}
     \centering
-    \subfloat[][Training times measured on the BPIC11~\cite{BPIC2011} dataset]{
-        \includegraphics[width=\textwidth]{gfx/bpic2011/train_timings.png}
-        \label{fig:BPIC11-training-timings}
-    }
-    \qquad
-    \subfloat[][Training times measured on the BPIC12~\cite{BPIC2012} dataset]{
-        \includegraphics[width=\textwidth]{gfx/bpic11-training-timings.jpg}
-        \label{fig:BPIC12-training-timings}
-    }
-    \qquad
-    \subfloat[][Training times measured on the BPIC17~\cite{BPIC2017} dataset]{
-        \includegraphics[width=\textwidth]{gfx/bpic11-training-timings.jpg}
-        \label{fig:BPIC17-training-timings}
-    }
-    
-    \caption{Training times per epoch for each model-formatting combination, listed per dataset}
-    \label{fig:training-timings}
+    \includegraphics[width=\textwidth]{gfx/bpic2011/train_timings.png}
+    \caption{Training times measured on the BPIC11~\cite{BPIC2011} dataset}
+    \label{fig:BPIC11-training-timings}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2012/train_timings.png}
+    \caption{Training times measured on the BPIC12~\cite{BPIC2012} dataset}
+    \label{fig:BPIC12-training-timings}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2015_1/train_timings.png}
+    \caption{Training times measured on the BPIC15-1~\cite{BPIC2015} dataset}
+    \label{fig:BPIC15-1-training-timings}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2015_2/train_timings.png}
+    \caption{Training times measured on the BPIC15-2~\cite{BPIC2015} dataset}
+    \label{fig:BPIC15-2-training-timings}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2015_3/train_timings.png}
+    \caption{Training times measured on the BPIC15-3~\cite{BPIC2015} dataset}
+    \label{fig:BPIC15-3-training-timings}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2015_4/train_timings.png}
+    \caption{Training times measured on the BPIC15-4~\cite{BPIC2015} dataset}
+    \label{fig:BPIC15-4-training-timings}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/bpic2015_5/train_timings.png}
+    \caption{Training times measured on the BPIC15-5~\cite{BPIC2015} dataset}
+    \label{fig:BPIC15-5-training-timings}
 \end{figure}
 
 \FloatBarrier
