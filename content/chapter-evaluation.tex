@@ -1,10 +1,11 @@
 \chapter{Evaluation}\label{chap:evaluation}
 Through the use of the framework described in the previous chapter, we evaluate four different algorithms for next-activity prediction side-by-side: Two implementations that mimic the networks by Evermann et al. and Schönig et al, and the PFS and SP2 approaches presented in \autoref{chap:taking-inspiration}. The reimplementation of Evermann's and Schönig's approaches will be referred to as EVM and SCH respectively. For each model, we will analyze the four different approaches for structuring the training data for performance differences from \autoref{chap:training-framework}.
 
-First we justify our choice of datasets in \autoref{sec:dataset-choice}. As we follow the KDD process, we then lead through the data preprocessing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the features for the SP-2 and PFS models. Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in each sections.
+First we justify our choice of datasets in \autoref{sec:eval:dataset-choice}. As we follow the KDD process, we then lead through the data preprocessing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the features for the SP-2 and PFS models.
+Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in each sections.
 
-\section{Choice of dataset}
-\label{sec:dataset-choice}
+\section{Choice of datasets}
+\label{sec:eval:dataset-choice}
 In \autoref{sec:intro:contribution}, we criticized the great variety of datasets used to evaluate approaches in Predictive Process Monitoring. While we can not establish a standard, we ensure comparability of our results to a variety of works by evaluating the four models on eight datasets in total, coming from the following sources:
 
 \begin{itemize}
@@ -24,7 +25,7 @@ Furthermore, these datasets allow us to compare our findings to the following wo
 \begin{itemize}
     \item Predicting the next element in a stream, not specific to a case
     \begin{itemize}
-        \item BPI12: Tax et al.~\cite{tax2018interdisciplinary, tax2017}
+        \item BPI12: Tax et al.~\cite{tax2017}
         \item BPI12: Evermann et al.~\cite{evermann2016}
     \end{itemize}
     \item Predicting the next element for a specific case
@@ -342,15 +343,28 @@ Finally, the windowing strategy is the fastest by far. It produces a constant nu
 
 \FloatBarrier
 \subsection*{Stability}
-As we stressed in the introduction, the stability of a prediction model along the life of a case greatly impacts the level of trust that users put into the model. \autoref{appendix:evaluation-measurements} contains the figures that illustrate the stability of each model per batching strategy, grouped by dataset. Each figure for a batching strategy and a dataset contains four curves, one for each model. The curves show the model accuracy along the progression of all traces inside the validation set in $5\%$-steps. This subsection sheds explains the results, again per batching strategy.
+As we stressed in the introduction, the stability of a prediction model along the progress of a case greatly impacts the level of trust that users put into the model. \autoref{appendix:evaluation-measurements} contains the figures that illustrate the stability of each model per batching strategy, grouped by dataset. Each figure for a batching strategy and a dataset contains four curves, one for each model. The curves show the model accuracy along the progression of all traces inside the validation set in $5\%$-steps. This subsection explains the results, again per batching strategy.\\
 
 The individual batching strategy not only takes the most time, it also leads to strong differences between the SCH, SP2 and PFS models, even though they are trained on the same data. A good example is the difference between \autoref{fig:bpic15-3-individual-stability} and \autoref{fig:bpic15-3-grouped-stability}. In the latter figure, the curves are a lot closer to each other.
 
-The grouping strategy increases the sample count per batch and this seems to have a harmonizing effect on the results as evidenced by the corresponding figures of all datasets. Further subdivision of the batches upon exceeding a size threshold could improve accuracy further.
+The grouping strategy increases the sample count per batch and this seems to have a harmonizing effect on the results as evidenced by the corresponding figures of all datasets. As noted before, further subdivision of the batches upon exceeding a size threshold could improve accuracy further.
 
 The padded strategy yields results very similar to the grouped strategy, with the exception of BPIC11. In this dataset, the training data had to be trimmed because the padded traces had required too much memory. With the long-tailed distributions in \autoref{appendix:trace-length-distributions} in mind, traces which were longer than $80\%$ of the rest were left out. This reduction of training data most likely causes the reduction in accuracy.
 
-Klinkmüller et al. state that the windowing strategy leads to unstable results~\cite{klinkmuller2018reliablemonitoring}. While this statement seems to be especially true for the longer processes in BPIC11 and BPIC15, the windowing strategy seems to have less of an impact with shorter processes as evidenced with BPIC12. There, all models show a dip towards the end of the trace.
+Klinkmüller et al. state that the windowing strategy leads to unstable results~\cite{klinkmuller2018reliablemonitoring}. While this statement seems to be especially true for the longer processes in BPIC11 and BPIC15, the windowing strategy seems to have less of an impact with shorter processes as evidenced with BPIC12. There, all models show a dip towards the end of the trace.\\
 
-\section{Discussion}\label{sec:eval:discussion}
-\todo[inline]{Is this really needed? Maybe discuss directly with the results?}
+Generally, models were expected to become more accurate as the trace neared its end. However this did not prove to be the case. Instead, the accuracy was high when variability in the respective stage of the process was low. For example, processes in BPIC11 always begin similarly, as patients need to be onboarded. Hence the high accuracies in the beginning. The processes in BPIC12 always end either on an approval or a dismissal of the application, making the model very accurate.
+
+\section{Discussion}
+\label{sec:eval:discussion}
+After presenting and explaining our findings, we summarize our learnings in this section and compare our findings to the papers mentioned in \autoref{sec:eval:dataset-choice}.\\
+
+First, we were able to confirm Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} and their suspicion that windowed batching does not work well for sequence prediction. While it may be a performant strategy to use for time-series prediction, it does not work very well for predicting the future of a single case.
+
+Secondly, we find that the grouping strategy frequently delivers the best results in terms of speed and accuracy. We do realize that it should be iterated upon to include a threshold which limits batches to a maximum sizes and splits the larger batches accordingly.
+
+Third and lastly, we realize that Embeddings might not be as useful with the currently available datasets as they might simply be too small. The lacking performance of the EVM model and its barely converging loss indicate that this might be the case. All accuracy/loss curves from training are enclosed in \autoref{appendix:loss-curves}, and show that especially for the EVM model, the loss optimization does not work properly.\\
+
+We end the evaluation with a comparison of our best results with the aforementioned publications based on BPIC12. While Tax et al.~\cite{tax2017} and Evermann et al.~\cite{evermann2016} were able to obtain an accuracy of $0.76$ and $0.768$ respectively, they did not focus on specific cases. Furthermore, Evermann did not use Keras on top of Tensorflow but Tensorflow directly, which enabled him to directly make use of low-level functions. To the best of our knowledge, our implementation sufficiently approximates his, but this can be a reason.
+
+Böhmer et al.~\cite{boehmer2018probability} are able to attain an accuracy of $0.77$. Using the padding strategy, all SCH, SP2 and PFS score above $0.80$, with the SP2 model edging to the best accuracy of $0.82$.
