@@ -71,7 +71,7 @@ In step 3, the results from the pairwise application of Cramér's~V~\cite{bergsm
 
 \begin{table}
 \centering
-\begin{tabular}{lp{4cm}p{5cm}}
+\begin{tabular}{lp{6cm}p{6cm}}
 \textbf{Dataset} & \textbf{Omitted features} & \textbf{Remaining features}\\
 \hline
 \textbf{BPIC11} & lifecycle:transition, Producer code, Activity code, Specialism code & time:timestamp, concept:name, org:group, Number of executions, Activity code, Producer code, Specialism code, Section\\
@@ -86,7 +86,7 @@ The activities described above were conducted in JupyterLab notebooks~\cite{web:
 
 \section{Data transformation}
 \label{sec:eval:data-transformation}
-Having removed unneeded features, the remaining ones were encoded following standard practice. Each numerical feature $x$ was normalized with values specific to each trace using the min-max method:
+Having removed unneeded features, the remaining ones were encoded following common procedures. Timestamps were converted to numerical features for each trace, i.e. each timestamp $t_i$ was made relative to the beginning of a trace by calculating $t_i - t_0$. Each numerical feature $x$ was normalized with values specific to each trace using the min-max method:
 
 $$normalize(x) =
 \begin{cases}
