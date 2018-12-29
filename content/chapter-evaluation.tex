@@ -137,7 +137,7 @@ closed_sequences = prefixspan_traces.topk(25, closed=True)
 \label{lst:pfs-mining}
 \end{listing}
 
-After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. For each index \verb=i= it is checked whether any of the mined subsequences starts at that position. This is checked by peeking ahead of \verb=i= for the length of the subsequence. As in the case of the SP-2 features, the occurence of a subsequence is marked with a boolean flag in the feature vector \verb=subseq\_df= from the row that it occured in onwards.
+After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. For each index \verb=i= it is checked whether any of the mined sub-sequences starts at that position. This is checked by peeking ahead of \verb=i= for the length of the sub-sequence. As in the case of the SP-2 features, the occurence of a sub-sequence is marked with a boolean flag in the feature vector \verb=subseq\_df= from the row that it occured in onwards.
 
 \begin{listing}[ht]
 \begin{minted}{python}
@@ -149,7 +149,7 @@ activity_codes = t[target_col].map(event_to_int)
 tlen = len(t)
 
 for i in range(0, tlen):
-  # loop through all subsequences
+  # loop through all sub-sequences
   for subseq_idx, subseq in enumerate(ps):
     if tlen <= i+len(subseq): continue
 
