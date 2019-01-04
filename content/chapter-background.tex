@@ -7,7 +7,7 @@ Finally, \autoref{sec:background:feature-engineering} highlights the peculiariti
 \section{Process Science And Process Monitoring}\label{sec:process-science}
 Process Science, as loosely defined by van der Aalst~\cite{Aalst2016}, refers to the \textit{broader discipline that combines knowledge from information technology and knowledge from management sciences to improve and run operational processes}. This results in improvement approaches that tend to be driven by process models.
 
-These models can be defined in a variety of modeling languages~\cite{panagacos2012ultimate}. Most languages, for example the Business Process Modeling Notation (BPMN)~\cite{bpmn2.0}, model the process flow in steps, commonly referred to as \textit{activities}, and shown in \autoref{fig:activity-introduction}. Less rigid are the models found in Adaptive Case Management (ACM), where rigidity is traded for flexibility during process execution. The latter sees more application in the domain of knowledge work, but both have an important detail in common: events.
+These models can be defined in a variety of modeling languages~\cite{panagacos2012ultimate}. Most languages, for example the Business Process Modeling Notation (BPMN)~\cite{bpmn2.0}, model the process flow in steps, commonly referred to as \textit{activities}, and shown in \autoref{fig:activity-introduction}. Less rigid are the models found in Adaptive Case Management (ACM), where rigidity is traded for flexibility during process execution. The latter sees more application in the domain of knowledge work, but both share a common trait in practice: events.
 
 \begin{figure}
     \centering
@@ -16,7 +16,7 @@ These models can be defined in a variety of modeling languages~\cite{panagacos20
     \label{fig:activity-introduction}
 \end{figure}
 
-With the help of workflow management systems (WFMS), it is possible to embed and enforce structured processes in an organization. These systems log events related to each activity, e.g. once it starts or ends. Said event logs give rise to the disciplines of Process Mining and Predictive Process Monitoring, as their analyses rest on the information contained therein\cite{Aalst2016}. \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast these very similar domains and how they can be distinguished. Finally, \autoref{sec:log-structure} formally defines the properties a log needs to fulfill to be considered useful for analysis. In the following, the execution history of a single case is also referred to as \textit{trace}.
+With the help of workflow management systems (WFMS), it is possible to embed and enforce structured processes in an organization. These systems log events related to each activity, e.g. once one starts or ends, is queued or transferred to another ressource. The number of event types is specific to the modeling language and the execution environment of the WFMS. Said event logs give rise to the disciplines of Process Mining and Predictive Process Monitoring, as their analyses rest on the information contained therein~\cite{Aalst2016}. \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast these very similar domains and how they can be distinguished. Finally, \autoref{sec:log-structure} formally defines the properties a log needs to fulfill to be considered useful for analysis. In the following, the execution history of a single case is also referred to as \textit{trace}.
 
 \begin{figure}
     \centering
@@ -50,12 +50,12 @@ The answers to these questions can give case workers the opportunity to interven
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/process-log.png}
-    \caption{The first entries of an exemplary event log from a case from the BPIC 2011 dataset~\cite{BPIC2011}. Each event is associated with data; column \texttt{concept:name} corresponds to the activity title.}
+    \caption{The first entries of an exemplary event log from a case from the BPIC11 dataset~\cite{BPIC2011}. Each event is associated with data; column \texttt{concept:name} corresponds to the activity title.}
     \label{fig:process-log}
 \end{figure}
 
 An exemplary log suited for analysis is depicted in \autoref{fig:process-log}, which was extracted from an XES-formatted file.
-XES is an abbreviation for the \textit{eXtensible Event Stream} standard, commonly used for process event logs~\cite{gunther2013xes}. As the execution of a process activity can take a certain amount of time, process \textit{events} are used to distinguish between e.g. the start or end of an activity. These events are contained inside these logs, together forming a trace.
+XES is an abbreviation for the \textit{eXtensible Event Stream} standard, commonly used for process event logs~\cite{gunther2013xes}. As the execution of a process activity can take a certain amount of time, process events are used to distinguish between e.g. the start or end of an activity. In a log, a number of events belong to a single case, which are referred to as the trace of a case.
 
 A log can be made up of any number of traces $t \in T$, where each trace $t$ represents an ordered number of events $e \in E$:
 

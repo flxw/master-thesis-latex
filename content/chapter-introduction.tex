@@ -1,36 +1,36 @@
 \chapter{Introduction}\label{sec:intro}
 \begin{flushright}{\slshape
-The most important contribution of management in the 20th century\\
-was to increase manual worker productivity fifty-fold.\\
-The most important contribution of management in the 21st century\\
-will be to increase knowledge worker productivity\\
-— hopefully by the same percentage} \\ \medskip
---- Peter F. Drucker~\cite{drucker1999}
+I choose a lazy person to do a hard job,\\
+because a lazy person will find an easy way to do it.}\\
+\medskip
+--- Bill Gates
 \end{flushright}
 
-\noindent Frederick Taylor focused on the improvement of manual labor productivity with his theory of scientific management. Following the credo of "what gets measured, gets managed", key performance indicator (KPI) measurements were installed into manual labor procedures. This combination made scientific management one of the main drivers of process automation~\cite{web:taylorism-and-drucker}.
+\noindent Since the start of the industrial revolution, humanity has always tried to find ways to work less. Often this was achieved by constructing machines and other helpful contraptions which automated a task. In more recent years, a guiding procedure - a process - was installed to streamline the workflow where a complete automation was not possible. With the rise of the credo "what gets measured, gets managed", key performance indicators (KPIs) were installed into manual labor processes~\cite{web:taylorism-and-drucker} to optimize process efficiency further.\\
 
-KPIs fell short of penetrating the realm of knowledge work, and this prompted Peter F. Drucker to make the statement above at the end of the $20^{th}$ century in 1999. Today, 20 years later, the automation of semi-structured knowledge work has picked up speed due to the general adaption of tracking systems and the proliferation of machine learning techniques around business processes~\cite{boehmer2018probability, klinkmuller2018reliablemonitoring}.
-In this thesis, we forgo KPIs for knowledge work, and apply machine learning to business process log data to predict the next activity in a running business process by using its execution history. This is a first step to process automation in knowledge work, as \autoref{sec:intro:motivation} will further elaborate.  We highlight the resulting contribution to current research in \autoref{sec:intro:contribution}. The chapter ends in \autoref{sec:intro:outline} with a description of the thesis outline.
+However, processes and KPIs fell short of penetrating and improving the realm of knowledge work, since the foundational mechanics of it differ strongly from manual labor. Peter F. Drucker, a renowned management educator, realized this in 1999:
+{\slshape"The most important contribution of management in the 20th century was to increase manual worker productivity fifty-fold. The most important contribution of management in the 21st century will be to increase knowledge worker productivity — hopefully by the same percentage"}~\cite{drucker1999}.\\
+
+In the spirit of Drucker's appeal and by leveraging the technical developments of the years since his statement, we apply machine learning on business process data to predict the next activity in a running business process by using its execution history. How this is a first step to process automation in knowledge work, will be explained further in \autoref{sec:intro:motivation}.  We highlight the resulting contribution to current research in \autoref{sec:intro:contribution}. The chapter ends in \autoref{sec:intro:outline} with a description of the thesis outline.
 
 \section{Motivation} \label{sec:intro:motivation}
-Automation of work is a phenomenon that has occurred in the past with manual labor, and is spreading into other types of work today, namely knowledge work. Both types of work differ strongly, as described in the following:
+Automation of work is a phenomenon that has occurred in the past with manual labor, and is spreading into other types of work today, namely knowledge work. As mentioned before, both types of work differ strongly:
 
 The course of manual labour is determined by physical laws, is often very structured, and thus offers great potential for easy automation - like work at an assembly line. Knowledge work on the other hand requires workers to "think for a living", and is strongly shaped by the individuality of the thoughts and habits of each knowledge worker~\cite{drucker1999}. As each worker has a different knowledge background, and uses information differently, this type of work is very flexible and often no process is executed exactly the same~\cite{hewelt2016}. A popular example for knowledge work are insurance claims, handled by several employees. Each claim requires a different course of action, since the information contained in each case differs.\\
 
-Forecasting the course of a running process, henceforth referred to as case or process instance, is of interest to both types of work. Manual labour is often dominated by questions of time and outcome~\cite{rogge2013} because the course of work is clear - natural interests in a world of distributed supply chains and just-in-time production~\cite{web:economist:jit}. The course of the work itself is of interest in the case of unstructured knowledge work~\cite{francescomarino2015}. Knowing about the development of a case presents workers with an opportunity to intervene if it were to progress in an unwanted fashion.
+Forecasting the course of a running process, henceforth referred to as case or process instance, is of interest to both types of work. Manual labour is often dominated by questions of time and outcome~\cite{rogge2013} because the course of work is clear - natural interests in a world of distributed supply chains and just-in-time production~\cite{web:economist:jit}. The course of the work itself is of interest in the case of unstructured knowledge work~\cite{francescomarino2015}. Knowing about the development of a case presents workers with an opportunity to intervene if it were to progress in an unwanted fashion.\\
 
 In the 20 years since Drucker's statement, the analog tools of knowledge workers have evolved into a plethora of digital systems and applications. These knowledge repositories and assistance systems for knowledge workers help make their decisions more informed and faster. In doing so, these systems also track work progress, resulting in logs which document the history of a case.\\
 
 These logs are a valuable source of data as they can reveal best practices that knowledge workers use in certain situations. If this data were processed, such best practices could be recommended by an auxiliary system. These knowledge worker assistance systems have been called for multiple times in recent literature reviews~\cite{hauder2014, francescomarino2018}, but have only been implemented prototypically until now. The following chapter lays out the exact challenges for these systems that we have identified in the literature and how we tackle them. Putting the ability to forecast a process development into perspective, it is possible to see that it is a step toward process automation, because then the machine knows the \textit{what} and is only missing the \textit{how}.
 
 \section{Contribution}\label{sec:intro:contribution}
-One of the challenges that lie in the way of creating assistance systems is the task of anticipating the development of a case, especially that of the next activity. In this area, we make a contribution to ongoing research by applying predictive analytics using neural networks on process execution logs. Through the execution history of an incomplete case, the prediction of its next activity is then made possible, also illustrated in \autoref{fig:next-activity-prediction}. This next step could then be processed further by the aforementioned assistance system, e.g. to propose an intervention if a case takes an unwanted course. The application of Predictive Analytics on business processes is fairly new, and is commonly referred to as Predictive Process Monitoring.\\
+One of the challenges that lie in the way of creating assistance systems is the task of anticipating the development of a case, especially that of the next activity. In this area, we make a contribution to ongoing research by applying predictive analytics using neural networks on process execution logs. By regarding the execution history of an incomplete case as a ordered sequence, the prediction of its next activity is possible - illustrated in \autoref{fig:next-activity-prediction}. This next step could then be processed further by the aforementioned assistance system, e.g. to propose an intervention if a case takes an unwanted course. The application of Predictive Analytics on business processes is fairly new, and is commonly referred to as Predictive Process Monitoring.\\
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gfx/next-activity.png}
-    \caption{Predicting the next activity from the history of a case}
+    \includegraphics[width=0.7\textwidth]{gfx/next-activity.png}
+    \caption[Next-activity prediction from a trace]{The next activity of a case is predicted from the sequence of elapsed activities in its trace}
     \label{fig:next-activity-prediction}
 \end{figure}
 
@@ -49,11 +49,11 @@ We aim to add value in these three areas by modifying a successful sequence pred
     \item\textit{Deep Learning Process Prediction with Discrete and Continuous Data Features} by Schönig et al.~\cite{schoenig2018}.
 \end{enumerate}
 
-Over the course of reverse-engineering the comparison models and the subsequent evaluation, widely divergent understandings and approaches with regard to the batch structure of sequential training data input for neural networks were uncovered. To contribute to a better understanding in this area, a comparison of four different batching strategies was incorporated into the evaluation of the models. By using different datasets with very different case characteristics we could infer a suggestion on which method to use for which flavor of case log.
+Over the course of reverse-engineering the comparison models and the subsequent evaluation, widely divergent understandings and approaches with regard to the batch structure of sequential training data input for neural networks were uncovered. To contribute to a better understanding in this area, a comparison of four different batching strategies was incorporated into the evaluation of the models. By using different datasets with very different case characteristics we infer a suggestion on which method to use for which flavor of case log.
 
 Furthermore we realized that typical model evaluations only measure total accuracy, while we believe that a stable accuracy across the whole execution of the process is key for putting trust into the model~\cite{francescomarino2015, boehmer2018probability}. Additionally, we investigate training time requirements.
 
-Finally, we attempt a first step toward streamlining the comparison of process prediction models. Currently, implementations and datasets vary widely between publications, making comparability an issue. With the learnings about the training data formats in mind, we propose a simple process prediction comparison framework that helped us conduct our measurements, and which can be easily expanded with other models and data formatting approaches.
+Finally, we present a first step toward streamlining the comparison of process prediction models. Currently, implementations and datasets vary widely between publications, making comparability an issue. With the learnings about the training data formats in mind, we propose a simple process prediction training framework that helped us quickly and easily set up our various models, and which can be easily expanded with future models and batch formatting approaches.
 
 \section{Thesis Outline}\label{sec:intro:outline}
 A preliminary definition of Predictive Process Monitoring and how it differs from Process Mining is delivered in \autoref{chap:background}. Furthermore this chapter provides information on Predictive Model Development as well as details on the inner workings of the used type of neural networks.
