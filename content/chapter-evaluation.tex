@@ -1,7 +1,7 @@
 \chapter{Evaluation}\label{chap:evaluation}
 Through the use of the framework described in the previous chapter, we evaluate four different algorithms for next-activity prediction side-by-side: Two implementations that mimic the networks by Evermann et al. and Schönig et al, and the PFS and SP2 approaches presented in \autoref{chap:taking-inspiration}. The reimplementation of Evermann's and Schönig's approaches will be referred to as EVM and SCH respectively. For each model, we will analyze the four different approaches for structuring the training data for performance differences from \autoref{chap:training-framework}.
 
-First we justify our choice of datasets in \autoref{sec:eval:dataset-choice}. As we follow the KDD process, we then lead through the data preprocessing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the features for the SP-2 and PFS models.
+First we justify our choice of datasets in \autoref{sec:eval:dataset-choice}. As we follow the KDD process, we then lead through the data pre-processing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the features for the SP-2 and PFS models.
 Then, the test setup and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in each sections.
 
 \section{Choice of datasets}
@@ -45,13 +45,13 @@ Furthermore, these datasets allow us to compare our findings to the following wo
 \textbf{BPIC15-5} & 6 & 154 & 51.10 & 1156 & 59 083 & 389\\
 \textbf{BPIC11} & 1 & 1 814 & 131.49 & 1 143 & 150 291 & 524\\
 \end{tabular}
-\caption{Properties of the traces contained in the used datasets. TL abbreviates trace length.}
+\caption[Trace properties in each dataset]{Properties of the traces contained in the used datasets. TL abbreviates trace length.}
 \label{tab:dataset-characteristics}
 \end{table}
 
-\section{Data preprocessing}
+\section{Data pre-processing}
 \label{sec:eval:data-preprocessing}
-In the first step of the KDD process~\cite{fayyad1996data}, the data is preprocessed to prepare the data for our prediction use case and eliminate generally known properties that hinder machine learning model performance. In our case, this encompassed two steps for all datasets:
+In the first step of the KDD process~\cite{fayyad1996data}, the data is pre-processed to prepare the data for our prediction use case and eliminate generally known properties that hinder machine learning model performance. In our case, this encompassed two steps for all datasets:
 
 \begin{enumerate}
     \item Filter for completed events
@@ -76,7 +76,7 @@ In step 3, the results from the pairwise application of Cramér's~V~\cite{bergsm
 \textbf{BPIC12} & lifecycle:transition & org:resource, concept:name, time:timestamp\\
 \textbf{BPIC15} & lifecycle:transition, activityNameNL, activityNameEN, action\_code, dueDate & time:timestamp 	dateFinished 	planned 	concept:name 	monitoringResource 	org:resource 	question
 \end{tabular}
-\caption{Omitted features in each dataset during preprocessing}
+\caption{Omitted features during pre-processing}
 \label{tab:dataset-preprocessing}
 \end{table}
 
@@ -191,7 +191,7 @@ A model was saved when its validation loss, calculated on the test set, hit a ne
         \textbf{Epochs}    & 50 & 100 & 150 & 150\\
         \textbf{Features}  & \makecell{Activity +\\Resource} & \multicolumn{3}{c}{All usable data attributes}\\
     \end{tabular}
-    \caption{Used hyper-parameters for each model, with the number of epochs to be understood as the maximum number of epochs, as training may stop early}
+    \caption[Used hyper-parameters for each model]{Used hyper-parameters for each model, with the number of epochs to be understood as the maximum number of epochs, as training may stop early}
     \label{tab:training-setup}
 \end{table}
 
@@ -210,7 +210,7 @@ BPIC 15-3 & 1 & & 10 & 414\\
 BPIC 15-4 & 1 & & 8 & 334\\
 BPIC 15-5 & 1 & & 7 & 420\\
 \end{tabular}
-\caption{Number of traces per batch for the different datasets and batching strategies}
+\caption[Batch sizes for each dataset and strategy]{Number of traces per batch for the different datasets and batching strategies}
 \label{tab:batch-sizes}
 \end{table}
 
@@ -238,48 +238,48 @@ Unsurprisingly, the individual batching strategy often results in slightly worse
 
 The padded strategy leads to consistently good results throughout the datasets and only loses accuracy on the BPIC11 datasets where the training set had to be shrunk because traces exceeded the length threshold.
 
-While the batching strategies that provide the whole history to the model consistently see the SCH, SP2 and PFS models on par with at most $0.1$ difference, the windowed batching strategy leads to very different results depending on the dataset and the model. With the window size set to three, the model does not have many timesteps to learn from in any given sample. However, this loss of information does not impact the SP2 model. We assume that its SP-2 features encode the history that is cut away and thus help it come close to the general maximum accuracy of the dataset with the exception of BPIC11.
+While the batching strategies that provide the whole history to the model consistently see the SCH, SP2 and PFS models on par with at most $0.1$ difference, the windowed batching strategy leads to very different results depending on the dataset and the model. With the window size of three suggested by Schönig et al., the model does not have many timesteps to learn from in any given sample. However, this loss of information does not impact the SP2 model. We assume that its SP-2 features encode the history that is cut away and thus help it come close to the general maximum accuracy of the dataset with the exception of BPIC11.
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2011/accuracies.png}
-    \caption{Best accuracies obtained on the validation set of BPIC11}
+    \caption{Best accuracies on the validation set of BPIC11}
     \label{fig:max-accuracies-bpic2011}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2012/accuracies.png}
-    \caption{Best accuracies obtained on the validation set of BPIC12}
+    \caption{Best accuracies on the validation set of BPIC12}
     \label{fig:max-accuracies-bpic2012}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_1/accuracies.png}
-    \caption{Best accuracies obtained on the validation set of BPIC15-1}
+    \caption{Best accuracies on the validation set of BPIC15-1}
     \label{fig:max-accuracies-bpic2015-1}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_2/accuracies.png}
-    \caption{Best accuracies obtained on the validation set of BPIC15-2}
+    \caption{Best accuracies on the validation set of BPIC15-2}
     \label{fig:max-accuracies-bpic2015-2}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_3/accuracies.png}
-    \caption{Best accuracies obtained on the validation set of BPI15-3}
+    \caption{Best accuracies on the validation set of BPI15-3}
     \label{fig:max-accuracies-bpic2015-3}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_4/accuracies.png}
-    \caption{Best accuracies obtained on the validation set of BPI15-4}
+    \caption{Best accuracies on the validation set of BPI15-4}
     \label{fig:max-accuracies-bpic2015-4}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_5/accuracies.png}
-    \caption{Best accuracies obtained on the validation set of BPI15-5}
+    \caption{Best accuracies on the validation set of BPI15-5}
     \label{fig:max-accuracies-bpic2015-5}
 \end{figure}
 \FloatBarrier
@@ -288,54 +288,54 @@ While the batching strategies that provide the whole history to the model consis
 The batch size is an important hyper-parameter, and since it directly corresponds to the number of weight adjustments per epoch, it also impacts the time that the training of an epoch requires. \autoref{fig:BPIC11-training-timings} to \autoref{fig:BPIC15-5-training-timings} illustrate the mean time required for training a model for an epoch, grouped by batching strategy.
 In this section we will go over the training times per batching strategy and explain the results.
 
-Unsurprisingly, the individual batching strategy leads to the longest epochs overall. With regard to the dataset characteristics in \autoref{tab:dataset-characteristics}, it becomes apparent that this strategy causes hundreds of weight adjustments per epoch.
+Unsurprisingly, the individual batching strategy leads to the longest epochs overall. \autoref{tab:dataset-characteristics} reveals that this strategy leads to hundreds of weight adjustments per epoch.
 
 The grouped batching strategy leads to significant reductions in training times, depending on how diverse the trace lengths are. \autoref{tab:dataset-characteristics} explains why the reduction is not as big with BPIC11: It exhibits up to 1814 different lengths, while the other datasets only exhibit $5\%$ to $10\%$ of this number.
 
-With the padded strategy it is possible to overcome the limit imposed by trace lengths and construct batches out of any number of traces. This makes it easier to optimize the batch size, and can thus lead to faster training times. That this does not always lead to better accuracies was shown in the previous chapter, as e.g. this strategy leads to lost samples on BPIC11.
+With the padded strategy it is possible to overcome the limit imposed by trace lengths and construct batches out of any number of traces. This makes it easier to optimize the batch size, and can thus lead to faster training times. That this does not always lead to better accuracies was shown in the previous section, as e.g. this strategy leads to lost samples on BPIC11.
 
 Finally, the windowing strategy is the fastest by far. It produces a constant number of timesteps and allows for arbitrary batch sizes.
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2011/train_timings.png}
-    \caption{Training times measured on BPIC11~\cite{BPIC2011}}
+    \caption{Training times measured on BPIC11}
     \label{fig:BPIC11-training-timings}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2012/train_timings.png}
-    \caption{Training times measured on BPIC12~\cite{BPIC2012}}
+    \caption{Training times measured on BPIC12}
     \label{fig:BPIC12-training-timings}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_1/train_timings.png}
-    \caption{Training times measured on BPIC15-1~\cite{BPIC2015}}
+    \caption{Training times measured on BPIC15-1}
     \label{fig:BPIC15-1-training-timings}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_2/train_timings.png}
-    \caption{Training times measured on BPIC15-2~\cite{BPIC2015}}
+    \caption{Training times measured on BPIC15-2}
     \label{fig:BPIC15-2-training-timings}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_3/train_timings.png}
-    \caption{Training times measured on BPIC15-3~\cite{BPIC2015}}
+    \caption{Training times measured on BPIC15-3}
     \label{fig:BPIC15-3-training-timings}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_4/train_timings.png}
-    \caption{Training times measured on BPIC15-4~\cite{BPIC2015}}
+    \caption{Training times measured on BPIC15-4}
     \label{fig:BPIC15-4-training-timings}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_5/train_timings.png}
-    \caption{Training times measured on the BPIC15-5~\cite{BPIC2015} dataset}
+    \caption{Training times measured on BPIC15-5}
     \label{fig:BPIC15-5-training-timings}
 \end{figure}
 
@@ -351,7 +351,7 @@ The padded strategy yields results very similar to the grouped strategy, with th
 
 Klinkmüller et al. state that the windowing strategy leads to unstable results~\cite{klinkmuller2018reliablemonitoring}. While this statement seems to be especially true for the longer processes in BPIC11 and BPIC15, the windowing strategy seems to have less of an impact with shorter processes as evidenced with BPIC12. There, all models show a dip towards the end of the trace.\\
 
-Generally, models were expected to become more accurate as the trace neared its end. However this did not prove to be the case. Instead, the accuracy was high when variability in the respective stage of the process was low. For example, processes in BPIC11 always begin similarly, as patients need to be onboarded. Hence the high accuracies in the beginning. The processes in BPIC12 always end either on an approval or a dismissal of the application, making the model very accurate.
+Generally, models were expected to become more accurate as the trace neared its end. However this did not prove to be the case. Instead, the accuracy was high when variability in the respective stage of the process was low. For example, processes in BPIC11 always begin similarly, as patients need to be onboarded~\cite{bose2011analysis}. Hence the high accuracies in the beginning. The processes in BPIC12 always end either on an approval or a dismissal of the application, making the model very accurate~\cite{adriansyah2012mining}.
 
 \section{Discussion}
 \label{sec:eval:discussion}
@@ -359,10 +359,10 @@ After presenting and explaining our findings, we summarize our learnings in this
 
 First, we were able to confirm Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} and their suspicion that windowed batching does not work well for sequence prediction. While it may be a performant strategy to use for time-series prediction, it does not work very well for predicting the future of a single case.
 
-Secondly, we find that the grouping strategy frequently delivers the best results in terms of speed and accuracy. We do realize that it should be iterated upon to include a threshold which limits batches to a maximum sizes and splits the larger batches accordingly.
+Secondly, we find that the grouping strategy frequently delivers the best results in terms of speed and accuracy. We do realize that it should be iterated upon to include a threshold which limits batches to a maximum size and splits the larger batches accordingly.
 
 Third and lastly, we realize that Embeddings might not be as useful with the currently available datasets as they might simply be too small. The lacking performance of the EVM model and its barely converging loss indicate that this might be the case. All accuracy/loss curves from training are enclosed in \autoref{appendix:loss-curves}, and show that especially for the EVM model, the loss optimization does not work properly.\\
 
-We end the evaluation with a comparison of our best results with the aforementioned publications based on BPIC12. While Tax et al.~\cite{tax2017} and Evermann et al.~\cite{evermann2016} were able to obtain an accuracy of $0.76$ and $0.768$ respectively, they did not focus on specific cases. Furthermore, Evermann did not use Keras on top of Tensorflow but Tensorflow directly, which enabled him to directly make use of low-level functions. To the best of our knowledge, our implementation sufficiently approximates his, but this can be a reason.
+We end the evaluation with a comparison of our best results with the initially mentioned publications based on BPIC12. While Tax et al.~\cite{tax2017} and Evermann et al.~\cite{evermann2016} were able to obtain an accuracy of $0.76$ and $0.768$ respectively, they did not focus on specific cases. Furthermore, Evermann et al. did not use Keras on top of Tensorflow but Tensorflow directly, which enabled him to directly make use of low-level functions. To the best of our knowledge, our implementation sufficiently approximates theirs, but this can be a reason for the bad results. Another very probable reason are the concatenated features used by them~\cite{evermann2016}.
 
 Böhmer et al.~\cite{boehmer2018probability} are able to attain an accuracy of $0.77$. Using the padding strategy, all SCH, SP2 and PFS score above $0.80$, with the SP2 model edging to the best accuracy of $0.82$.

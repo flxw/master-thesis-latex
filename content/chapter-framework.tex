@@ -21,7 +21,7 @@ Second, \textit{some} traces can be trained inside a single batch. This is possi
 \begin{figure}[ht!]
     \centering
     \includegraphics[width=.9\textwidth]{gfx/frequency-distribution.png}
-    \caption{Distribution of trace lengths in the BPIC2011 training set.}
+    \caption{Distribution of trace lengths in BPIC11}
     \label{fig:bpic2011-length-distribution}
 \end{figure}
 
@@ -45,7 +45,7 @@ To mitigate this situation, we designed the software framework that helped us co
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/training-framework-classes.png}
-    \caption{A Unified Modeling Language (UML) diagram of the abstract base class inheritance structure of Builders and Batchers.}
+    \caption[UML diagram of the framework classes]{Unified Modeling Language (UML) diagram of the abstract base class inheritance structure of Builders and Batchers}
     \label{fig:trainig-framework-classes}
 \end{figure}
 
@@ -88,6 +88,6 @@ optional arguments:
   --output OUTPUT       Target directory to put model
                         and training statistics
 \end{verbatim}
-\caption{The \texttt{model\_runner} command-line frontend for the training framework.}
+\caption[CLI frontend for the framework]{The \texttt{model\_runner} command-line frontend for the training framework}
 \label{fig:framework-frontend}
 \end{figure}

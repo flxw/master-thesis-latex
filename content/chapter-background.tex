@@ -21,7 +21,7 @@ With the help of workflow management systems (WFMS), it is possible to embed and
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=.8\textwidth]{gfx/process-data-science.png}
-    \caption[Process Mining connects Process Science and Data Science]{Process Mining connects Process Science and Data Science \cite[p.18]{Aalst2016} - the blue line symbolizes the subdomains that Predictive Process Monitoring brings together}
+    \caption[Process Mining connects two disciplines]{Process Mining connects Process Science and Data Science \cite[p.18]{Aalst2016} - the blue line symbolizes the subdomains that Predictive Process Monitoring brings together}
     \label{fig:process-data-science}
 \end{figure}
 
@@ -148,7 +148,7 @@ Because of this, increasing the number of features for training a predictive mod
 \begin{figure}
     \centering
     \includegraphics[width=.75\textwidth]{gfx/dimensionality_vs_performance.png}
-    \caption[The curse of dimensionality, visualized]{Adding features to the feature space does not improve model performance indefinitely}
+    \caption[A visualization of the curse of dimensionality]{Adding features to the feature space does not improve model performance indefinitely}
     \label{fig:dimensionality-vs-performance}
 \end{figure}
 
@@ -160,7 +160,7 @@ An artificial neural network (ANN) mimics the inner workings of a human brain in
 \begin{figure}[ht!]
     \centering
     \includegraphics[width=.85\textwidth]{gfx/feedforward-neural-network.png}
-    \caption[A simple feed-forward ANN with a single hidden layer]{A simple feed-forward ANN with a single hidden layer. The network takes the inputs $x_1$ to $x_m$ and passes them through edges that are weighted with weights $\beta_{ij}$. Illustration taken from \cite{lessmannBADS}}
+    \caption[Feed-forward ANN with a single hidden layer]{A simple feed-forward ANN with a single hidden layer. The network takes the inputs $x_1$ to $x_m$ and passes them through edges that are weighted with weights $\beta_{ij}$. Illustration taken from \cite{lessmannBADS}}
     \label{fig:feedforward-ann}
 \end{figure}
 
@@ -180,7 +180,7 @@ As the name suggests, recurrent neural networks (RNN) implement a feedback loop.
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=.9\textwidth]{gfx/rnn-unrolled.png}
-    \caption{A neuron receives an input $x_t$ and outputs a value $h_t$. The loop allows information to be passed from one step $t$ of the network to the next step $t+1$. This Illustration is taken from \cite{web:colah}}
+    \caption[An unrolled RNN neuron]{A neuron receives an input $x_t$ and outputs a value $h_t$. The loop allows information to be passed from one step $t$ of the network to the next step $t+1$. This Illustration is taken from \cite{web:colah}}
     \label{fig:rnn-unrolled}
 \end{figure}
 
@@ -195,7 +195,7 @@ Hochreiter \& Schmidhuber published this enhancement in 1997~\cite{hochreiter199
 \begin{figure}[ht!]
     \centering
     \includegraphics[width=.8\textwidth]{gfx/lstm-chain.png}
-    \caption{An exemplary unrolled neuron and its LSTM cell with the upper horizontal line representing the cell state $C$. This illustration is taken from \cite{web:colah}}
+    \caption[An unrolled LSTM cell and its internals]{An exemplary unrolled neuron and its LSTM cell with the upper horizontal line representing the cell state $C$. This illustration is taken from \cite{web:colah}}
     \label{fig:lstm}
 \end{figure}
 
@@ -223,7 +223,7 @@ One-hot encoding is often used for features which have a small to medium-sized n
         \hline
         0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
     \end{tabular}
-    \caption{One-hot encoding of "Arthur" using the alphabet of $seq1$ and $seq2$.}
+    \caption{One-hot encoding of "Arthur" from alphabet of $seq1$ and $seq2$}
     \label{tab:one-hot}
 \end{table}
 
@@ -245,14 +245,14 @@ In contrast to one-hot encoding, this dictionary encoding does not result in wid
         \hline
         Code & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8
     \end{tabular}
-    \caption{The dictionary built from the itemsets of $seq1$ and $seq2$.}
+    \caption{The dictionary built from the $seq1$ and $seq2$}
     \label{tab:dictionary-encoding}
 \end{figure}
 
 \subsubsection*{Word embedding}
 Because dictionary encodings impose an order and one-hot encodings lead to sparsity, word embeddings are perceived as a viable alternative for encoding categorical variables.
 
-A word embedding is the output of a neural network with a single hidden layer that has been trained on a large text corpus and thus detected how words relate to each other \cite{web:word-embedding}. The network puts out highly dimensional vectors for each word which represent any word property that the model has picked up. In the following example from~\cite{web:word-embedding}, the network was able to detect gender properties and social semantics of words:
+A word embedding is the output of a neural network with a single hidden layer that has been trained on a large text corpus. It detects how words relate to each other~\cite{web:word-embedding} and puts out highly dimensional vectors for each word. These represent any word property that the model has picked up. In the following example from~\cite{web:word-embedding}, the network was able to detect gender properties and social semantics of words:
 
 $$
 \vec{v}_{king} - \vec{v}_{man} + \vec{v}_{women} = \vec{v}_{queen}
