@@ -4,8 +4,7 @@ While a number of works have demonstrated the applicability of LSTM neural netwo
 
 We establish the connection between processes and sequences by connecting their definitions in \autoref{sec:contrib:case-sequence-understanding}. This provides the underpinning for introducing two NLP-inspired approaches for predicting the next activity in a case. These are presented in \autoref{sec:contrib:sp2-inspiration} and \autoref{sec:contrib:pfs-inspiration}.
 
-\section{Understanding a trace as a sequence}
-\label{sec:contrib:case-sequence-understanding}
+\section{Understanding a trace as a sequence}\label{sec:contrib:case-sequence-understanding}
 The definition for sequences presented in \autoref{sec:background:sequence-prediction} is a general one and needs to be specialized so that a case trace can be understood as a sequence.
 
 In the definition of a sequence, the set $I=\{i_1, i_2, \dots, i_n\}$ is used for \textit{items}, out of which itemsets $s \subset I$ are comprised. To understand a process trace as a sequence, an itemset needs to be perceived as a single row in a log. As such a row is made up of multiple different elements and adheres to a fixed schema, the definition needs to account for these two properties.\\
@@ -16,8 +15,7 @@ $$I = \bigcup\limits_{i=1}^{n} C_{i}$$
 
 Secondly, an itemset $s$ needs to be bound by a specific schema. This schema needs to match the schema of the log and can be defined as such: $s =\{<i_1, i_2, ..., i_i\}$ with $i_i \in C_i$. With this subdivision, the original condition $s \subseteq I$ still holds true, but every item now has a fixed place in the itemset depending on which column it originates from. Furthermore, this definition of an itemset resembles exactly that of an event in \autoref{sec:log-structure}.
 
-\section{Adapting a competition submission}
-\label{sec:contrib:sp2-inspiration}
+\section{Adapting a competition submission}\label{sec:contrib:sp2-inspiration}
 Shibata et al.'s bipartite network architecture has shown outstanding performance in the SPiCe competition~\cite{web:spice}. Under the assumption that a case exhibits properties similar to sentences, we adapt it for use in the business process domain.
 
 \autoref{fig:sp2-architecture} displays how the original network architecture from Shibata et al. was adapted. The word embedding layers were removed on the sequence data input and replaced with a fully-connected Dense layer on the right. Furthermore, the hidden layer dimensions were adapted following the example by Schönig et al.~\cite{schoenig2018}. The model will be trained on whole events and SP-2 features, whereas the latter is fed in on the right input layer. This approach will be referred to as SP2 in the following.\\
