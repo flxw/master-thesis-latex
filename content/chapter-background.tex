@@ -1,11 +1,11 @@
 (\chapter{Background}\label{chap:background}
 To predict the next element in a running case, we bring together the domains of Process Science, Predictive Modeling and Deep Learning. This background chapter gives comprehensive insight into those parts of said domains which will be used and referenced in this thesis. The chapter approaches them in a top-down fashion, starting with the high-level perspective from Process Science and how Process Mining is distinguished from Predictive Process Monitoring in \autoref{sec:process-science}. The section ends with information on how the used logs usually come into existence and which requirements these logs need to fulfill to be used in a prediction scenario.
-With the data origin explained, \autoref{sec:predictive-modeling} introduces the KDD process, along which predictive model development usually takes place.
+With the data origin explained, \autoref{sec:predictive-modeling} introduces a process along which predictive model development usually takes place.
 \autoref{sec:artificial-neural-networks} gives an in-depth look at neural networks and the components relevant to this thesis, especially stressing the importance of long short-term memory cells.
 Finally, \autoref{sec:background:feature-engineering} highlights the peculiarities encountered when dealing with sequential data and introduces popular approaches to deal with them.
 
 \section{Process Science}\label{sec:process-science}
-Business processes are a collection of structured tasks which result in a product or service, i.e. serve a particular business goal, if ordered in a specific sequence~\cite{weske2012business}. To facilitate a common understanding of a process, processes are visualized with modeling languages~\cite{panagacos2012ultimate}. Most languages, for example the Business Process Modeling Notation (BPMN)~\cite{bpmn2.0}, model the process flow in steps, commonly referred to as \textit{activities} - shown in \autoref{fig:activity-introduction}. An instance of a process is referred to as case.
+Business processes are a collection of structured tasks which serve a particular business goal, if ordered in a specific sequence~\cite{weske2012business}. To facilitate a common understanding of a process, processes are visualized with modeling languages~\cite{panagacos2012ultimate}. Most languages, for example the Business Process Modeling Notation (BPMN)~\cite{bpmn2.0}, model the process flow in steps, commonly referred to as \textit{activities} - shown in \autoref{fig:activity-introduction}. An instance of a process is referred to as case.
 
 \begin{figure}[!htb]
     \centering
@@ -16,7 +16,7 @@ Business processes are a collection of structured tasks which result in a produc
 
 Process Science, as loosely defined by van der Aalst~\cite{Aalst2016}, refers to the "broader discipline that combines knowledge from information technology and knowledge from management sciences to improve and run operational processes".
 
-With the help of workflow management systems (WFMS), it is possible to embed and enforce structured processes in an organization. When an activity in a process is executed, it goes through different stages. These stages are captured in its lifecycle in \autoref{fig:activity-lifecycle}. WFMS log events related to each activity, but the types of captured events are specific to the modeling language and the execution environment of the WFMS.
+With the help of workflow management systems (WFMS), it is possible to embed and enforce business processes in an organization. When an activity in a process is executed, it goes through different stages. These stages are captured in the activity lifecycle in \autoref{fig:activity-lifecycle}. WFMS log events related to each activity, but the types of captured events are specific to the modeling language and the execution environment of the WFMS.
 
 \begin{figure}[!htb]
     \centering
@@ -25,10 +25,10 @@ With the help of workflow management systems (WFMS), it is possible to embed and
     \label{fig:activity-lifecycle}
 \end{figure}
 
-Said event logs give rise to the disciplines of Process Mining and Predictive Process Monitoring, as their analyses are based on the information contained in the logs~\cite{Aalst2016}. Because of the paramount importance of logs for this work, this section begins with \autoref{sec:log-structure} defining the properties and structure of a log. \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast Process Mining and Predictive Process Monitoring and how they can be distinguished.
+The event logs give rise to the disciplines of Process Mining and Predictive Process Monitoring, as their analyses are based on the information contained in those logs~\cite{Aalst2016}. Because of the paramount importance of logs for this work, this section begins with \autoref{sec:log-structure} defining the properties and structure of a log. \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast Process Mining and Predictive Process Monitoring.
 
 \subsection{Process logs}\label{sec:log-structure}
-A process log tracks the execution history of a process and can be understood in a hierarchical manner. Each log of a process consists of cases, which represent an instance of a process. A case itself consists of a trace of events, i.e. a sequence that only belongs to a single case. Each event can have attributes attached, i.e. data payloads~\cite{Aalst2016}.
+A process log tracks the execution history of a process and can be understood in a hierarchical manner. Each log of a process consists of cases, which represent instances of a process. A case itself consists of a trace of events, i.e. a sequence that only belongs to a single case. Each event can have attributes attached~\cite{Aalst2016}.
 
 \begin{figure}
     \centering
@@ -45,9 +45,10 @@ Each trace represents a finite sequence of events $e \in \mathscr{E}$:
 $$ \#_{trace}(c) = \langle e_1, e_2, e_3 \dots, e_n \rangle $$
 
 The events are ordered by timestamp. In turn, each event $e$ has certain attributes associated with it. It is assumed that for a specific process, the type, number and name of these attributes does not change. An example for common attributes are the activity name $\#_{activity}(e)$ or the timestamp $\#_{timestamp}(e)$ at which the event occurred. Coming back to the example in \autoref{fig:process-log}, $e = \#_{trace}(c)[2]$ would get the second event in the trace, and $\#_{lifecycle:transition}(e)$ would produce the value \verb=complete=.
+\todo[inline]{Übergang?}
 
 \subsection{Process Mining}\label{sec:process-mining}
-Process Mining covers the three steps of process model discovery, conformance checking and process model enhancement \cite{Aalst2016} -  all based on the process event logs. It is worth noting that the logs can be enriched with data from systems other than WFMS. The three steps are enabled with techniques from Data Science, making it possible to understand Process Mining as a link between Data Science and Process Science. This is also visualized in \autoref{fig:process-data-science}.
+Process Mining covers the three steps of process model discovery, conformance checking and process model enhancement \cite{Aalst2016} -  all based on process event logs. It is worth noting that the logs can be enriched with data from systems other than WFMS. The three steps are enabled with techniques from Data Science, making it possible to understand Process Mining as a link between Data Science and Process Science. This is also visualized in \autoref{fig:process-data-science}.
 
 \begin{figure}[!htb]
     \centering
@@ -60,7 +61,7 @@ A major problem when discovering process models is posed by spaghetti and lasagn
 
 \FloatBarrier
 \subsection{Predictive Process Monitoring}\label{sec:predictive-process-monitoring}
-Predictive Process Monitoring is aimed at the use of online data to make statements about the progression of a running case~\cite{francescomarino2015, schoenig2018}. It is not based on process models, but predictive models, and thus provides a flexibility that is not available within model-based Process Mining. As Data Mining is also part of Process Mining~\cite{Aalst2016}, so is Predictive Process Monitoring. The application of Predictive Analytics on incomplete traces connects two sub-domains of Process Science and Data Science. This is also illustrated in \autoref{fig:process-data-science}. With Predictive Process Monitoring, it is possible to answer questions such as:
+Predictive Process Monitoring is aimed at the use of online data to make statements about the progression of a running case~\cite{francescomarino2015, schoenig2018}. It is not based on process models, but predictive models, and thus provides a flexibility that is not available within model-based Process Mining.  As visualized in \autoref{fig:process-data-science}, Predictive Process Monitoring connects two sub-domains of Process Science and Data Science. This makes it a discipline within Process Mining~\cite{Aalst2016}. With Predictive Process Monitoring, questions such as the following can be answered:
 
 \begin{enumerate}
     \item Can the service level agreement still be met?
@@ -72,9 +73,7 @@ The answers to these questions can give case workers the opportunity to interven
 
 \section{Predictive Modeling}\label{sec:predictive-modeling}
 Predictive Modeling is a domain that deals with creating models from learned statistical properties of data to predict outcomes~\cite{sivaganesan1994predictive}. These models are referred to as predictive models, and are not related to process models. This section introduces a common process for predictive model generation in \autoref{sec:predictive-model-development}.
-As we aim to transfer a method from NLP to Predictive Process Monitoring, we introduce a definition of sequences in \autoref{sec:background:sequences}. Then, we frame the problem in \autoref{sec:background:sequence-prediction} that is fundamental to this thesis: next-element predictions in a sequence.\\
-
-Predictive models work on \textit{samples}, which are comprised of a number of \textit{features} - variables that are considered useful for the prediction of the \textit{target variable}. The target variable may either be a continuous or discrete value. In the latter case, the output is referred to as classification. Activities are discrete, and as such this thesis deals with classification. In the exemplary log in \autoref{fig:process-log}, each row can be understood as a sample and each column as a single feature. Features are sometimes also referred to as predictor variables.
+As we aim to transfer a method from NLP to Predictive Process Monitoring, we introduce a definition of sequences in \autoref{sec:background:sequences}. Then, we frame the problem in \autoref{sec:background:sequence-prediction} that is fundamental to this thesis: next-element predictions in a sequence.
 
 \subsection{Predictive model development}
 \label{sec:predictive-model-development}
@@ -84,7 +83,9 @@ Predictive models work on \textit{samples}, which are comprised of a number of \
 	\caption{The process for \textit{Knowledge Discovery in Databases}~\cite{fayyad1996data}}
 	\label{fig:kdd_process}
 \end{figure}
-In 1996 Fayyad et al. published what came to be known as the Knowledge Discovery in Databases (KDD) process~\cite{fayyad1996data}. Published over 20 years ago and aimed at data mining, it is also applicable to predictive model building. It is illustrated in \autoref{fig:kdd_process}, and shall be explained step by step in the following with technical details relevant for this thesis. The process is highly iterative, is focused intensely on the data, and jumps between every step are possible~\cite{kuhn2013applied}.
+In 1996 Fayyad et al. published what came to be known as the Knowledge Discovery in Databases (KDD) process~\cite{fayyad1996data}. Published over 20 years ago and aimed at data mining, it is also applicable to predictive model building. It is illustrated in \autoref{fig:kdd_process}, and shall be explained step by step in the following with technical details relevant for this thesis. The process is highly iterative, is focused intensely on the data, and jumps between every step are possible~\cite{kuhn2013applied}.\\
+
+Predictive models are the statistical tools that are used to make predictions. They work on \textit{samples}, which are comprised of a number of \textit{features} - variables that are considered useful for the prediction of the \textit{target variable}. The target variable may either be a continuous or discrete value. In the latter case, the output is referred to as classification. Activities are discrete, and as such this thesis deals with classification. In the exemplary log in \autoref{fig:process-log}, each row can be understood as a sample and each column as a single feature. Features are sometimes also referred to as predictor variables.
 
 \subsubsection*{Selection}
 During the first step of the KDD process in \autoref{fig:kdd_process}, features are chosen as predictors based on differed criteria such as their predictive power or inter-feature correlations. Based on the latter, features can also be omitted from the original dataset.
@@ -96,7 +97,7 @@ The second step of the KDD process is focused on data quality. Features may be s
 The third step of the KDD process is aimed at making the data accessible for machine learning methods. During transformation, some features might be aggregated, normalized or encoded differently to assist the predictive model in picking up relations between variables. Common tasks are one-hot or dictionary encoding of discrete values such as strings, e.g. activity names. Variable concatenations or complex aggregations might also be added as \textit{engineered} features~\cite{kuhn2013applied}.
 
 \subsubsection*{Data Mining}
-Data mining deals with the extraction of implicit, previously unknown, and potentially useful information from data. Machine learning provide a technical basis for this~\cite{Aalst2016}. The goal of predicting the next activity is a classification task for which a wide array of applicable predictive models is available, such as decision trees, random forests, support vector machines (SVM) or artificial neural networks (ANN)~\cite{kuhn2013applied}.
+Data mining deals with the extraction of implicit, previously unknown, and potentially useful information from data. Machine learning provides a technical basis for this~\cite{Aalst2016}. The goal of predicting the next activity is a classification task for which a wide array of applicable predictive models is available, such as decision trees, random forests, support vector machines (SVM) or artificial neural networks (ANN)~\cite{kuhn2013applied}.
 
 The data prepared in the previous steps is used to \textit{train} the model. During this training phase, the model uses accuracy metrics to assess the quality of its predictions, learn the statistical properties of the data and adjust its internals accordingly. Certain input parameters of the model are adjusted during this phase as well, an activity referred to as \textit{hyper-parameter tuning}. Training the model can be a very time-consuming task, unless appropriate hardware is used.
 
