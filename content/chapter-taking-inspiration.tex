@@ -33,9 +33,9 @@ The SP-2 features are fed in higher up on the right side of the tree, passing th
     \label{fig:sp2-architecture}
 \end{figure}
 
-\section{Encoding sub-sequence occurrence}
+\section{Encoding subsequence occurrence}
 \label{sec:contrib:pfs-inspiration}
-Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} compared different feature representations and found that sub-trace occurence features help the model cover a broader variety of relationships. While they found this to be true for random forests, we want to investigate the applicability of such features for LSTM neural networks since we established the similarity of traces and sequences. While the results from Francescomarino et al. are discouraging~\cite{francescomarino2017}, another network architecture can make a difference. As SP-2 features already encode history and sub-sequence encodings do the same on a higher level of abstraction, we take the SP2 model architecture and inject different features in place of the SP-2 features. Said features and the corresponding architecture will henceforth be referred to as PFS, as illustrated in \autoref{fig:pfs-architecture}. The acronym PFS originates from the word PrefixSpan, which is the name of the algorithm used in \autoref{chap:evaluation} to mine the sub-sequences.
+Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} compared different feature representations and found that sub-trace occurence features help the model cover a broader variety of relationships. While they found this to be true for random forests, we want to investigate the applicability of such features for LSTM neural networks since we established the similarity of traces and sequences. While the results from Francescomarino et al. are discouraging~\cite{francescomarino2017}, another network architecture can make a difference. As SP-2 features already encode history and subsequence encodings do the same on a higher level of abstraction, we take the SP2 model architecture and inject different features in place of the SP-2 features. Said features and the corresponding architecture will henceforth be referred to as PFS, as illustrated in \autoref{fig:pfs-architecture}. The acronym PFS originates from the word PrefixSpan, which is the name of the algorithm used in \autoref{chap:evaluation} to mine the subsequences.
 
 \begin{figure}[ht]
     \centering

@@ -8,7 +8,7 @@ We cluster the future work by items which why we believe to be of importance for
 
 \noindent\textbf{Imbalanced classes:} While our approach at pre-processing the data covered the basics, a necessity to balance the distribution of classes in the target data remains. We do not believe it is viable to modify the traces themselves, but weighting classes based on their occurence in the current batch might be an option which could see accuracy gains as models learn better with a balanced target class distribution~\cite{web:stackoverflow-keras-class-weights}.\\
 
-\noindent\textbf{PFS feature engineering and hyper-parameter tuning:} The PFS model features  were chosen to be the 25 closed sub-sequences with the highest support. This threshold should be explored further. Furthermore, none of the model's hyper-parameters were optimized for lack of a functional framework. In this area, another contribution can be made.\\
+\noindent\textbf{PFS feature engineering and hyper-parameter tuning:} The PFS model features  were chosen to be the 25 closed subsequences with the highest support. This threshold should be explored further. Furthermore, none of the model's hyper-parameters were optimized for lack of a functional framework. In this area, another contribution can be made.\\
 
 \noindent\textbf{Concept drift:} Processes change over time and so does the content of their event logs. It is worth investigating at which point data can be omitted from training because it originates from an outdated version of the process. Knowledge about this also impacts whether or how often models need to be retrained and on which data.\\
 

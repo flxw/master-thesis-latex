@@ -93,7 +93,7 @@ $$normalize(x) =
 \end{cases}
 $$
 
-Categorical features without ordinal properties, i.e. all of the remaining features, were encoded using one-hot encoding if possible. In the case of the input for the EVM model, the concatenation of activity name and resource ID was encoded with dictionary encoding, as demonstrated in his paper~\cite{evermann2016}. Furthermore, the additional SP-2 and sub-sequence features needed to be engineered, which the following subsection show.
+Categorical features without ordinal properties, i.e. all of the remaining features, were encoded using one-hot encoding if possible. In the case of the input for the EVM model, the concatenation of activity name and resource ID was encoded with dictionary encoding, as demonstrated in his paper~\cite{evermann2016}. Furthermore, the additional SP-2 and subsequence features needed to be engineered, which the following subsection show.
 
 \subsection*{SP-2 feature engineering}
 For every trace, SP-2 features mark whether an activity has occured yet. Thus, these features are engineered in an iterative fashion, as \autoref{lst:sp2-generation} outlines. For every trace, a new feature vector \texttt{sp2\_df} is created and the occurence of the first activity is marked inside it. Now, a loop begins over the remaining steps, where each previous row inside \texttt{sp2\_df} is copied into the currently indexed row and the presence of the current activity is marked. This repeats itself until the trace has been processed completely.
@@ -123,8 +123,8 @@ for i in range(1,len(t)):
 \label{lst:sp2-generation}
 \end{listing}
 
-\subsection*{Sub-sequence feature engineering}
-The sub-sequence features for the PFS model were created with the help of the PrefixSpan algorithm implementation from the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. As \autoref{lst:pfs-mining} shows, the library greatly facilitates obtaining closed sub-sequences ranked by support, returning a two-dimensional array of sub-sequences, with one array per sub-sequence. The sequences are mined from the entirety of traces, and we pick the top 25 sequences as features to be encoded.
+\subsection*{subsequence feature engineering}
+The subsequence features for the PFS model were created with the help of the PrefixSpan algorithm implementation from the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. As \autoref{lst:pfs-mining} shows, the library greatly facilitates obtaining closed subsequences ranked by support, returning a two-dimensional array of subsequences, with one array per subsequence. The sequences are mined from the entirety of traces, and we pick the top 25 sequences as features to be encoded.
 
 \begin{listing}[ht]
 \begin{minted}{python}
@@ -135,7 +135,7 @@ closed_sequences = prefixspan_traces.topk(25, closed=True)
 \label{lst:pfs-mining}
 \end{listing}
 
-After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. For each index \verb=i= it is checked whether any of the mined sub-sequences starts at that position. This is checked by peeking ahead of \verb=i= for the length of the sub-sequence. As in the case of the SP-2 features, the occurence of a sub-sequence is marked with a boolean flag in the feature vector \verb=subseq\_df= from the row that it occured in onwards.
+After mining the sequences, a loop is executed for every trace, shown in \autoref{lst:subsequence-feature-creation}. For each index \verb=i= it is checked whether any of the mined subsequences starts at that position. This is checked by peeking ahead of \verb=i= for the length of the subsequence. As in the case of the SP-2 features, the occurence of a subsequence is marked with a boolean flag in the feature vector \verb=subseq\_df= from the row that it occured in onwards.
 
 \begin{listing}[ht]
 \begin{minted}{python}
@@ -147,7 +147,7 @@ activity_codes = t[target_col].map(event_to_int)
 tlen = len(t)
 
 for i in range(0, tlen):
-  # loop through all sub-sequences
+  # loop through all subsequences
   for subseq_idx, subseq in enumerate(ps):
     if tlen <= i+len(subseq): continue
 
@@ -164,7 +164,7 @@ for i in range(0, tlen):
     if subsequence_found:
       subseq_df.values[j+i:,subseq_idx] = True
 \end{minted}
-\caption{Enriching a trace \texttt{t} with sub-sequence features by detecting those that are contained inside it.}
+\caption{Enriching a trace \texttt{t} with subsequence features by detecting those that are contained inside it.}
 \label{lst:subsequence-feature-creation}
 \end{listing}
 
