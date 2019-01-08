@@ -8,7 +8,7 @@ We establish the connection between processes and sequences by connecting their 
 The definition for sequences presented in \autoref{sec:background:sequence-prediction} is a general one and needs to be specialized so that a case trace can be understood as a sequence.
 
 In the definition of a sequence, the set $I=\{i_1, i_2, \dots, i_n\}$ is used for \textit{items}, out of which itemsets $s \subset I$ are comprised. To understand a process trace as a sequence, an itemset needs to be perceived as a single row in a log. As such a row is made up of multiple different elements and adheres to a fixed schema, the definition needs to account for these two properties.\\
-% https://www.youtube.com/watch?v=D9ioyEvdggk
+
 \noindent First, the set $I$ is redefined as a union of the sets $C_i$. Each $C$ makes up the distinct values inside one of the $n$ columns of a trace:
 
 $$I = \bigcup\limits_{i=1}^{n} C_{i}$$
