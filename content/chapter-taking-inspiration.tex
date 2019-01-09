@@ -30,24 +30,29 @@ The definition places each item on a specific place in the itemset, depending on
 \section{Adapting a competition submission}\label{sec:contrib:sp2-inspiration}
 Shibata et al.'s bipartite network architecture has shown outstanding performance in the SPiCe competition~\cite{web:spice}. Under the assumption that a case exhibits properties similar to sentences, we adapt it for use in the business process domain.
 
-\autoref{fig:sp2-architecture} displays how the original network architecture from Shibata et al. was adapted. The word embedding layers were removed on the sequence data input and replaced with a fully-connected Dense layer on the right. Furthermore, the hidden layer dimensions were adapted following the example by Schönig et al.~\cite{schoenig2018}. The model will be trained on whole events and SP-2 features, whereas the latter is fed in on the right input layer. This approach will be referred to as SP2 in the following.\\
-
-The model uses $n$ units on the first input layer, denoting the dimensionality of the input vector with its encoded activity name, timestamps and other event attributes. It puts out the next activity in one-hot encoded form through $m$ units, thus modelling the task as a multi-classification problem.
-
-In contrast to Evermann et al. and Shibata et al., the number of units $m+n$ in the hidden layers is a function of the input unit count and the output unit count. This follows general advice not to introduce bottlenecks in the hidden layers by using fewer units than required in the output layer. Furthermore, dropout layers have been introduced to prevent overfitting. Another contrast to Shibata et al. is the removal of the embedding layers above the inputs. We opted for this strategy since the dimensionality of activity names is typically a lot lower than it would be for words in a sentence.
-
-The SP-2 features are fed in higher up on the right side of the tree, passing through a ReLU-activated, fully-connected layer, before concatenation with the LSTM output. Finally, the concatenated vectors are processed by fully-connected layers, with the commonly used Softmax activation function producing the classification.
-
-\begin{figure}[ht]
+\begin{figure}[!htb]
     \centering
     \includegraphics[width=0.8\textwidth]{gfx/sp2-network-architecture.png}
     \caption{SP2 network architecture and its dimensions}
     \label{fig:sp2-architecture}
 \end{figure}
 
+\autoref{fig:sp2-architecture} displays the adapted network architecture from Shibata et al., and we shall describe the changes we made in the following.
+
+The Embedding layers were completely removed. Above the SP-2 feature input layer, the embedding layer was replaced with a fully-connected layer. The reason for the removal is as follows: Shibata et al. predicted the next word in a sentence based on the preceding words, and as such, the itemsets that they used consisted of a single item: a word~\cite{shibata2016bipartite}. We aim to predict the next activity based on the preceding events, and as shown in the previous section, the event-itemsets consist of multiple items which represent different attributes.
+Embedding layers require dictionary-encoded input of a single item, which is a problem when multiple items belong together~\cite{goldberg2014word2vec}. An alternative to the removal would have been the concatenation of the outputs of one Embedding layer per attribute type. We decided against this due to the relatively small amount of available training data and the increased computational overhead.
+
+The model uses $n$ units on the first input layer, denoting the dimensionality of the input vector with its encoded activity name, timestamps and other event attributes. It puts out the next activity in one-hot encoded form through $m$ units, thus modelling the task as a multi-classification problem.
+
+In contrast to Evermann et al. and Shibata et al., the number of units $m+n$ in the hidden layers is a function of the input unit count and the output unit count. This follows general advice not to introduce bottlenecks in the hidden layers by using fewer units than required in the output layer~\cite{web:techniques-in-convnets,szegedy2016rethinking}. Furthermore, dropout layers have been introduced to prevent overfitting.
+
+The SP-2 features are to be engineered based on the activity names, as the name of the next activity is also the prediction target. Shibata et al. also encoded the history of the prediction target in their implementation~\cite{shibata2016bipartite}. The SP-2 features are fed in higher up on the right side of the tree, passing through a ReLU-activated, fully-connected layer, before concatenation with the LSTM output. Finally, the concatenated vectors are processed by fully-connected layers, with the commonly used Softmax activation function producing the classification.
+
 \section{Encoding subsequence occurrence}
 \label{sec:contrib:pfs-inspiration}
-Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} compared different feature representations and found that sub-trace occurence features help the model cover a broader variety of relationships. While they found this to be true for random forests, we want to investigate the applicability of such features for LSTM neural networks since we established the similarity of traces and sequences. While the results from Francescomarino et al. are discouraging~\cite{francescomarino2017}, another network architecture can make a difference. As SP-2 features already encode history and subsequence encodings do the same on a higher level of abstraction, we take the SP2 model architecture and inject different features in place of the SP-2 features. Said features and the corresponding architecture will henceforth be referred to as PFS, as illustrated in \autoref{fig:pfs-architecture}. The acronym PFS originates from the word PrefixSpan, which is the name of the algorithm used in \autoref{chap:evaluation} to mine the subsequences.
+Klinkmüller et al. compared different feature representations and found that sub-trace occurence features help the model cover a broader variety of relationships~\cite{klinkmuller2018reliablemonitoring}. While they found this to be true for random forests, we want to investigate the applicability of such features for LSTM neural networks since we established the similarity of traces and sequences. While the results from Francescomarino et al. are discouraging~\cite{francescomarino2017}, another network architecture could make a difference.
+
+Since SP-2 features already encode history and subsequence encodings do the same on a higher level of abstraction, we take the SP2 model architecture and inject different features in place of the SP-2 features. Said features and the corresponding architecture will henceforth be referred to as PFS, as illustrated in \autoref{fig:pfs-architecture}. The acronym PFS originates from the word PrefixSpan, which is the name of the algorithm used in \autoref{chap:evaluation} to mine the subsequences.
 
 \begin{figure}[ht]
     \centering
