@@ -39,7 +39,7 @@ A process log tracks the execution history of a process and can be understood in
 
 Process event logs are typically made availble via XES files. XES is an abbreviation for the \textit{eXtensible Event Stream} standard~\cite{gunther2013xes}. An excerpt from a case extracted from the BPIC11 XES file~\cite{BPIC2011} is displayed in \autoref{fig:process-log}. In this particular log, only completion events are tracked, as evidenced by the values in the \verb=lifecycle:transition= column.\\
 
-Formally, a log is defined as follows~\cite{Aalst2016}. It is made up of cases $c \in \mathscr{C}$, where $\mathscr{C}$ is the case universe. Similar to events, cases have attributes, e.g. a name. The operator $\#_{attr}(c)$ returns the value of the attribute $attr$ on a case $c$. A mandatory attribute of any case is its trace $\#_{trace}(c)$, which is especially relevant for our work.
+Formally, a log $L$ is defined as follows~\cite{Aalst2016}. It is made up of cases $c \in \mathscr{C}$, where $\mathscr{C}$ is the case universe. Similar to events, cases have attributes, e.g. a name. The operator $\#_{attr}(c)$ returns the value of the attribute $attr$ on a case $c$. The function $attr$ is lists all atributes that an event posseses. A mandatory attribute of any case is its trace $\#_{trace}(c)$, which is especially relevant for our work.
 Each trace represents a finite sequence of events $e \in \mathscr{E}$:
 
 $$ \#_{trace}(c) = \langle e_1, e_2, e_3 \dots, e_n \rangle $$
@@ -112,12 +112,12 @@ A sequence is made up of ordered, individual steps, which are referred to as ite
 \begin{equation*}
 \begin{split}
 \mathscr{I} &= \{i_1, i_2, \cdots, i_n\}\\
-        s   &= (x_1x_2\cdots x_n)\ |\ \forall 0 \leq j \leq n: x_j \in \mathscr{I}\\
-        seq &= \langle s_1s_2\cdots s_l \rangle\ |\ \forall\ 0 \leq j \leq l: s_j \subseteq \mathscr{I}
+        s   &= (x_1,x_2\cdots x_n)\ |\ \forall 0 \leq j \leq n: x_j \in \mathscr{I}\\
+        seq &= \langle s_1,s_2\cdots s_l \rangle\ |\ \forall\ 0 \leq j \leq l: s_j \subseteq \mathscr{I}
 \end{split}
 \end{equation*}
 
-Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items. For  subsequences, the notation $seq_{i,k}$ denotes that elements from index $i$ through $k$ from the original sequence are contained consecutively: $seq_{1,2} = \langle s_1s_2 \rangle$. The relationship itself is noted as $seq_{1,2} \sqsubseteq seq$.\\
+Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items. For  subsequences, the notation $seq_{i,k}$ denotes that elements from index $i$ through $k$ from the original sequence are contained consecutively: $seq_{1,2} = \langle s_1,s_2 \rangle$. The relationship itself is noted as $seq_{1,2} \sqsubseteq seq$.\\
 
 Assuming that a sequence terminates, consider the database of terminated sequences $TS$. Under the assumption of the Markovian hypothesis that "the probability of each event depends only on the state attained in the previous event"~\cite{gagniuc2017markov}, a predictive model can be trained on this database to predict the next sequence. This will be shown in the next sub-section.
 
@@ -145,8 +145,8 @@ Many-to-many predictions are common in the domains of machine translation. For e
 
 \begin{equation*}
 \begin{split}
-seq_{in} &= \langle(I) (am) (writing) (my) (thesis)\rangle\\
-\widehat{seq_{out}} &= \langle(Ich) (schreibe) (meine) (Masterarbeit)\rangle
+seq_{in} &= \langle(I),(am),(writing),(my),(thesis)\rangle\\
+\widehat{seq_{out}} &= \langle(Ich),(schreibe),(meine),(Masterarbeit)\rangle
 \end{split}
 \end{equation*}
 
@@ -154,7 +154,7 @@ Many-to-one predictions are used to generate text and even write simple novels~\
 
 \begin{equation*}
 \begin{split}
-seq_{in}  &= \langle(I) (am) (writing) (my)\rangle\\
+seq_{in}  &= \langle(I),(am) (writing),(my)\rangle\\
 \hat{s} &= \langle thesis\rangle
 \end{split}
 \end{equation*}
@@ -225,8 +225,8 @@ Data preparation and feature engineering are the tasks in predictive model devel
 Then, relevant methods used for categorical variables are presentedin \autoref{sec:categorical-feature-engineering}. \autoref{sec:sequential-feature-engineering} points out methods with which to make sequential inputs of various length conform with the fixed-width input requirement of predictive models. In the case of ANNs this requirement can easily be explained by the fixed number of units on the input layer. The methods are demonstrated at the example of the following two sequences:
 \begin{equation*}
     \begin{split}
-        seq1 &= \langle(Arthur) (is) (the) (king)\rangle\\
-        seq2 &= \langle(Maria) (wants) (to) (be) (the) (queen)\rangle
+        seq1 &= \langle(Arthur),(is),(the),(king)\rangle\\
+        seq2 &= \langle(Maria),(wants),(to),(be),(the),(queen)\rangle
     \end{split}
 \end{equation*}
 
