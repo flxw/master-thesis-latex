@@ -236,15 +236,15 @@ To conduct the experiments, Docker containers were built with the development An
 \begin{tabular}{c|rrrr}
 Dataset & Individual & Grouped & Padded & Windowed \\
 \hline
-BPIC11    & 1 & & 7 & 1054\\
-BPIC 12   & 1 & & 89 & 939\\
-BPIC 15-1 & 1 & & 9 & 365\\
-BPIC 15-2 & 1 & & 5 & 316\\
-BPIC 15-3 & 1 & & 10 & 414\\
-BPIC 15-4 & 1 & & 8 & 334\\
-BPIC 15-5 & 1 & & 7 & 420\\
+BPIC11    & 1 & $2.80 \pm 4.99$ & 7 & 1054\\
+BPIC 12   & 1 & $129.14 \pm 333.58$ & 89 & 939\\
+BPIC 15-1 & 1 & $10.33 \pm 11.45$ & 9 & 365\\
+BPIC 15-2 & 1 & $6.17 \pm 7.57$ & 5 & 316\\
+BPIC 15-3 & 1 & $12.27 \pm 19.28$ & 10 & 414\\
+BPIC 15-4 & 1 & $9.17 \pm 14.59$ & 8 & 334\\
+BPIC 15-5 & 1 & $9.52 \pm 14.36$ & 7 & 420\\
 \end{tabular}
-\caption[Batch sizes for each dataset and strategy]{Traces per batch for the different datasets and batching strategies}
+\caption[Batch sizes for each dataset and strategy]{Traces per batch for the different datasets and batching strategies. Since the grouped batches vary in size, their size is stated as \textit{average} $\pm$ \textit{standard deviation}}
 \label{tab:batch-sizes}
 \end{table}
 
@@ -426,6 +426,7 @@ Secondly, we find that the grouping strategy frequently delivers the best result
 Third and lastly, we realize that Embeddings might not be useful on the currently available datasets as these might simply be too small. The lacking performance of the EVM model and its barely converging loss indicate that this might be the case. All accuracy/loss curves from training are enclosed in \autoref{appendix:loss-curves}, and show that especially for the EVM model, the loss optimization does not work properly.\\
 
 We end the evaluation with a comparison of our best results with the initially mentioned publications based on BPIC12. While Tax et al.~\cite{tax2017} and Evermann et al.~\cite{evermann2016} were able to obtain an accuracy of $0.76$ and $0.768$ respectively, they did not focus on specific cases. Furthermore, Evermann et al. did not use Keras on top of Tensorflow but Tensorflow directly, which enabled him to directly make use of low-level functions. To the best of our knowledge, our implementation sufficiently approximates theirs, but this can be a reason for the bad results. Another very probable reason is their feature engineering~\cite{evermann2016}.
-Böhmer et al.~\cite{boehmer2018probability} are able to attain an accuracy of $0.77$ with their statistical approach.
 
-Using the padding strategy, all SCH, SP2 and PFS score above $0.80$, with the SP2 model edging to the best accuracy of $0.82$.
+Böhmer et al.~\cite{boehmer2018probability} are able to attain an accuracy of $0.77$ with their statistical approach. While they argue that machine learning methods may perform better, they place great value on comprehensible reasoning information from the model.
+
+Using the padding strategy, all SCH, SP2 and PFS score above $0.80$, with the SP2 model edging to the best accuracy of $0.82$. This supports the thesis by Böhmer et al. of lower comprehensibility at higher accuracy.
