@@ -337,7 +337,7 @@ BPIC2015-4 &    0.638515 &  0.668868 &  0.645301 &  0.579371 \\
 BPIC2015-5 &    0.630758 &  0.650530 &  0.640852 &  0.557139 \\
 \end{tabular}
 \caption[Grouping strategy leads to best mean accuracies]{The grouping strategy accuracy mean across the top accuracies of the SCH, SP2 and PFS models is generally the highest}
-\label{fig:strategy-top-accuracies}
+\label{tab:strategy-top-accuracies}
 \end{figure}
 \FloatBarrier
 
@@ -421,12 +421,11 @@ After presenting and explaining our findings, we summarize our learnings in this
 
 First, we were able to confirm Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} and their suspicion that windowed batching does not work well for sequence prediction. While it may be a performant strategy to use for time-series prediction, it does not work very well for predicting the future of a single case.
 
-Secondly, we find that the grouping strategy frequently delivers the best results in terms of speed and accuracy. We do realize that it should be iterated upon to include a threshold which limits batches to a maximum size and splits the larger batches accordingly. As evidenced by the charts, the grouping strategy seems to perform better with a medium to highly complex processes from BPIC11 and BPIC15, while padding works better with the simpler process from BPIC12.
+Secondly, we find that the grouping strategy frequently delivers the best results in terms of speed and accuracy. We do realize that it should be iterated upon to include a threshold which limits batches to a maximum size and splits the larger batches accordingly. As evidenced by the charts, the grouping strategy seems to perform better with a medium to highly complex processes from BPIC11 and BPIC15, while padding works better with the simpler process from BPIC12. In combination with the SP2 model, the strategy contributed to most of the highest accuracies.
 
 Third and lastly, we realize that Embeddings might not be useful on the currently available datasets as these might simply be too small. The lacking performance of the EVM model and its barely converging loss indicate that this might be the case. All accuracy/loss curves from training are enclosed in \autoref{appendix:loss-curves}, and show that especially for the EVM model, the loss optimization does not work properly.\\
 
 We end the evaluation with a comparison of our best results with the initially mentioned publications based on BPIC12. While Tax et al.~\cite{tax2017} and Evermann et al.~\cite{evermann2016} were able to obtain an accuracy of $0.76$ and $0.768$ respectively, they did not focus on specific cases. Furthermore, Evermann et al. did not use Keras on top of Tensorflow but Tensorflow directly, which enabled him to directly make use of low-level functions. To the best of our knowledge, our implementation sufficiently approximates theirs, but this can be a reason for the bad results. Another very probable reason is their feature engineering~\cite{evermann2016}.
-
 Böhmer et al.~\cite{boehmer2018probability} are able to attain an accuracy of $0.77$ with their statistical approach.
 
 Using the padding strategy, all SCH, SP2 and PFS score above $0.80$, with the SP2 model edging to the best accuracy of $0.82$.

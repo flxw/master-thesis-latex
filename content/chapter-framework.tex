@@ -55,12 +55,11 @@ The proposed framework provides a simple training frontend, and integrates two c
 
 \noindent\textbf{Batchers} take the pre-formatted data sets and structure them into batches. For each batching strategy, a class inherits from the abstract base class \verb=AbstractBuilder=.\\
 
-\noindent The \verb=model_runner= frontend ties these two concepts together with training logic and provides a basic command-line interface as \autoref{fig:framework-frontend} shows. It allows for flexibly training a model with a specific Builder and a specific Batcher. It also permits placing the training process on a specific GPU, and defining the output directory for the model and performance measurement files. The training algorithm also implements early stopping, of which the thresholds can be configured via Builder properties.\\
+\noindent The \verb=model_runner= frontend ties these two concepts together with training logic and provides a basic command-line interface as \autoref{fig:framework-frontend} shows. It allows for flexibly training a model with a specific Builder and a specific Batcher. It also permits placing the training process on a specific GPU, and defining the output directory for the model and performance measurement files. The training algorithm also implements early stopping, of which the thresholds can be configured via a configuration file.\\
 
-The inheritance structure allows all classes to implement the same interface, which make the interaction in \autoref{fig:} possible. This exchange enables the flexibility that this framework provides.\\
+%The inheritance structure allows all classes to implement the same interface, which make the interaction in \autoref{fig:} possible. This exchange enables the flexibility that this framework provides.\\
 
-With the help of this framework, future researchers only need to subclass \verb=AbstractBuilder=, and can directly evaluate the model performance on any given dataset without having to implement the whole training environment. By simply sharing their Builder and Batcher implementations, it will be much easier for other researchers to reproduce findings. The framework and detailed documentation is hosted under \href{https://github.com/flxw/ppm-tf}{flxw/ppm-tf}
-\todo[inline]{Create this repository anlong with its documentation and usage instructions.}
+With the help of this framework, future researchers only need to subclass \verb=AbstractBuilder=, and can directly evaluate the model performance on any given dataset without having to implement the whole training environment. By simply sharing their Builder and Batcher implementations, it will be much easier for other researchers to reproduce findings. The framework and detailed documentation is hosted under \href{https://github.com/flxw/nitro4ppm}{flxw/nitro4ppm}
 
 \begin{figure}
 \centering
