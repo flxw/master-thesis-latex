@@ -1,6 +1,6 @@
 \chapter{Sequence prediction for running cases}
 \label{chap:taking-inspiration}
-While a number of works have demonstrated the applicability of LSTM neural networks to Predictive Process Monitoring, most have left out a perspective on the sequence prediction problem from Natural Language Processing (NLP). In this chapter we outline how we take inspiration from sequence prediction in NLP, and thus add to improvement area 3 from \autoref{sec:intro:contribution}.
+While a number of works have demonstrated the applicability of LSTM neural networks to Predictive Process Monitoring, most have left out a perspective on the sequence prediction problem from Natural Language Processing (NLP). In this chapter, we outline how we take inspiration from sequence prediction in NLP, and thus add to improvement area 3 from \autoref{sec:intro:contribution}.
 
 We establish the connection between processes and sequences by connecting their definitions in \autoref{sec:contrib:case-sequence-understanding}. This provides the underpinning for introducing two NLP-inspired approaches for predicting the next activity in a case. These are presented in \autoref{sec:contrib:sp2-inspiration} and \autoref{sec:contrib:pfs-inspiration}.
 
@@ -49,7 +49,7 @@ Shibata et al.'s bipartite network architecture has shown outstanding performanc
 The Embedding layers were completely removed. Above the SP-2 feature input layer, the embedding layer was replaced with a fully-connected layer. The reason for the removal is as follows: Shibata et al. predicted the next word in a sentence based on the preceding words. As each word is an item, their used itemsets only consist of a single item~\cite{shibata2016bipartite}. We aim to predict the next activity based on the preceding events, and as shown in the previous section, the event-itemsets consist of multiple items which represent different attributes.
 Embedding layers require dictionary-encoded input of a single item, which is a problem when multiple items belong together~\cite{goldberg2014word2vec}. An alternative to the removal would have been the concatenation of the outputs of one Embedding layer per attribute type. We decided against this due to the relatively small amount of available training data and the increased computational overhead.
 
-The model uses $n$ units on the first input layer, denoting the dimensionality of the input vector with its encoded activity name, timestamps and other event attributes. It puts out the next activity in one-hot encoded form through $m$ units, thus modelling the task as a multi-classification problem.
+The model uses $n$ units on the first input layer, denoting the dimensionality of the input vector with its encoded activity name, timestamps and other event attributes. It puts out the next activity in one-hot encoded form through $m$ units, thus modeling the task as a multi-classification problem.
 
 In contrast to Evermann et al. and Shibata et al., the number of units $m+n$ in the hidden layers is a function of the input unit count and the output unit count. This follows general advice not to introduce bottlenecks in the hidden layers by using fewer units than required in the output layer~\cite{web:techniques-in-convnets,szegedy2016rethinking}. Furthermore, dropout layers have been introduced to prevent overfitting.
 

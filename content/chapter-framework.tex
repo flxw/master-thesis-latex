@@ -12,9 +12,9 @@ Keras' implementation of LSTM is stateful \textit{during} a batch, and resets th
 
 $$(n_{samples}, n_{timesteps}, n_{features})$$
 
-Each sample contains a number of timesteps $n_{timesteps}$ containing a number of features $n_{features}$. $n_{features}$ is constant, as it represents the feature vector dimensions. For each sample, the Keras LSTM layer cells maintain a separate state, meaning that several traces can be trained on simultaneously~\cite{web:keras-lstm-state}. As the batches themselves need not to have the same dimensions, this definition opens up a range of possibilities to construct batches, four of which we highlight in the following paragraphs. To the best of our knowledge, these have not been compared in this context yet.\\
+Each sample contains a number of timesteps $n_{timesteps}$ containing a number of features $n_{features}$. $n_{features}$ is constant, as it represents the feature vector dimensions. For each sample, the Keras LSTM layer cells maintain a separate state, meaning that several traces can be trained on simultaneously~\cite{web:keras-lstm-state}. As the batches themselves do not need to have the same dimensions, this definition opens up a range of possibilities to construct batches. We highlight four of them in the following paragraphs. To the best of our knowledge, these have not been compared in this context yet.\\
 
-First and easiest, one trace can be trained per batch. This fulfills the requirement of constant dimensions, since only a single sample is used.
+First and easiest, one trace can be trained per batch. This fulfills the requirement of constant dimensions since only a single sample is used.
 
 Second, \textit{some} traces can be trained inside a single batch. This is possible if all traces inside the batch have the same number of timesteps, i.e. have the same length. The number of samples and timesteps may vary between batches. A look at the trace length distribution in \autoref{fig:bpic2011-length-distribution} from BPIC11 reveals that grouped batching could bias the model toward the long tail of the distribution, as those traces are trained in batches of their own.
 
@@ -29,7 +29,7 @@ Third, there is the possibility of padding the number of time-steps in a sequenc
 
 Fourth and finally, there is also the possibility to split the trace into samples by sliding a window along it. This results in $l-w+1$ samples for a trace of length $l$ and a window width $w$. Taking \autoref{tab:sliding-window} in \autoref{sec:background:feature-engineering} as an example, the window would be two timesteps wide. While this approach solves the problem of unequal sample lengths and facilitates batch construction, the model can only use a maximum of $w$ timesteps per sample for training and might lose potential long-term dependencies. As both Evermann et al.~\cite{evermann2016} and Schönig et al.~\cite{schoenig2018} use this format and it directly opposes the findings of Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}, we investigate it. Furthermore, we are convinced that a windowed training data format misses out on LSTM potential.\\
 
-The four batching strategies are labelled in the order of the preceding presentation for easier reference in the next chapter, where they are evaluated:
+The four batching strategies are labeled in the order of the preceding presentation for easier reference in the next chapter, where they are evaluated:
 \begin{itemize}
 \item\textbf{Individual}: One trace per batch
 \item\textbf{Grouped}: Same-length traces in one batch
@@ -40,7 +40,7 @@ The four batching strategies are labelled in the order of the preceding presenta
 \section{A next-event predictive model training framework}
 \label{sec:contrib:training-framework}
 We realize that making different process prediction approaches comparable is not only a technical but also a data-related challenge - no established benchmarking datasets for Predictive Process Monitoring exist yet.
-To mitigate this situation, we designed a software framework that helped us compare the sixteen total model-batching-strategy combinations on a variety of datasets in an extensible way. We want to make this framework accessible to future researchers to facilitate model development, and sharing of implementations.\\
+To mitigate this situation, we designed a software framework that helped us compare the sixteen total model-batching-strategy combinations on a variety of datasets in an extensible way. We want to make this framework accessible to future researchers to facilitate model development and sharing of implementations.\\
 
 \begin{figure}
     \centering
@@ -49,15 +49,13 @@ To mitigate this situation, we designed a software framework that helped us comp
     \label{fig:trainig-framework-classes}
 \end{figure}
 
-The proposed framework provides a simple training frontend, and integrates two concepts: Builders and Batchers. As \autoref{fig:trainig-framework-classes} shows, the two concepts are introduced as abstract base classes from which the actual model and batching strategy implementations are derived.\\
+The proposed framework provides a simple training frontend and integrates two concepts: Builders and Batchers. As \autoref{fig:trainig-framework-classes} shows, the two concepts are introduced as abstract base classes from which the actual model and batching strategy implementations are derived.\\
 
-\noindent\textbf{Builders} construct Keras models and also define the structure of the training and test data. This is important as models may not only have one input layer, but two or more. These pre-formatted data sets are not structured into batches yet. One such Builder is implemented for every model type by inheriting from the abstract base class \verb=AbstractBuilder=.\\
+\noindent\textbf{Builders} construct Keras models and also define the structure of the training and test data. This is important as models may not only have one input layer but two or more. These pre-formatted data sets are not structured into batches yet. One such Builder is implemented for every model type by inheriting from the abstract base class \verb=AbstractBuilder=.\\
 
 \noindent\textbf{Batchers} take the pre-formatted data sets and structure them into batches. For each batching strategy, a class inherits from the abstract base class \verb=AbstractBuilder=.\\
 
-\noindent The \verb=model_runner= frontend ties these two concepts together with training logic and provides a basic command-line interface as \autoref{fig:framework-frontend} shows. It allows for flexibly training a model with a specific Builder and a specific Batcher. It also permits placing the training process on a specific GPU, and defining the output directory for the model and performance measurement files. The training algorithm also implements early stopping, of which the thresholds can be configured via a configuration file.\\
-
-%The inheritance structure allows all classes to implement the same interface, which make the interaction in \autoref{fig:} possible. This exchange enables the flexibility that this framework provides.\\
+\noindent The \verb=model_runner= frontend ties these two concepts together with training logic and provides a basic command-line interface as \autoref{fig:framework-frontend} shows. It allows for flexible training of a model with a specific Builder and a specific Batcher. It also permits placing the training process on a specific GPU and defining the output directory for the model and performance measurement files. The training algorithm also implements early stopping, of which the thresholds can be configured via a configuration file.\\
 
 With the help of this framework, future researchers only need to subclass \verb=AbstractBuilder=, and can directly evaluate the model performance on any given dataset without having to implement the whole training environment. By simply sharing their Builder and Batcher implementations, it will be much easier for other researchers to reproduce findings. The framework and detailed documentation is hosted under \href{https://github.com/flxw/nitro4ppm}{flxw/nitro4ppm}
 

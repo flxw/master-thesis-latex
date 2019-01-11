@@ -2,7 +2,7 @@
 Through the use of the framework described in the previous chapter, we can evaluate four different algorithms for next-activity prediction side-by-side: Two implementations that mimic the networks by Evermann et al. and Schönig et al, and the PFS and SP2 approaches presented in \autoref{chap:taking-inspiration}. The reimplementation of Evermann's and Schönig's approaches will be referred to as EVM and SCH respectively. For each model, we will analyze the performance differences between the four different batching strategies from \autoref{chap:training-framework}.
 
 In this chapter, we first present our choice of datasets in \autoref{sec:eval:dataset-choice}. As we follow the KDD process, we then lead through the data pre-processing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the features for the SP-2 and PFS models.
-The system configuration and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in each sections.
+The system configuration and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in each section.
 
 \section{Choice of datasets}
 \label{sec:eval:dataset-choice}
@@ -65,9 +65,9 @@ In the first step of the KDD process~\cite{fayyad1996data}, the data is pre-proc
     \item Eliminate features which correlate strongly. To account for categorical correlation, the bias-corrected version of Cramér's~V~\cite{bergsma2013bias} is used.
 \end{enumerate}
 
-In step 1, the \verb=lifecycle:transition= feature was filtered so that only completed events were left. This was done to reduce dimensionality and improve comparability, since BPIC11 only contains completed events.
+In step 1, the \verb=lifecycle:transition= feature was filtered so that only completed events were left. This was done to reduce dimensionality and improve comparability because BPIC11 only contains completed events.
 
-In step 2, the \verb=lifecycle:transition= feature was removed in every dataset, since it had been filtered before. No other features exhibited zero entropy.
+In step 2, the \verb=lifecycle:transition= feature was removed in every dataset since it had been filtered before. No other features exhibited zero entropy.
 
 In step 3, the results from the pairwise application of Cramér's~V~\cite{bergsma2013bias} on the features in a dataset reveal that some features correlate strongly with several others in the BPIC11 and BPIC15 datasets. The respective heatmaps can be found in \autoref{appendix:correlation-heatmaps}. Thus, these were dropped. As evidenced in the respective heatmap, the BPIC12 dataset with its small number of features did not require any removals. \autoref{tab:dataset-preprocessing} summarizes which features were removed and which ones were kept after the three steps.
 
@@ -79,21 +79,21 @@ In step 3, the results from the pairwise application of Cramér's~V~\cite{bergsm
 \hline
 \textbf{BPIC11} & \verb=lifecycle:transition=, \verb=Producer code=,  \verb=Activity code=,  \verb=Specialism code= & \verb=time:timestamp=, \verb=concept:name=, \verb=org:group=, \verb=Number of executions=, \verb=Activity code=, \verb=Producer code=, \verb=Specialism code=, \verb=Section=\\
 \textbf{BPIC12} & \verb=lifecycle:transition= & \verb=org:resource=, \verb=concept:name=, \verb=time:timestamp=\\
-\textbf{BPIC15} & \verb=lifecycle:transition=, \verb=activityNameNL=, \verb=activityNameEN=, \verb=action_code=, \verb=dueDate= & \verb=time:timestamp=, \verb=dateFinished=, \verb=planned=, \verb=concept:name=, \verb=monitoringResource=, \verb=org:resource=, 	\verb=question=
+\textbf{BPIC15} & \verb=lifecycle:transition=, \verb=activityNameNL=, \verb=activityNameEN=, \verb=action_code=, \verb=dueDate= & \verb=time:timestamp=, \verb=dateFinished=, \verb=planned=, \verb=concept:name=, \verb=monitoringResource=, \verb=org:resource=,     \verb=question=
 \end{tabular}
 \end{adjustbox}
 \caption{Omitted features during pre-processing}
 \label{tab:dataset-preprocessing}
 \end{table}
 
-The activities described above were conducted in JupyterLab notebooks~\cite{web:jupyter}, where Anaconda~\cite{web:anaconda} was used to create a stable development environment. The OpyenXes~\cite{web:opyenxes} library proved to be especially useful for transferring raw XES logs into workable Pandas dataframes.
+The activities described above were conducted in JupyterLab notebooks~\cite{web:jupyter}, where Anaconda~\cite{web:anaconda} was used to create a stable development environment. The OpyenXes~\cite{web:opyenxes} library proved to be especially useful for transferring raw XES logs into workable Pandas data frames.
 
 \section{Data transformation}
 \label{sec:eval:data-transformation}
 After selecting suitable features in the first step, the second step of the KDD process~\cite{fayyad1996data} suggests the transformation of the remaining features into representations that are better received by predictive models. Also, feature engineering is part of this step, and so the construction of the SP-2 and PFS features is explained in the following subsections.
 
 \subsection*{Transforming basic features}
-The features remaining after selection can be divided into three categories: timestamps, numerical and categorical. The transformation applied on each category of feature is described briefly in the following:
+The features remaining after selection can be divided into three categories: timestamps, numerical and categorical. The transformation applied to each category of feature is described briefly in the following:
 
 Timestamps are converted to numerical features for each trace, i.e. each timestamp $t_i$ was made relative to the beginning of a trace by replacing it with the result of $t_i - t_0$. Relative timestamps have been shown to work with sequential data~\cite{lessmannBADS}.
 
@@ -144,7 +144,7 @@ As presented in \autoref{sec:contrib:pfs-inspiration}, PFS features encode subse
 
 The features for the PFS model were created with the help of the PrefixSpan algorithm implementation from the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. Similarly to the SP-2 features, they are based on the target variable.
 
-As \autoref{lst:pfs-mining} shows, prefixspan-py greatly facilitates obtaining subsequences. The depicted function call returns the top 25 closed subsequences ranked by support. Mined from the entirety of traces, these subsequences are picked as features to be encoded. By choosing 25, we stay well above the minimum support requirement of $0.05$ chosen by Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}.
+As \autoref{lst:pfs-mining} shows, prefixspan-py greatly facilitates obtaining subsequences. The depicted function call returns the top 25 closed subsequences ranked by their support metric. Mined from the entirety of traces, these subsequences are picked as features to be encoded. By choosing 25, we stay well above the minimum support requirement of $0.05$ chosen by Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}.
 
 \begin{listing}[ht]
 \begin{minted}{python}
@@ -203,16 +203,16 @@ To finally work with the data, the column containing the name of the next activi
 \subsection*{Splitting the datasets}
 To verify model performance on unseen data, a portion of the dataset is often put aside for testing purposes~\cite{kuhn2013applied}.
 
-We split all datasets into training and validation sets of complete traces. While $25\%$ of the traces were used for validation, the remaining $75\%$ were used for training purposes. The traces were shuffled and stratified to contain an approximately similar distribution of trace lengths. This avoid possible biases towards trace lengths. The event order in a trace was not changed.
+We split all datasets into training and validation sets of complete traces. While $25\%$ of the traces were used for validation, the remaining $75\%$ were used for training purposes. The traces were shuffled and stratified to contain an approximately similar distribution of trace lengths. This avoids possible biases towards trace lengths. The event order in a trace was not changed.
 
 \section{Training configuration}\label{sec:eval:test-setup}
 This section highlights the model configuration, and the employed hyper-parameters for each model, as well as batch sizes of each batching strategy.
 
 We made use of the framework described in \autoref{chap:training-framework}, which implements early stopping, and saves model snapshots when its validation loss hits a new record low. If the validation loss did not improve for 10 epochs, the training was stopped.
 
-The implementation of the padding strategy required a small cue: The padding values incurred a large memory overhead, so that BPIC11 could not fit into GPU memory. For this reason, we filtered out $20\%$ of the longest traces. With regard to the length distribution in \autoref{fig:bpic2011-length-distribution}, these seem to be strong outliers.
+The implementation of the padding strategy required a small cue: The padding values incurred a large memory overhead so that BPIC11 could not fit into GPU memory. For this reason, we filtered out $20\%$ of the longest traces. With regard to the length distribution in \autoref{fig:bpic2011-length-distribution}, these seem to be strong outliers.
 
-The models themselves were trained with different optimizers, and various initialization strategies for weights, depending on the original author's choice~\cite{evermann2016, schoenig2018}. \autoref{tab:model-setup} shows these hyper-parameters per network side-by-side, and recapitulates the used event attributes. The batch size is also an important hyper-parameter. It depends on the respective batching strategy and is shown in \autoref{tab:batch-sizes}.
+The models themselves were trained with different optimizers, and various initialization strategies for weights, depending on the original author's choice~\cite{evermann2016, schoenig2018}. \autoref{tab:model-setup} shows these hyper-parameters per network side-by-side and recapitulates the used event attributes. The batch size is also an important hyper-parameter. It depends on the respective batching strategy and is shown in \autoref{tab:batch-sizes}.
 
 \begin{table}[ht!]
 \centering
@@ -229,7 +229,7 @@ The models themselves were trained with different optimizers, and various initia
 \label{tab:model-setup}
 \end{table}
 
-To conduct the experiments, Docker containers were built with the development Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-batch-formatting combination was trained and evaluated on a single NVIDIA K80 GPU. The HPI FutureSOC Lab~\cite{web:fsoc} provided the computational infrastructure and multiple GPUs, so that multiple models could be trained and evaluated simultaneously. The complete source code used for evaluation is publicly available on GitHub at \href{https://github.com/flxw/master-thesis-code}{flxw/master-thesis-code}.
+To conduct the experiments, Docker containers were built with the development Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-batch-formatting combination was trained and evaluated on a single NVIDIA K80 GPU. The HPI FutureSOC Lab~\cite{web:fsoc} provided the computational infrastructure and multiple GPUs so that multiple models could be trained and evaluated simultaneously. The complete source code used for evaluation is publicly available on GitHub at \href{https://github.com/flxw/master-thesis-code}{flxw/master-thesis-code}.
 
 \begin{table}
 \centering
@@ -270,7 +270,7 @@ The individual batching strategy often results in slightly worse accuracies than
 
 % grouped batching strategy
 The grouped batching strategy generally causes the top performance in lieu with the SP2 model on any dataset except for BPIC11 and BPIC12. On BPIC11, the strategy brings the best accuracy with the PFS model. On BPIC12, it causes the worst accuracies on the dataset. The explanation for this can be found in \autoref{tab:dataset-characteristics} and \autoref{tab:batch-sizes}. The dataset has the highest number of traces, and a relatively even distribution of lengths, resulting in a small standard deviation. This results in too many traces being put in a single batch, causing lost optimization opportunities. With this in mind, the grouping strategy should be enhanced to split batches if they exceed a certain size threshold. Nonetheless, we realized that the mean of the top accuracies of the SCH, SP2 and PFS models is the highest with the grouping strategy. \autoref{tab:strategy-top-accuracies} illustrates these mean accuracies.
-%We also realized that the grouping strategy not only contributes to the best accuracies, but also that it has a harmonizing effect on the accuracies among the SCH, SP2 and PFS models. This effect is illustrated in \autoref{fig:accuracy-harmonization}. The heatmap shows how the standard deviation between the top accuracies of the three models decreases with the grouping strategy on any dataset.
+%We also realized that the grouping strategy not only contributes to the best accuracies but also that it has a harmonizing effect on the accuracies among the SCH, SP2 and PFS models. This effect is illustrated in \autoref{fig:accuracy-harmonization}. The heatmap shows how the standard deviation between the top accuracies of the three models decreases with the grouping strategy on any dataset.
 
 % padded strategy
 The padded strategy leads to consistently good results throughout the datasets and only loses accuracy on the BPIC11 datasets where the training set had to be shrunk because traces exceeded a length threshold.
@@ -279,7 +279,7 @@ The padded strategy leads to consistently good results throughout the datasets a
 The batching strategies that provide the whole history in one sample consistently see the SCH, SP2 and PFS models on par with at most $0.1$ difference. The windowed batching strategy leads to very different results, depending on the dataset and model. With a window size of three, suggested by Schönig et al., the model does not have many timesteps to learn from in any given sample. However, this loss of information does not impact the SP2 model. We assume that its SP-2 features encode the history that is cut away and thus help it come close to the general maximum accuracy of the dataset with the exception of BPIC11.
 
 Looking at the accuracy of the EVM model across all datasets, it is evident that it is consistently outperformed. We trace the low accuracy back to the application of an Embedding layer, which we suspect to require more data than included in most datasets to improve its internal data representation.
-Its accuracy on the BPIC12 dataset represents an exception. The performance jump here corresponds to the small number of activities and large number of traces in \autoref{tab:dataset-characteristics}, which could help the Embedding learn better. Therefore, we assume that Embeddings need more training data than currently available to become more effective.
+Its accuracy on the BPIC12 dataset represents an exception. The performance jump here corresponds to the small number of activities and a large number of traces in \autoref{tab:dataset-characteristics}, which could help the Embedding learn better. Therefore, we assume that Embeddings need more training data than currently available to become more effective.
 
 \begin{figure}
     \centering
@@ -342,13 +342,13 @@ BPIC15-5 &    0.630758 &  0.650530 &  0.640852 &  0.557139 \\
 \FloatBarrier
 
 \subsection*{Training times}
-The training time that a model requires for an epoch is important to gauge the efficiency of its training process. The batch size has a direct effect on the required time, since it corresponds to the number of weight adjustments per epoch. \autoref{fig:BPIC11-training-timings} to \autoref{fig:BPIC15-5-training-timings} illustrate the mean time required for training a model for an epoch, grouped by batching strategy. Here, we will go over the training times per batching strategy and explain the results.
+The training time that a model requires for an epoch is important to gauge the efficiency of its training process. The batch size has a direct effect on the required time since it corresponds to the number of weight adjustments per epoch. \autoref{fig:BPIC11-training-timings} to \autoref{fig:BPIC15-5-training-timings} illustrate the mean time required for training a model for an epoch, grouped by batching strategy. Here, we will go over the training times per batching strategy and explain the results.
 
 Unsurprisingly, the individual batching strategy leads to the longest times overall. \autoref{tab:dataset-characteristics} reveals that this strategy leads to hundreds of weight adjustments per epoch.
 
 The grouped batching strategy leads to significant reductions in training times, depending on how diverse the trace lengths are. \autoref{tab:dataset-characteristics} explains why the reduction is not as big with BPIC11: It exhibits up to 1814 different lengths, while the other datasets only exhibit $5\%$ to $10\%$ of this number.
 
-With the padded strategy it is possible to overcome the limit imposed by trace lengths and construct batches out of any number of traces. This makes it easier to optimize the batch size, which can lead to faster training times. That this does not always lead to better accuracies was shown in the previous section, as e.g. this strategy incurs a loss of samples samples on BPIC11.
+With the padded strategy, it is possible to overcome the limitations imposed by trace lengths and construct batches out of any number of traces. This makes it easier to optimize the batch size, which can lead to faster training times. That this does not always lead to better accuracies was shown in the previous section, as e.g. this strategy incurs a loss of samples on BPIC11.
 
 Finally, the windowing strategy is the fastest by at least 60 seconds on any dataset. It produces a constant number of timesteps and allows for arbitrary batch sizes.
 
@@ -399,7 +399,7 @@ Finally, the windowing strategy is the fastest by at least 60 seconds on any dat
 \subsection*{Stability}
 As we stressed in the introduction, the stability of a prediction model along the progress of a case greatly impacts the level of trust that users put into the model. \autoref{appendix:evaluation-measurements} contains the figures that illustrate the stability of each model per batching strategy, grouped by dataset. Each figure for a batching strategy and a dataset contains four curves, one for each model. The curves show the model accuracy along the progression of all traces inside the validation set in steps of $5\%$. This subsection explains the results, again per batching strategy.\\
 
-The individual batching strategy not only takes the most time, it also leads to strong differences between the SCH, SP2 and PFS models. A good example is the difference between \autoref{fig:bpic15-3-individual-stability} and \autoref{fig:bpic15-3-grouped-stability}. In the latter figure, the SCH, SP2 and PFS curves are a lot closer to each other.
+The individual batching strategy not only takes the most time, but it also leads to strong differences between the SCH, SP2, and PFS models. A good example is the difference between \autoref{fig:bpic15-3-individual-stability} and \autoref{fig:bpic15-3-grouped-stability}. In the latter figure, the SCH, SP2 and PFS curves are a lot closer to each other.
 
 The grouping strategy increases the sample count per batch and this seems to have a harmonizing effect on the results as evidenced by the corresponding figures of all datasets. This harmonizing effect can be witnessed in the reduction of the standard deviation of the best accuracies of the SCH, SP2 and PFS models in \autoref{fig:grouping-accuracy-harmonization}.
 
@@ -414,7 +414,7 @@ The padded strategy yields results very similar to the grouped strategy, with th
 
 Klinkmüller et al. state that the windowing strategy leads to unstable results~\cite{klinkmuller2018reliablemonitoring}. While this statement seems to be especially true for the longer processes in BPIC11 and BPIC15, the windowing strategy seems to have less of an impact with shorter processes as evidenced with BPIC12. There, all models show a dip towards the end of the trace.\\
 
-Generally, models were expected to become more accurate as the trace neared its end. However this did not turn out to be the case. Instead, the accuracy was high when variability in the respective stage of the process was low. For example, processes in BPIC11 always begin similarly, as patients need to be onboarded~\cite{bose2011analysis}. This could be a cause for the high accuracies in the beginning. The processes in BPIC12 always end either on an approval or a dismissal of the application, making the models very accurate~\cite{adriansyah2012mining} in this stage.
+Generally, models were expected to become more accurate as the trace neared its end. However, this did not turn out to be the case. Instead, the accuracy was high when variability in the respective stage of the process was low. For example, processes in BPIC11 always begin similarly, as patients need to be onboarded~\cite{bose2011analysis}. This could be a cause for the high accuracies in the beginning. The processes in BPIC12 always end either on an approval or a dismissal of the application, making the models very accurate~\cite{adriansyah2012mining} in this stage.
 
 \section{Discussion}\label{sec:eval:discussion}
 After presenting and explaining our findings, we summarize our learnings in this section and compare our findings to the papers mentioned in \autoref{sec:eval:dataset-choice}.\\
@@ -429,4 +429,4 @@ We end the evaluation with a comparison of our best results with the initially m
 
 Böhmer et al.~\cite{boehmer2018probability} are able to attain an accuracy of $0.77$ with their statistical approach. While they argue that machine learning methods may perform better, they place great value on comprehensible reasoning information from the model.
 
-Using the padding strategy, all SCH, SP2 and PFS score above $0.80$, with the SP2 model edging to the best accuracy of $0.82$. This supports the thesis by Böhmer et al. of lower comprehensibility at higher accuracy.
+Using the padding strategy, all SCH, SP2, and PFS score above $0.80$, with the SP2 model edging to the best accuracy of $0.82$. This supports the thesis by Böhmer et al. of lower comprehensibility at higher accuracy.
