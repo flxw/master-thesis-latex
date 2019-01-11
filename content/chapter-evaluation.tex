@@ -14,7 +14,7 @@ In \autoref{sec:intro:contribution}, we criticized the great variety of datasets
     \item BPIC15 is divided into five logs. Each contains all building permit applications over a period of approximately four years from a Dutch municipality. They are referred to as BPIC15-1 to BPIC15-5 in the following~\cite{BPIC2015}
 \end{itemize}
 
-We picked the three BPIC datasets as we believe that they cover a spectrum of process complexity. We take the increasing number of distinct activities and variance in trace length to be indicators of complexity. \autoref{tab:dataset-characteristics} sums up the key properties discussesd in the following.
+We picked the three BPIC datasets as we believe that they cover a spectrum of process complexity. We take the increasing number of distinct activities and variance in trace length to be indicators of complexity. \autoref{tab:dataset-characteristics} sums up the key properties discussed in the following.
 
 The least complex process is traced in BPIC12, with a small variance in trace length and a very small number of different activities. From BPIC12, process models were also easily mined~\cite{adriansyah2012mining}.
 
@@ -27,12 +27,12 @@ BPIC15 resides relatively in the middle of the two in terms of complexity. The m
 \begin{itemize}
     \item Predicting the next element in a stream, not specific to a case
     \begin{itemize}
-        \item BPI12: Tax et al.~\cite{tax2017}
-        \item BPI12: Evermann et al.~\cite{evermann2016}
+        \item BPIC12: Tax et al.~\cite{tax2017}
+        \item BPIC12: Evermann et al.~\cite{evermann2016}
     \end{itemize}
     \item Predicting the next element for a specific case
     \begin{itemize}
-        \item BPI12: Böhmer et al.~\cite{boehmer2018probability}
+        \item BPIC12: Böhmer et al.~\cite{boehmer2018probability}
     \end{itemize}
 \end{itemize}
 
@@ -74,12 +74,12 @@ In step 3, the results from the pairwise application of Cramér's~V~\cite{bergsm
 \begin{table}[!htb]
 \centering
 \begin{adjustbox}{center}
-\begin{tabular}{lp{7cm}p{7cm}}
+\begin{tabular}{lp{6cm}p{6cm}}
 \textbf{Dataset} & \textbf{Omitted features} & \textbf{Remaining features}\\
 \hline
-\textbf{BPIC11} & \verb=lifecycle:transition=, Producer code, Activity code, Specialism code & time:timestamp, concept:name, org:group, Number of executions, Activity code, Producer code, Specialism code, Section\\
-\textbf{BPIC12} & \verb=lifecycle:transition= & org:resource, concept:name, time:timestamp\\
-\textbf{BPIC15} & \verb=lifecycle:transition=, activityNameNL, activityNameEN, action\_code, dueDate & time:timestamp 	dateFinished 	planned 	concept:name 	monitoringResource 	org:resource 	question
+\textbf{BPIC11} & \verb=lifecycle:transition=, \verb=Producer code=,  \verb=Activity code=,  \verb=Specialism code= & \verb=time:timestamp=, \verb=concept:name=, \verb=org:group=, \verb=Number of executions=, \verb=Activity code=, \verb=Producer code=, \verb=Specialism code=, \verb=Section=\\
+\textbf{BPIC12} & \verb=lifecycle:transition= & \verb=org:resource=, \verb=concept:name=, \verb=time:timestamp=\\
+\textbf{BPIC15} & \verb=lifecycle:transition=, \verb=activityNameNL=, \verb=activityNameEN=, \verb=action_code=, \verb=dueDate= & \verb=time:timestamp=, \verb=dateFinished=, \verb=planned=, \verb=concept:name=, \verb=monitoringResource=, \verb=org:resource=, 	\verb=question=
 \end{tabular}
 \end{adjustbox}
 \caption{Omitted features during pre-processing}
@@ -95,7 +95,7 @@ After selecting suitable features in the first step, the second step of the KDD 
 \subsection*{Transforming basic features}
 The features remaining after selection can be divided into three categories: timestamps, numerical and categorical. The transformation applied on each category of feature is described briefly in the following:
 
-Timestamps are converted to numerical features for each trace, i.e. each timestamp $t_i$ was made relative to the beginning of a trace by replacing it with the result of $t_i - t_0$.
+Timestamps are converted to numerical features for each trace, i.e. each timestamp $t_i$ was made relative to the beginning of a trace by replacing it with the result of $t_i - t_0$. Relative timestamps have been shown to work with sequential data~\cite{lessmannBADS}.
 
 Each numerical feature $x$ is normalized using the min-max method with min- and max-values specific to each trace. This also included the relative timestamps.
 
@@ -109,9 +109,9 @@ $$
 Categorical features were encoded using one-hot encoding, since no ordinal relationships were present in the data, and the dimensions were not too large.
 
 \subsection*{Engineering the SP-2 features}
-SP-2 features were proposed in the SPiCe submission by Shibata et al.~\cite{shibata2016bipartite}. In a binary bag-of-words feature vector, they mark whether an activity has occured in the past. As such, these features are engineered in an iterative fashion. \autoref{lst:sp2-generation} shows the construction of the feature vector in Python.
+SP-2 features were proposed in the SPiCe submission by Shibata et al.~\cite{shibata2016bipartite}. In a binary bag-of-words feature vector, they mark whether an activity has occurred in the past. As such, these features are engineered in an iterative fashion. \autoref{lst:sp2-generation} shows the construction of the feature vector in Python.
 
-For every trace, a new feature vector \texttt{sp2\_df} is created and the occurence of the first activity, contained in the column \verb=target_col=, is marked inside it. Then, a loop begins over the remaining steps, where each previous row inside \texttt{sp2\_df} is copied into the currently indexed row and the presence of the current activity is marked. This repeats itself until the trace has been processed completely, leaving behind a complete SP-2 feature vector for a trace.
+For every trace, a new feature vector \texttt{sp2\_df} is created and the occurrence of the first activity, contained in the column \verb=target_col=, is marked inside it. Then, a loop begins over the remaining steps, where each previous row inside \texttt{sp2\_df} is copied into the currently indexed row and the presence of the current activity is marked. This repeats itself until the trace has been processed completely, leaving behind a complete SP-2 feature vector for a trace.
 
 \begin{listing}[ht]
 \begin{minted}{python}
@@ -140,7 +140,7 @@ for i in range(1,len(t)):
 
 \FloatBarrier
 \subsection*{Engineering the PFS features}
-As presented in \autoref{sec:contrib:pfs-inspiration}, PFS features encode subsequence occurence. Klinkmüller et al. claim that these features can help models cover a broader variety of relationships~\cite{klinkmuller2018reliablemonitoring}.
+As presented in \autoref{sec:contrib:pfs-inspiration}, PFS features encode subsequence occurrence. Klinkmüller et al. claim that these features can help models cover a broader variety of relationships~\cite{klinkmuller2018reliablemonitoring}.
 
 The features for the PFS model were created with the help of the PrefixSpan algorithm implementation from the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. Similarly to the SP-2 features, they are based on the target variable.
 
@@ -157,7 +157,7 @@ closed_sequences = prefixspan_traces.topk(25, closed=True)
 
 After mining the sequences, a loop is executed for every trace - shown in \autoref{lst:subsequence-feature-creation}. This loop constructs the PFS feature vector in an iterative fashion.
 
-For each index \verb=i= it is checked whether any of the mined subsequences starts at that position. This is checked by peeking ahead of \verb=i= for the length of the subsequence. As in the case of the SP-2 features, the occurence of a subsequence is marked with a boolean flag in the feature vector \verb=subseq_df= from the row that it occured in onwards.
+For each index \verb=i= it is checked whether any of the mined subsequences starts at that position. This is checked by peeking ahead of \verb=i= for the length of the subsequence. As in the case of the SP-2 features, the occurrence of a subsequence is marked with a boolean flag in the feature vector \verb=subseq_df= from the row that it occurred in onwards.
 
 \begin{listing}[ht]
 \begin{minted}{python}
@@ -203,7 +203,7 @@ To finally work with the data, the column containing the name of the next activi
 \subsection*{Splitting the datasets}
 To verify model performance on unseen data, a portion of the dataset is often put aside for testing purposes~\cite{kuhn2013applied}.
 
-Here, all datasets were split into training and validation sets of complete traces. While $25\%$ of the traces were used for validation, the remaining $75\%$ were used for training purposes. The sets were shuffled and stratified to contain an approximately similar distribution of trace lengths. This avoid possible biases towards trace lengths.
+We split all datasets into training and validation sets of complete traces. While $25\%$ of the traces were used for validation, the remaining $75\%$ were used for training purposes. The traces were shuffled and stratified to contain an approximately similar distribution of trace lengths. This avoid possible biases towards trace lengths. The event order in a trace was not changed.
 
 \section{Training configuration}\label{sec:eval:test-setup}
 This section highlights the model configuration, and the employed hyper-parameters for each model, as well as batch sizes of each batching strategy.
@@ -236,15 +236,15 @@ To conduct the experiments, Docker containers were built with the development An
 \begin{tabular}{c|rrrr}
 Dataset & Individual & Grouped & Padded & Windowed \\
 \hline
-BPIC11    & 1 & $2.80 \pm 4.99$ & 7 & 1054\\
-BPIC 12   & 1 & $129.14 \pm 333.58$ & 89 & 939\\
-BPIC 15-1 & 1 & $10.33 \pm 11.45$ & 9 & 365\\
-BPIC 15-2 & 1 & $6.17 \pm 7.57$ & 5 & 316\\
-BPIC 15-3 & 1 & $12.27 \pm 19.28$ & 10 & 414\\
-BPIC 15-4 & 1 & $9.17 \pm 14.59$ & 8 & 334\\
-BPIC 15-5 & 1 & $9.52 \pm 14.36$ & 7 & 420\\
+BPIC11    & 1 & $2.80 , \sigma 4.99$ & 7 & 1054\\
+BPIC 12   & 1 & $129.14 , \sigma 333.58$ & 89 & 939\\
+BPIC 15-1 & 1 & $10.33 , \sigma 11.45$ & 9 & 365\\
+BPIC 15-2 & 1 & $6.17 , \sigma 7.57$ & 5 & 316\\
+BPIC 15-3 & 1 & $12.27 , \sigma 19.28$ & 10 & 414\\
+BPIC 15-4 & 1 & $9.17 , \sigma 14.59$ & 8 & 334\\
+BPIC 15-5 & 1 & $9.52 , \sigma 14.36$ & 7 & 420\\
 \end{tabular}
-\caption[Batch sizes for each dataset and strategy]{Traces per batch for the different datasets and batching strategies. Since the grouped batches vary in size, their size is stated as \textit{average} $\pm$ \textit{standard deviation}}
+\caption[Batch sizes for each dataset and strategy]{Traces per batch for the different datasets and batching strategies. Since the grouped batches vary in size, their size is stated as \textit{average} $, \sigma$ \textit{standard deviation}}
 \label{tab:batch-sizes}
 \end{table}
 
@@ -328,13 +328,13 @@ Its accuracy on the BPIC12 dataset represents an exception. The performance jump
 \begin{tabular}{l|rrrr}
 &  Individual &   Grouped &    Padded &  Windowed \\
 \midrule
-BPIC2011   &    0.576469 &  0.676253 &  0.632560 &  0.479481 \\
-BPIC2012   &    0.850625 &  0.761743 &  0.833241 &  0.728079 \\
-BPIC2015-1 &    0.614653 &  0.670698 &  0.635351 &  0.559452 \\
-BPIC2015-2 &    0.577262 &  0.604133 &  0.581127 &  0.503441 \\
-BPIC2015-3 &    0.649604 &  0.680127 &  0.654643 &  0.581378 \\
-BPIC2015-4 &    0.638515 &  0.668868 &  0.645301 &  0.579371 \\
-BPIC2015-5 &    0.630758 &  0.650530 &  0.640852 &  0.557139 \\
+BPIC11   &    0.576469 &  0.676253 &  0.632560 &  0.479481 \\
+BPIC12   &    0.850625 &  0.761743 &  0.833241 &  0.728079 \\
+BPIC15-1 &    0.614653 &  0.670698 &  0.635351 &  0.559452 \\
+BPIC15-2 &    0.577262 &  0.604133 &  0.581127 &  0.503441 \\
+BPIC15-3 &    0.649604 &  0.680127 &  0.654643 &  0.581378 \\
+BPIC15-4 &    0.638515 &  0.668868 &  0.645301 &  0.579371 \\
+BPIC15-5 &    0.630758 &  0.650530 &  0.640852 &  0.557139 \\
 \end{tabular}
 \caption[Grouping strategy leads to best mean accuracies]{The grouping strategy accuracy mean across the top accuracies of the SCH, SP2 and PFS models is generally the highest}
 \label{tab:strategy-top-accuracies}
@@ -406,7 +406,7 @@ The grouping strategy increases the sample count per batch and this seems to hav
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/grouping-accuracy-harmonization.png}
-    \caption[The batching strategies harmonizes top accuracies]{The grouping strategy often reduces the standard deviation between the highest accuracies of SCH, SP2 and PFS models}
+    \caption[Batching strategy harmonizes top accuracies]{The grouping strategy often reduces the standard deviation between the highest accuracies of SCH, SP2 and PFS models}
     \label{fig:grouping-accuracy-harmonization}
 \end{figure}
 

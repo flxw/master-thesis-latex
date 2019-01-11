@@ -1,11 +1,11 @@
-(\chapter{Background}\label{chap:background}
-To predict the next element in a running case, we bring together the domains of Process Science, Predictive Modeling and Deep Learning. This background chapter gives comprehensive insight into those parts of said domains which will be used and referenced in this thesis. The chapter approaches them in a top-down fashion, starting with the high-level perspective from Process Science and how Process Mining is distinguished from Predictive Process Monitoring in \autoref{sec:process-science}. The section ends with information on how the used logs usually come into existence and which requirements these logs need to fulfill to be used in a prediction scenario.
+\chapter{Background}\label{chap:background}
+To predict the next element in a running case, we bring together the domains of Process Science, Predictive Modeling and Deep Learning. This background chapter gives comprehensive insight into those parts of the domains which will be used and referenced throughout this thesis. The chapter approaches them in a top-down fashion, starting with the high-level perspective from Process Science and how Process Mining is distinguished from Predictive Process Monitoring in \autoref{sec:process-science}. The section ends with information on how the used logs usually come into existence and which requirements these logs need to fulfill to be used in a prediction scenario.
 With the data origin explained, \autoref{sec:predictive-modeling} introduces a process along which predictive model development usually takes place.
 \autoref{sec:artificial-neural-networks} gives an in-depth look at neural networks and the components relevant to this thesis, especially stressing the importance of long short-term memory cells.
 Finally, \autoref{sec:background:feature-engineering} highlights the peculiarities encountered when dealing with sequential data and introduces popular approaches to deal with them.
 
 \section{Process Science}\label{sec:process-science}
-Business processes are a collection of structured tasks which serve a particular business goal, if ordered in a specific sequence~\cite{weske2012business}. To facilitate a common understanding of a process, processes are visualized with modeling languages~\cite{panagacos2012ultimate}. Most languages, for example the Business Process Modeling Notation (BPMN)~\cite{bpmn2.0}, model the process flow in steps, commonly referred to as \textit{activities} - shown in \autoref{fig:activity-introduction}. An instance of a process is referred to as case.
+Business processes are a collection of structured tasks which serve a particular business goal, if ordered in a specific sequence~\cite{weske2012business}. To facilitate a common understanding of a process, processes are visualized with modeling languages~\cite{panagacos2012ultimate}. Most languages, for example the Business Process Modeling Notation (BPMN)~\cite{bpmn2.0}, model the process flow in steps, commonly referred to as \textit{activities} - shown in \autoref{fig:activity-introduction}. An instance of a process is referred to as \textit{case}.
 
 \begin{figure}[!htb]
     \centering
@@ -16,7 +16,7 @@ Business processes are a collection of structured tasks which serve a particular
 
 Process Science, as loosely defined by van der Aalst~\cite{Aalst2016}, refers to the "broader discipline that combines knowledge from information technology and knowledge from management sciences to improve and run operational processes".
 
-With the help of workflow management systems (WFMS), it is possible to embed and enforce business processes in an organization. When an activity in a process is executed, it goes through different stages. These stages are captured in the activity lifecycle in \autoref{fig:activity-lifecycle}. WFMS log events related to each activity, but the types of captured events are specific to the modeling language and the execution environment of the WFMS.
+With the help of workflow management systems (WFMS), it is possible to embed and enforce business processes in an organization. When an activity in a process is executed, it goes through different stages. These stages are captured in the activity lifecycle in \autoref{fig:activity-lifecycle}. WFMS log state transitions related to each activity as events. The types of captured events are specific to the modeling language and the execution environment of the WFMS.
 
 \begin{figure}[!htb]
     \centering
@@ -25,27 +25,30 @@ With the help of workflow management systems (WFMS), it is possible to embed and
     \label{fig:activity-lifecycle}
 \end{figure}
 
-The event logs give rise to the disciplines of Process Mining and Predictive Process Monitoring, as their analyses are based on the information contained in those logs~\cite{Aalst2016}. Because of the paramount importance of logs for this work, this section begins with \autoref{sec:log-structure} defining the properties and structure of a log. \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast Process Mining and Predictive Process Monitoring.
+The event logs give rise to the disciplines of Process Mining and Predictive Process Monitoring, as their analysis are based on the information contained in those logs~\cite{Aalst2016}. Because of the paramount importance of logs for this work, this section begins with \autoref{sec:log-structure} defining the properties and structure of a log. \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast Process Mining and Predictive Process Monitoring.
 
 \subsection{Process logs}\label{sec:log-structure}
 A process log tracks the execution history of a process and can be understood in a hierarchical manner. Each log of a process consists of cases, which represent instances of a process. A case itself consists of a trace of events, i.e. a sequence that only belongs to a single case. Each event can have attributes attached~\cite{Aalst2016}.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gfx/process-log.png}
-    \caption{A case excerpt from BPIC11}
+    \begin{adjustbox}{center}
+    \includegraphics[width=1\textwidth]{gfx/process-log.png}
+    \end{adjustbox}
+    \caption{An excerpt from a BPIC12 case}
     \label{fig:process-log}
 \end{figure}
 
-Process event logs are typically made availble via XES files. XES is an abbreviation for the \textit{eXtensible Event Stream} standard~\cite{gunther2013xes}. An excerpt from a case extracted from the BPIC11 XES file~\cite{BPIC2011} is displayed in \autoref{fig:process-log}. In this particular log, only completion events are tracked, as evidenced by the values in the \verb=lifecycle:transition= column.\\
+Process event logs are typically made available via XES files. XES is an abbreviation for the \textit{eXtensible Event Stream} standard~\cite{gunther2013xes}. An excerpt from a case extracted from the BPIC12 XES file~\cite{BPIC2012} is displayed in \autoref{fig:process-log}. In this particular excerpt, a variety of state transitions are tracked, as evidenced by the values in the \verb=lifecycle:transition= column.\\
 
-Formally, a log $L$ is defined as follows~\cite{Aalst2016}. It is made up of cases $c \in \mathscr{C}$, where $\mathscr{C}$ is the case universe. Similar to events, cases have attributes, e.g. a name. The operator $\#_{attr}(c)$ returns the value of the attribute $attr$ on a case $c$. The function $attr$ is lists all atributes that an event posseses. A mandatory attribute of any case is its trace $\#_{trace}(c)$, which is especially relevant for our work.
+Formally, a log $L$ is defined as follows~\cite{Aalst2016}. It is made up of cases $c \in \mathscr{C}$, where $\mathscr{C}$ is the case universe. Similar to events, cases have attributes, e.g. a name. The operator $\#_{attr}(c)$ returns the value of the attribute $attr$ on a case $c$. The function $attr$ lists all attributes that an event possesses. A mandatory attribute of any case is its trace $\#_{trace}(c)$, which is especially relevant for our work.
 Each trace represents a finite sequence of events $e \in \mathscr{E}$:
 
 $$ \#_{trace}(c) = \langle e_1, e_2, e_3 \dots, e_n \rangle $$
 
-The events are ordered by timestamp. In turn, each event $e$ has certain attributes associated with it. It is assumed that for a specific process, the type, number and name of these attributes does not change. An example for common attributes are the activity name $\#_{activity}(e)$ or the timestamp $\#_{timestamp}(e)$ at which the event occurred. Coming back to the example in \autoref{fig:process-log}, $e = \#_{trace}(c)[2]$ would get the second event in the trace, and $\#_{lifecycle:transition}(e)$ would produce the value \verb=complete=.
-\todo[inline]{Übergang?}
+The events are ordered by timestamp. In turn, each event $e$ has certain attributes associated with it. It is assumed that for a specific process, the type, number and name of these attributes does not change. An example for common attributes are the activity name $\#_{activity}(e)$ or the timestamp $\#_{timestamp}(e)$ at which the event occurred.
+
+Applied to the example in \autoref{fig:process-log}, $e = \#_{trace}(c)[4]$ would get the fourth event in the trace, and $\#_{concept:name}(e)$ would produce the activity name \verb=W_Completeren aanvraag=. Calling $attr(e)$ would yield \verb=lifecycle:transition=, \verb=concept:name=, \verb=time:timestamp=, and \verb=org:resource=. Working with data contained in logs is essential to Process Mining, which is introduced in the next subsection.
 
 \subsection{Process Mining}\label{sec:process-mining}
 Process Mining covers the three steps of process model discovery, conformance checking and process model enhancement \cite{Aalst2016} -  all based on process event logs. It is worth noting that the logs can be enriched with data from systems other than WFMS. The three steps are enabled with techniques from Data Science, making it possible to understand Process Mining as a link between Data Science and Process Science. This is also visualized in \autoref{fig:process-data-science}.
@@ -136,7 +139,7 @@ A function $predict$ takes in a sequence $seq_{in}$ and gives out an output $\ha
 \begin{equation}
 \begin{split}
     predict(seq_{in}) &= \widehat{seq_{out}}\\
-    predict(seq_{in}) &= \hat{s_k}
+    predict(seq_{in}) &= \hat{s}
 \end{split}
 \label{eq:prediction-from-sequence}
 \end{equation}
@@ -176,7 +179,7 @@ The first and most trivial type of ANN is the feedforward neural network~\cite{s
 
 The nodes in any ANN are organized in layers, with each neuron connecting to every neuron in the adjacent layers, resulting in fully connected layers. The samples are fed into the input layer in the form of a vector of features. The prediction ultimately comes out of the output layer. The layers between the input and output layers are referred to as \textit{hidden layers} and  can be greater in number.
 
-\autoref{fig:feedforward-ann} shows an examplary ANN with a single hidden layer. The features $x_1$ to $x_m$ are fed into the network as one vector, and their numeric values are passed along the edges to every neuron in the next layer. For each neuron, the incoming values are multiplied with the respective edge weight $\beta$ and summed up, as depicted by the $\sum$ symbol in each circle. The sum is passed to a function called \textit{activation function} - illustrated by the sigmoid curve - which controls whether the neuron emits a signal or not. The outputs are passed along the output edges of the respective neurons and the process is repeated for the next layer until the results have reached the output layer. This process of continually feeding the outputs forward to the next layer also gives this type of ANN its name.
+\autoref{fig:feedforward-ann} shows an exemplary ANN with a single hidden layer. The features $x_1$ to $x_m$ are fed into the network as one vector, and their numeric values are passed along the edges to every neuron in the next layer. For each neuron, the incoming values are multiplied with the respective edge weight $\beta$ and summed up, as depicted by the $\sum$ symbol in each circle. The sum is passed to a function called \textit{activation function} - illustrated by the sigmoid curve - which controls whether the neuron emits a signal or not. The outputs are passed along the output edges of the respective neurons and the process is repeated for the next layer until the results have reached the output layer. This process of continually feeding the outputs forward to the next layer also gives this type of ANN its name.
 
 The weights $\beta$ are adjusted during training to increase prediction accuracy. For this purpose, the training samples are grouped into \textit{batches}. Once all batches have passed through the network once, an \textit{epoch} has elapsed. The samples in a batch are passed into the network, and the predictions for this batch are compared to the target labels. At this point, the \textit{loss function} calculates how far the network's predictions missed the labels. The weights are then adjusted to reduce the loss in the next batch. Because the goal of the training algorithm is to minimize the network's loss, it can happen that the weights are adapted too well to the training set, making the network overfit.
 
@@ -215,14 +218,14 @@ Hochreiter \& Schmidhuber published this enhancement in 1997~\cite{hochreiter199
     \label{fig:lstm}
 \end{figure}
 
-\autoref{fig:lstm} showcases the architecure of an unrolled LSTM cell. In the diagram, each line carries an entire vector, from the output of one node to the inputs of others. The pink circles represent pointwise operations, like vector addition, while the yellow boxes implement operations. Lines merging denote concatenation, while a line forking denote its content being copied and the copies going to different locations. The cell state $C$ is symbolized by the horizontal upper line running from left to right. The lower line on the left represents $h_{t-1}$, the output of the cell in the previous step.
+\autoref{fig:lstm} showcases the architecture of an unrolled LSTM cell. In the diagram, each line carries an entire vector, from the output of one node to the inputs of others. The pink circles represent pointwise operations, like vector addition, while the yellow boxes implement operations. Lines merging denote concatenation, while a line forking denote its content being copied and the copies going to different locations. The cell state $C$ is symbolized by the horizontal upper line running from left to right. The lower line on the left represents $h_{t-1}$, the output of the cell in the previous step.
 
 The $\sigma$ boxes represent gates. Which parts of $C_{t-1}$ to keep and what to forget is decided at the first gate from the left, by taking $h_{t-1}$ and $x_t$ into account. The following $\sigma$ gate and $tanh$ operator together create the update to $C_{t-1}$. Finally on the right, the updated cell state $C_t$ is used together with the activation function $tanh$ to produce the output $h_t$. Variants of this original LSTM cell architecture exist, with most modifications made around the construction of the state $C$ - all exhibiting similar performance~\cite{greff2017lstm}.
 
 \section{Data preparation and feature engineering}
 \label{sec:background:feature-engineering}
-Data preparation and feature engineering are the tasks in predictive model development that demand the most effort and have the greatest impact on prediction accuracy~\cite{kuhn2013applied}. To assist predictive models during training, most features need to be reformatted. This requirement comes with an implication that can also harm model peformance, which is explained in \autoref{sec:background:curse-of-dimensionality}.
-Then, relevant methods used for categorical variables are presentedin \autoref{sec:categorical-feature-engineering}. \autoref{sec:sequential-feature-engineering} points out methods with which to make sequential inputs of various length conform with the fixed-width input requirement of predictive models. In the case of ANNs this requirement can easily be explained by the fixed number of units on the input layer. The methods are demonstrated at the example of the following two sequences:
+Data preparation and feature engineering are the tasks in predictive model development that demand the most effort and have the greatest impact on prediction accuracy~\cite{kuhn2013applied}. To assist predictive models during training, most features need to be reformatted. This requirement comes with an implication that can also harm model performance, which is explained in \autoref{sec:background:curse-of-dimensionality}.
+Then, relevant methods used for categorical variables are presented in \autoref{sec:categorical-feature-engineering}. \autoref{sec:sequential-feature-engineering} points out methods with which to make sequential inputs of various length conform with the fixed-width input requirement of predictive models. In the case of ANNs this requirement can easily be explained by the fixed number of units on the input layer. The methods are demonstrated at the example of the following two sequences:
 \begin{equation*}
     \begin{split}
         seq1 &= \langle(Arthur),(is),(the),(king)\rangle\\
@@ -341,7 +344,7 @@ The bag-of-words (BOW) encoding produces $l$ input tuples, where $l$ is the leng
 \subsubsection*{$n$-grams}
 The $n$-gram approach is very popular in computational linguistics, biology and data compression and is effectively an $(n-1)$-order Markov model, with the most popular choices for $n$ being $1,2$ and $3$. These models would be called \textit{unigram}, \textit{bigram} and \textit{trigram} models.
 
-Similar to BOW, an $n$-gram model counts occurences. Different from BOW however, it tracks the occurence of subsequences of length $n$. Suppose a set $LS$ holds all possible values of a single feature. From $LS$, a feature set $FS$ is constructed with every item being a permutation of length $n$. A feature in this set would be referred to as \textit{gram}, and can also be understood as a possible subsequence.
+Similar to BOW, an $n$-gram model counts occurrences. Different from BOW however, it tracks the occurrence of subsequences of length $n$. Suppose a set $LS$ holds all possible values of a single feature. From $LS$, a feature set $FS$ is constructed with every item being a permutation of length $n$. A feature in this set would be referred to as \textit{gram}, and can also be understood as a possible subsequence.
 
 $$
 FS = S(LS, n)
@@ -351,7 +354,7 @@ While $n$-grams can be be powerful features to use, their high dimensionality ca
 
 \subsubsection*{subsequence mining}
 One of the main weaknesses of $n$-grams is the restriction to a single $n$ and that "one may need to examine a combinatorially explosive
-number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reason, approaches have been developed that combine the benefit of $n$-grams with more flexibility by avoiding the limitation to $n$. An algorithms sifts through input sequences and detects sequential patterns of any length. These sequences are then encoded instead of the $n$-grams, resulting in line items similar to the ones in \autoref{tab:bow-encoding}, with the respective boolean entry denoting the occurence of a specific subsequence in the sequence. Examples for these algorithms are GSP \cite{srikant1996gsp}, FreeSpan \cite{han2000freespan} and PrefixSpan \cite{pei2001prefixspan}.\\
+number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reason, approaches have been developed that combine the benefit of $n$-grams with more flexibility by avoiding the limitation to $n$. An algorithms sifts through input sequences and detects sequential patterns of any length. These sequences are then encoded instead of the $n$-grams, resulting in line items similar to the ones in \autoref{tab:bow-encoding}, with the respective boolean entry denoting the occurrence of a specific subsequence in the sequence. Examples for these algorithms are GSP \cite{srikant1996gsp}, FreeSpan \cite{han2000freespan} and PrefixSpan \cite{pei2001prefixspan}.\\
 
 For every mined subsequence $ss$, the \textit{support} metric $supp(ss)$ can be calculated. This metric indicates in how many complete sequences, $ss$ as a subsequence. Sometimes, shorter subsequences are part of longer subsequences, like $ss1$ is contained in $ss2$:
 
