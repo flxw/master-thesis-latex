@@ -41,8 +41,8 @@ A process log tracks the execution history of a process and can be understood in
 
 Process event logs are typically made available via XES files. XES is an abbreviation for the \textit{eXtensible Event Stream} standard~\cite{gunther2013xes}. An excerpt from a case extracted from the BPIC12 XES file~\cite{BPIC2012} is displayed in \autoref{fig:process-log}. In this particular excerpt, a variety of state transitions are tracked, as evidenced by the values in the \verb=lifecycle:transition= column.\\
 
-Formally, a log $L$ is defined as follows~\cite{Aalst2016}. It is made up of cases $c \in \mathscr{C}$, where $\mathscr{C}$ is the case universe. Similar to events, cases have attributes, e.g. a name. The operator $\#_{attr}(c)$ returns the value of the attribute $attr$ on a case $c$. The function $attr$ lists all attributes that an event possesses. A mandatory attribute of any case is its trace $\#_{trace}(c)$, which is especially relevant for our work.
-Each trace represents a finite sequence of events $e \in \mathscr{E}$:
+Formally, a log $L$ is defined as follows~\cite{Aalst2016}. It is made up of cases $c \in \mathscr{C}$, where $\mathscr{C}$ is the case universe. Similar to events, cases have attributes, e.g. a name. The operator $\#_{attr}(c)$ returns the value of the attribute $attr$ on a case $c$. The function $attribute\_names$ lists the names of all attributes that an event possesses. A mandatory attribute of any case is its trace $\#_{trace}(c)$, which is especially relevant for our work.
+Each trace represents a finite sequence of events $e \in \mathscr{E}$. $\mathscr{E}$ is the set of all events.
 
 $$ \#_{trace}(c) = \langle e_1, e_2, e_3 \dots, e_n \rangle $$
 
@@ -102,7 +102,9 @@ The third step of the KDD process is aimed at making the data accessible for mac
 \subsubsection*{Data Mining}
 Data mining deals with the extraction of implicit, previously unknown, and potentially useful information from data. Machine learning provides a technical basis for this~\cite{Aalst2016}. The goal of predicting the next activity is a classification task for which a wide array of applicable predictive models is available, such as decision trees, random forests, support vector machines (SVM) or artificial neural networks (ANN)~\cite{kuhn2013applied}.
 
-The data prepared in the previous steps are used to \textit{train} the model. During this training phase, the model uses accuracy metrics to assess the accuracy of its predictions, learn the statistical properties of the data and adjust its internals accordingly. The accuracy is calculated on the target labels, i.e. the predictions that the model should produce on known data. Working with labeled training data is referred to as supervised learning. There are other categories, such as reinforcement learning or unsupervised learning, which this thesis does not deal with. Certain input parameters of the model are adjusted during this phase as well, an activity referred to as \textit{hyper-parameter tuning}.
+The data prepared in the previous steps are used to \textit{train} the model. During this training phase, the model uses accuracy metrics to assess the accuracy of its predictions, learn the statistical properties of the data and adjust its internals accordingly. The accuracy is calculated on the target labels, i.e. the predictions that the model should produce on known data.
+%Working with labeled training data is referred to as supervised learning. There are other categories, such as reinforcement learning or unsupervised learning, which this thesis does not deal with.
+Certain input parameters of the model are adjusted during this phase as well, an activity referred to as \textit{hyper-parameter tuning}.
 
 \subsubsection*{Evaluation}
 Typically, not all of the available data are used for training. This is to make sure that the model generalizes well, i.e. predicts as good on data that it has not seen before, as on data it was trained on. If a model is not generalizing, it is said to be \textit{overfitting}. A model is said to be overfitting when it has learned the properties of the training data too well and thus shows poor generalization capabilities. A simple and effective method to avoid bias is to divide the available data into two sets: 75\% as the training set to train the model on, and 25\% of it as the test set to verify the model's performance on unseen data~\cite{kuhn2013applied, lessmannBADS}.
@@ -122,13 +124,13 @@ A sequence is made up of ordered, individual steps, which are referred to as ite
 
 Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items. For  subsequences, the notation $seq_{i,k}$ denotes that elements from index $i$ through $k$ from the original sequence are contained consecutively: $seq_{1,2} = \langle s_1,s_2 \rangle$. The relationship itself is noted as $seq_{1,2} \sqsubseteq seq$.\\
 
-Assuming that a sequence terminates, consider the database of terminated sequences $TS$. Under the assumption of the Markovian hypothesis that "the probability of each event depends only on the state attained in the previous event"~\cite{gagniuc2017markov}, a predictive model can be trained on this database to predict the next sequence. This will be shown in the next sub-section.
+Under the assumption of the Markovian hypothesis that "the probability of each event depends only on the state attained in the previous event"~\cite{gagniuc2017markov}, a predictive model can be trained on a database of sequences to predict the progress of a sequence. This will be shown in the next sub-section.
 
 \subsection{Sequence prediction}\label{sec:background:sequence-prediction}
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=.75\textwidth]{gfx/sequence-prediction-flavors.jpeg}
-    \caption{Flavors of sequence prediction~\cite{web:lstm-effectiveness}}
+    \caption[Flavors of sequence prediction]{The different flavors of sequence prediction. Picture taken from~\cite{web:lstm-effectiveness}}
     \label{fig:sequence-prediction-flavors}
 \end{figure}
 
@@ -138,8 +140,8 @@ A function $predict$ takes in a sequence $seq_{in}$ and gives out an output $\ha
 
 \begin{equation}
 \begin{split}
-    predict(seq_{in}) &= \widehat{seq_{out}}\\
-    predict(seq_{in}) &= \hat{s}
+    \widehat{seq_{out}} &= predict(seq_{in})\\
+    \hat{s}             &= predict(seq_{in})
 \end{split}
 \label{eq:prediction-from-sequence}
 \end{equation}
@@ -148,7 +150,7 @@ Many-to-many predictions are common in the domains of machine translation. For e
 
 \begin{equation*}
 \begin{split}
-seq_{in} &= \langle(I),(am),(writing),(my),(thesis)\rangle\\
+           seq_{in} &= \langle(I),(am),(writing),(my),(thesis)\rangle\\
 \widehat{seq_{out}} &= \langle(Ich),(schreibe),(meine),(Masterarbeit)\rangle
 \end{split}
 \end{equation*}
@@ -181,7 +183,7 @@ The nodes in any ANN are organized in layers, with each neuron connecting to eve
 
 \autoref{fig:feedforward-ann} shows an exemplary ANN with a single hidden layer. The features $x_1$ to $x_m$ are fed into the network as one vector, and their numeric values are passed along the edges to every neuron in the next layer. For each neuron, the incoming values are multiplied with the respective edge weight $\beta$ and summed up, as depicted by the $\sum$ symbol in each circle. The sum is passed to a function called \textit{activation function} - illustrated by the sigmoid curve - which controls whether the neuron emits a signal or not. The outputs are passed along the output edges of the respective neurons and the process is repeated for the next layer until the results have reached the output layer. This process of continually feeding the outputs forward to the next layer also gives this type of ANN its name.
 
-The weights $\beta$ are adjusted during training to increase prediction accuracy. For this purpose, the training samples are grouped into \textit{batches}. Once all batches have passed through the network once, an \textit{epoch} has elapsed. The samples in a batch are passed into the network, and the predictions for this batch are compared to the target labels. At this point, the \textit{loss function} calculates how far the network's predictions missed the labels. The weights are then adjusted to reduce the loss in the next batch. Because the goal of the training algorithm is to minimize the network's loss, it can happen that the weights are adapted too well to the training set, making the network overfit.
+The weights $\beta$ are adjusted during training to increase prediction accuracy. For this purpose, the training samples are grouped into \textit{batches}. The samples in a batch are passed into the network, and the predictions for this batch are compared to the target labels. At this point, the \textit{loss function} calculates how far the network's predictions missed the labels. The weights are then adjusted to reduce the loss in the next batch.  Once all batches have passed through the network once, an \textit{epoch} has elapsed. Because the goal of the training algorithm is to minimize the network's loss, it can happen that the weights are adapted too well to the training set, making the network overfit.
 
 Overfitting an ANN during training can be avoided by calculating the network's loss both on the training set as well as on the test set. The weight adjustments are made based on the loss on the training set, but the training is stopped once the loss on the test set has ceased to improve for a certain number of epochs. This technique is referred to as early stopping.\\
 
@@ -196,7 +198,7 @@ As the name suggests, recurrent neural networks (RNN) implement a feedback loop.
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=.9\textwidth]{gfx/rnn-unrolled.png}
-    \caption{An unrolled neuron of an ANN}
+    \caption[An unrolled neuron of an ANN]{An unrolled neuron of an ANN, taken from~\cite{web:colah}}
     \label{fig:rnn-unrolled}
 \end{figure}
 
@@ -214,7 +216,7 @@ Hochreiter \& Schmidhuber published this enhancement in 1997~\cite{hochreiter199
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=\textwidth]{gfx/lstm-chain.png}
-    \caption{An unrolled LSTM cell and its architecture~\cite{web:colah}}
+    \caption[An unrolled LSTM cell and its architecture]{An unrolled LSTM cell and its architecture. Illustration taken from~\cite{web:colah}}
     \label{fig:lstm}
 \end{figure}
 
@@ -240,7 +242,7 @@ Then, relevant methods used for categorical variables are presented in \autoref{
     \caption[A visualization of the curse of dimensionality]{Adding features to the feature space does not improve model performance indefinitely}
     \label{fig:dimensionality-vs-performance}
 \end{figure}
-The curse of dimensionality describes a phenomenon that arises when using more and more features~\cite{Aalst2016} with the same number of samples impacts accuracy negatively. It appears across various domains such as combinatorics, sampling optimization, and machine learning, and is especially prominent when features are engineered.
+The curse of dimensionality describes a phenomenon that arises when using more and more features~\cite{Aalst2016} with the same number of samples impacts accuracy on test data negatively. It appears across various domains such as combinatorics, sampling optimization, and machine learning, and is especially prominent when features are engineered.
 
 The increase in dimensionality caused by the number of features increases the size of the solution space. This eventually causes problems for machine learning algorithms which require statistic significance, and as a result, the algorithm becomes less accurate. To counter this effect, more training data would be necessary. Thus, increasing the number of features for training a predictive model only improves accuracy to a certain extent when the number of samples is constant. This relationship is illustrated in \autoref{fig:dimensionality-vs-performance}.
 
@@ -286,7 +288,7 @@ In contrast to one-hot encoding, this dictionary encoding does not result in wid
 \subsubsection*{Word embedding}
 Because dictionary encodings impose order and one-hot encodings lead to sparse data, word embeddings are perceived as a viable alternative for encoding categorical variables. Word embeddings are rooted in NLP, where applications deal with very large alphabets.
 
-A word embedding is the output of a neural network with a single hidden layer that has been trained on a large text corpus. It detects how words relate to each other~\cite{web:word-embedding} and puts out highly dimensional vectors for each word. These represent any word property that the model has picked up. In the following example from~\cite{mikolov2013distributed}, the network was able to detect gender properties and social semantics of words:
+A word embedding is the output of a neural network with a single hidden layer that has been trained on a large, dictionary-encoded text corpus. It detects how words relate to each other~\cite{web:word-embedding} and puts out highly dimensional vectors for each word. These represent any word property that the model has picked up. In the following example from~\cite{mikolov2013distributed}, the network was able to detect gender properties and social semantics of words:
 
 $$
 \vec{v}_{king} - \vec{v}_{man} + \vec{v}_{women} = \vec{v}_{queen}
@@ -352,7 +354,7 @@ $$
 
 While $n$-grams can be powerful features to use, their high dimensionality causes high computational loads and sparse data. With the small feature set of 9 words in the given example, a line item using tri-grams would already be $\frac{|FS|!}{(|FS|-n)!}=504$ elements wide.
 
-\subsubsection*{subsequence mining}
+\subsubsection*{Subsequence mining}
 One of the main weaknesses of $n$-grams is the restriction to a single $n$ and that "one may need to examine a combinatorially explosive
 number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reason, approaches have been developed that combine the benefit of $n$-grams with more flexibility by avoiding the limitation to $n$. An algorithm sifts through input sequences and detects sequential patterns of any length. These sequences are then encoded instead of the $n$-grams, resulting in line items similar to the ones in \autoref{tab:bow-encoding}, with the respective boolean entry denoting the occurrence of a specific subsequence in the sequence. Examples for these algorithms are GSP \cite{srikant1996gsp}, FreeSpan \cite{han2000freespan} and PrefixSpan \cite{pei2001prefixspan}.\\
 

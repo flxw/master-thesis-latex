@@ -95,9 +95,9 @@ After selecting suitable features in the first step, the second step of the KDD 
 \subsection*{Transforming basic features}
 The features remaining after selection can be divided into three categories: timestamps, numerical and categorical. The transformation applied to each category of feature is described briefly in the following:
 
-Timestamps are converted to numerical features for each trace, i.e. each timestamp $t_i$ was made relative to the beginning of a trace by replacing it with the result of $t_i - t_0$. Relative timestamps have been shown to work with sequential data~\cite{lessmannBADS}.
+Timestamps are converted to numerical features for each trace, i.e. each timestamp $t_i$ is made relative to the beginning of a trace by replacing it with the result of $t_i - t_0$. Relative timestamps have been shown to work with sequential data~\cite{lessmannBADS}.
 
-Each numerical feature $x$ is normalized using the min-max method with min- and max-values specific to each trace. This also included the relative timestamps.
+Each numerical feature $x$ is normalized using the min-max method with min- and max-values specific to each trace. This also includes the relative timestamps. For those traces that contain only a single timestamp, an edge case is introduced:
 
 $$normalize(x) =
 \begin{cases}
@@ -229,7 +229,7 @@ The models themselves were trained with different optimizers, and various initia
 \label{tab:model-setup}
 \end{table}
 
-To conduct the experiments, Docker containers were built with the development Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-batch-formatting combination was trained and evaluated on a single NVIDIA K80 GPU. The HPI FutureSOC Lab~\cite{web:fsoc} provided the computational infrastructure and multiple GPUs so that multiple models could be trained and evaluated simultaneously. The complete source code used for evaluation is publicly available on GitHub at \href{https://github.com/flxw/master-thesis-code}{flxw/master-thesis-code}.
+To conduct the experiments, Docker containers were built with the development Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-batch-formatting combination was trained and evaluated on a single NVIDIA K80 GPU. The HPI FutureSOC Lab~\cite{web:fsoc} provided the computational infrastructure and multiple GPUs so that multiple models could be trained and evaluated simultaneously. The complete source code used for evaluation is publicly available on GitHub at \href{https://github.com/flxw/master-thesis-code}{github.com/flxw/master-thesis-code}.
 
 \begin{table}
 \centering
@@ -263,13 +263,13 @@ While the first two criteria target the general usability of each model, the las
 The three aforementioned evaluation criteria were applied to each model-batching combination on each dataset, and the results are presented in this section. By criterion, we go through the measurements. Some of the referenced figures are placed in the appendices, due to space reasons.
 
 \subsection*{Accuracy}
-The overall accuracy is a good indicator of the prediction performance of any prediction model. We will go over the model accuracies by batching strategy and explain the results. In \autoref{fig:max-accuracies-bpic2011} to \autoref{fig:max-accuracies-bpic2015-5}, the model performances per dataset are presented, grouped by batching strategy. The plots make apparent that only three models perform well consistently and that the batching strategies can have a profound effect on accuracy.\\
+The validation accuracy is a good indicator of the prediction performance of any prediction model. We will go over the model accuracies by batching strategy and explain the results. In \autoref{fig:max-accuracies-bpic2011} to \autoref{fig:max-accuracies-bpic2015-5}, the model performances per dataset are presented, grouped by batching strategy. The plots make apparent that only three models perform well consistently and that the batching strategies can have a profound effect on accuracy.\\
 
 % individual batching strategy
-The individual batching strategy often results in slightly worse accuracies than the grouped batching strategy. We trace this back to the more frequent adjustment of weights that can lead the loss optimization into local minima. For this strategy, the SCH model always gives the best accuracies.
+The individual batching strategy often results in slightly worse accuracies than the grouped batching strategy. We trace this back to the more frequent adjustment of weights that can lead the loss optimization into local minima~\cite{keskar2016large}. For this strategy, the SCH model always gives the best accuracies.
 
 % grouped batching strategy
-The grouped batching strategy generally causes the top performance in lieu with the SP2 model on any dataset except for BPIC11 and BPIC12. On BPIC11, the strategy brings the best accuracy with the PFS model. On BPIC12, it causes the worst accuracies on the dataset. The explanation for this can be found in \autoref{tab:dataset-characteristics} and \autoref{tab:batch-sizes}. The dataset has the highest number of traces, and a relatively even distribution of lengths, resulting in a small standard deviation. This results in too many traces being put in a single batch, causing lost optimization opportunities. With this in mind, the grouping strategy should be enhanced to split batches if they exceed a certain size threshold. Nonetheless, we realized that the mean of the top accuracies of the SCH, SP2 and PFS models is the highest with the grouping strategy. \autoref{tab:strategy-top-accuracies} illustrates these mean accuracies.
+The grouped batching strategy generally leads to top performance in lieu with our SP2 model on any dataset except for BPIC11 and BPIC12. On BPIC11, the strategy brings the best accuracy with the PFS model. On BPIC12, it causes the worst accuracies on the dataset. The explanation for this can be found in \autoref{tab:dataset-characteristics} and \autoref{tab:batch-sizes}. The dataset has the highest number of traces, and a relatively even distribution of lengths, resulting in a small standard deviation. This results in too many traces being put in a single batch, causing lost optimization opportunities. With this in mind, the grouping strategy should be enhanced to split batches if they exceed a certain size threshold. Nonetheless, we realized that the mean of the top accuracies of the SCH, SP2 and PFS models is the highest with the grouping strategy. \autoref{tab:strategy-top-accuracies} illustrates these mean accuracies.
 %We also realized that the grouping strategy not only contributes to the best accuracies but also that it has a harmonizing effect on the accuracies among the SCH, SP2 and PFS models. This effect is illustrated in \autoref{fig:accuracy-harmonization}. The heatmap shows how the standard deviation between the top accuracies of the three models decreases with the grouping strategy on any dataset.
 
 % padded strategy
@@ -341,7 +341,7 @@ BPIC15-5 &    0.630758 &  0.650530 &  0.640852 &  0.557139 \\
 \end{figure}
 \FloatBarrier
 
-\subsection*{Training times}
+\subsection*{Training time}
 The training time that a model requires for an epoch is important to gauge the efficiency of its training process. The batch size has a direct effect on the required time since it corresponds to the number of weight adjustments per epoch. \autoref{fig:BPIC11-training-timings} to \autoref{fig:BPIC15-5-training-timings} illustrate the mean time required for training a model for an epoch, grouped by batching strategy. Here, we will go over the training times per batching strategy and explain the results.
 
 Unsurprisingly, the individual batching strategy leads to the longest times overall. \autoref{tab:dataset-characteristics} reveals that this strategy leads to hundreds of weight adjustments per epoch.

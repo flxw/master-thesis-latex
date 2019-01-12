@@ -1,6 +1,6 @@
 \chapter{Sequence prediction for running cases}
 \label{chap:taking-inspiration}
-While a number of works have demonstrated the applicability of LSTM neural networks to Predictive Process Monitoring, most have left out a perspective on the sequence prediction problem from Natural Language Processing (NLP). In this chapter, we outline how we take inspiration from sequence prediction in NLP, and thus add to improvement area 3 from \autoref{sec:intro:contribution}.
+Previos works have demonstrated the applicability of LSTM neural networks to Predictive Process Monitoring, most have left out a perspective on the sequence prediction problem from Natural Language Processing (NLP). In this chapter, we outline how we take inspiration from sequence prediction in NLP, and thus add to improvement area 3 from \autoref{sec:intro:contribution}.
 
 We establish the connection between processes and sequences by connecting their definitions in \autoref{sec:contrib:case-sequence-understanding}. This provides the underpinning for introducing two NLP-inspired approaches for predicting the next activity in a case. These are presented in \autoref{sec:contrib:sp2-inspiration} and \autoref{sec:contrib:pfs-inspiration}.
 
@@ -18,24 +18,24 @@ seq           &=  \langle s_1,s_2\cdots s_l \rangle\ |\ \forall\ 1 \leq j \leq l
 Any itemset consists of items $s = (i_1, i_2 \cdots i_n)$ with $i \in \mathscr{I}$. Events are made up of attributes that are accessed via the $\#$ operator.
 In a first step, attributes are defined as items, so that any possible value from any attribute can be understood as an item:
 
-$$\mathscr{I} = \{\#_{a}(e)\ |\ c \in L\wedge e \in \#_{trace}(c) \wedge a \in attrs(e)\}$$
+$$\mathscr{I} = \{\#_{a}(e)\ |\ c \in L\wedge e \in \#_{trace}(c) \wedge a \in attribute\_names(e)\}$$
 
 In a second step, a schema is applied to the itemsets. Without it, the itemset that should represent an event could consist e.g. only out of timestamps, as $s \subseteq \mathscr{I}$ does not place any restrictions on the content of $s$.
 The schema also provides the tabular format required for machine learning applications, and is introduced as a direct mapping from event $e$ to itemset $s$:
 
 $$ s = (i_1, i_2 \cdots i_n)\ |\ i_i = \#_{attrs(e)[i]}(e) $$
 
-The definition places each item on a specific place in the itemset, depending on the index in the attribute list $attr(e)$. Still, the original condition $s \subseteq \mathscr{I}$ hold true, and now permits sequence prediction on traces.
+The definition places each item on a specific place in the itemset, depending on the index in the attribute list $attribute\_names(e)$. Still, the original condition $s \subseteq \mathscr{I}$ hold true, and now permits sequence prediction on traces.
 
 In \autoref{sec:background:sequence-prediction}, a many-to-one prediction is defined to target the next itemset $\hat{s}$.
 In our case that would not only mean a timestamp, a resource and an activity name, but also all other data attributes used for events in the respective log. Since we specifically target the name of the next activity, the definition of the prediction function needs to be adjusted. The XES standard defines the activity name to be contained in the field \verb=concept:name=~\cite{Aalst2016}:
 
-$$ predict(seq_{in}) = #_{concept:name}(\hat{s}) $$
+$$ predict(seq_{in}) = \#_{concept:name}(\hat{s}) $$
 
 Having picked a single prediction target, we move on to presenting the network architectures for executing the prediction.
 
 \section{Adapting a competition submission}\label{sec:contrib:sp2-inspiration}
-Shibata et al.'s bipartite network architecture has shown outstanding performance in the SPiCe competition~\cite{web:spice}. Under the assumption that a case exhibits properties similar to sentences, we adapt it for use in the business process domain.
+Shibata et al.'s bipartite network architecture has shown outstanding performance in the Sequence Prediction competition (SPiCe)~\cite{web:spice}. Under the assumption that a case exhibits properties similar to sentences, we adapt it for use in the business process domain.
 
 \begin{figure}[!htb]
     \centering
@@ -57,7 +57,7 @@ The SP-2 features are to be engineered based on the activity names, as the name 
 
 \section{Encoding subsequence occurrence}
 \label{sec:contrib:pfs-inspiration}
-Klinkmüller et al. compared different feature representations and found that sub-trace occurrence features can help models cover a broader variety of relationships~\cite{klinkmuller2018reliablemonitoring}. While they found this to be true for random forests, we want to investigate the applicability of such features for LSTM neural networks since we established the similarity of traces and sequences. While the results from Francescomarino et al. are discouraging~\cite{francescomarino2017}, another network architecture could make a difference.
+Klinkmüller et al. compared different feature representations and found that sub-trace occurrence features can help models cover a broader variety of relationships~\cite{klinkmuller2018reliablemonitoring}. While they found this to be true for random forests, we want to investigate the applicability of such features for LSTM neural networks since we established the similarity of traces and sequences. The results from Francescomarino et al. are discouraging~\cite{francescomarino2017}, another network architecture could make a difference.
 
 Since SP-2 features already encode history and subsequence encodings do the same on a higher level of abstraction, we take the SP2 model architecture and inject different features in place of the SP-2 features. Said features and the corresponding architecture will henceforth be referred to as PFS, as illustrated in \autoref{fig:pfs-architecture}. The acronym PFS originates from the word PrefixSpan, which is the name of the algorithm used in \autoref{chap:evaluation} to mine the subsequences. Both PFS and SP2 models will also be evaluated in \autoref{chap:evaluation}.
 
