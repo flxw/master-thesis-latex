@@ -1,8 +1,8 @@
 \chapter{Evaluation}\label{chap:evaluation}
-Through the use of the framework described in the previous chapter, we can evaluate four different algorithms for next-activity prediction side-by-side: Two implementations that mimic the networks by Evermann et al. and Schönig et al, and the PFS and SP2 approaches presented in \autoref{chap:taking-inspiration}. The reimplementation of Evermann's and Schönig's approaches will be referred to as EVM and SCH respectively. For each model, we will analyze the performance differences between the four different batching strategies from \autoref{chap:training-framework}.
-
 In this chapter, we first present our choice of datasets in \autoref{sec:eval:dataset-choice}. As we follow the KDD process, we then lead through the data pre-processing and transformation phases in \autoref{sec:eval:data-preprocessing} and \autoref{sec:eval:data-transformation}. The latter section also covers the strategy used to engineer the features for the SP-2 and PFS models.
 The system configuration and the used training strategy is presented in \autoref{sec:eval:test-setup}, followed by the set of criteria by which we judge the results in \autoref{sec:eval:criteria}. Finally, the chapter ends with the presentation in \autoref{sec:eval:results} and discussion of the results in \autoref{sec:eval:discussion}. Used and relevant technologies are highlighted in each section.
+
+Through the use of the framework described in the previous chapter, we can evaluate four different algorithms for next-activity prediction side-by-side: Two implementations that mimic the networks by Evermann et al. and Schönig et al, and the PFS and SP2 approaches presented in \autoref{chap:taking-inspiration}. The reimplementation of Evermann's and Schönig's approaches will be referred to as EVM and SCH respectively. For each model, we will analyze the performance differences between the four different batching strategies from \autoref{chap:training-framework}.
 
 \section{Choice of datasets}
 \label{sec:eval:dataset-choice}
@@ -114,7 +114,7 @@ SP-2 features were proposed in the SPiCe submission by Shibata et al.~\cite{shib
 For every trace, a new feature vector \texttt{sp2\_df} is created and the occurrence of the first activity, contained in the column \verb=target_col=, is marked inside it. Then, a loop begins over the remaining steps, where each previous row inside \texttt{sp2\_df} is copied into the currently indexed row and the presence of the current activity is marked. This repeats itself until the trace has been processed completely, leaving behind a complete SP-2 feature vector for a trace.
 
 \begin{listing}[ht]
-\begin{minted}{python}
+\begin{minted}[linenos]{python}
 # Dataframe initialization with zeroes
 sp2_df = pd.DataFrame(columns=activity_labels,
                       index=range(0,len(t)),
@@ -147,7 +147,7 @@ The features for the PFS model were created with the help of the PrefixSpan algo
 As \autoref{lst:pfs-mining} shows, prefixspan-py greatly facilitates obtaining subsequences. The depicted function call returns the top 25 closed subsequences ranked by their support metric. Mined from the entirety of traces, these subsequences are picked as features to be encoded. By choosing 25, we stay well above the minimum support requirement of $0.05$ chosen by Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}.
 
 \begin{listing}[ht]
-\begin{minted}{python}
+\begin{minted}[linenos]{python}
 prefixspan_traces = PrefixSpan(encoded_traces)
 closed_sequences = prefixspan_traces.topk(25, closed=True)
 \end{minted}
@@ -160,7 +160,7 @@ After mining the sequences, a loop is executed for every trace - shown in \autor
 For each index \verb=i= it is checked whether any of the mined subsequences starts at that position. This is checked by peeking ahead of \verb=i= for the length of the subsequence. As in the case of the SP-2 features, the occurrence of a subsequence is marked with a boolean flag in the feature vector \verb=subseq_df= from the row that it occurred in onwards.
 
 \begin{listing}[ht]
-\begin{minted}{python}
+\begin{minted}[linenos]{python}
 # Initialize the feature vector
 # subsequences have not happened yet
 subseq_df = pd.DataFrame(columns=subseq_labels,
@@ -348,7 +348,7 @@ Unsurprisingly, the individual batching strategy leads to the longest times over
 
 The grouped batching strategy leads to significant reductions in training times, depending on how diverse the trace lengths are. \autoref{tab:dataset-characteristics} explains why the reduction is not as big with BPIC11: It exhibits up to 1814 different lengths, while the other datasets only exhibit $5\%$ to $10\%$ of this number.
 
-With the padded strategy, it is possible to overcome the limitations imposed by trace lengths and construct batches out of any number of traces. This makes it easier to optimize the batch size, which can lead to faster training times. That this does not always lead to better accuracies was shown in the previous section, as e.g. this strategy incurs a loss of samples on BPIC11.
+With the padded strategy, it is possible to overcome the limitations imposed by trace lengths and construct batches out of any number of traces. This makes it easier to optimize the batch size, which can lead to faster training times. That it does not always lead to better accuracies was shown in the previous section, as e.g. this strategy incurs a loss of samples on BPIC11.
 
 Finally, the windowing strategy is the fastest by at least 60 seconds on any dataset. It produces a constant number of timesteps and allows for arbitrary batch sizes.
 
@@ -397,7 +397,7 @@ Finally, the windowing strategy is the fastest by at least 60 seconds on any dat
 \FloatBarrier
 
 \subsection*{Stability}
-As we stressed in the introduction, the stability of a prediction model along the progress of a case greatly impacts the level of trust that users put into the model. \autoref{appendix:evaluation-measurements} contains the figures that illustrate the stability of each model per batching strategy, grouped by dataset. Each figure for a batching strategy and a dataset contains four curves, one for each model. The curves show the model accuracy along the progression of all traces inside the validation set in steps of $5\%$. This subsection explains the results, again per batching strategy.\\
+As we stressed in the introduction, the stability of a prediction model along the progress of a case greatly impacts the level of trust that users put into the model~\cite{metzger2015}. \autoref{appendix:evaluation-measurements} contains the figures that illustrate the stability of each model per batching strategy, grouped by dataset. Each figure for a batching strategy and a dataset contains four curves, one for each model. The curves show the model accuracy along the progression of all traces inside the validation set in steps of $5\%$. This subsection explains the results, again per batching strategy.\\
 
 The individual batching strategy not only takes the most time, but it also leads to strong differences between the SCH, SP2, and PFS models. A good example is the difference between \autoref{fig:bpic15-3-individual-stability} and \autoref{fig:bpic15-3-grouped-stability}. In the latter figure, the SCH, SP2 and PFS curves are a lot closer to each other.
 
@@ -421,7 +421,7 @@ After presenting and explaining our findings, we summarize our learnings in this
 
 First, we were able to confirm Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} and their suspicion that windowed batching does not work well for sequence prediction. While it may be a performant strategy to use for time-series prediction, it does not work very well for predicting the future of a single case.
 
-Secondly, we find that the grouping strategy frequently delivers the best results in terms of speed and accuracy. We do realize that it should be iterated upon to include a threshold which limits batches to a maximum size and splits the larger batches accordingly. As evidenced by the charts, the grouping strategy seems to perform better with a medium to highly complex processes from BPIC11 and BPIC15, while padding works better with the simpler process from BPIC12. In combination with the SP2 model, the strategy contributed to most of the highest accuracies.
+Secondly, we find that the grouping strategy frequently delivers the best results in terms of speed and accuracy. We realized that it should be iterated upon to include a threshold which limits batches to a maximum size and splits the larger batches accordingly. As evidenced by the charts, the grouping strategy seems to perform better with a medium to highly complex processes from BPIC11 and BPIC15, while padding works better with the simpler process from BPIC12. In combination with the SP2 model, the strategy contributed to most of the highest accuracies.
 
 Third and lastly, we realize that Embeddings might not be useful on the currently available datasets as these might simply be too small. The lacking performance of the EVM model and its barely converging loss indicate that this might be the case. All accuracy/loss curves from training are enclosed in \autoref{appendix:loss-curves}, and show that especially for the EVM model, the loss optimization does not work properly.\\
 

@@ -44,7 +44,7 @@ Shibata et al.'s bipartite network architecture has shown outstanding performanc
     \label{fig:sp2-architecture}
 \end{figure}
 
-\autoref{fig:sp2-architecture} displays the adapted network architecture from Shibata et al., and we shall describe the changes we made in the following. It will be referred to as SP2 from here on.
+\autoref{fig:sp2-architecture} displays the adapted network architecture from Shibata et al. It will be referred to as SP2 from here on.
 
 The Embedding layers were completely removed. Above the SP-2 feature input layer, the embedding layer was replaced with a fully-connected layer. The reason for the removal is as follows: Shibata et al. predicted the next word in a sentence based on the preceding words. As each word is an item, their used itemsets only consist of a single item~\cite{shibata2016bipartite}. We aim to predict the next activity based on the preceding events, and as shown in the previous section, the event-itemsets consist of multiple items which represent different attributes.
 Embedding layers require dictionary-encoded input of a single item, which is a problem when multiple items belong together~\cite{goldberg2014word2vec}. An alternative to the removal would have been the concatenation of the outputs of one Embedding layer per attribute type. We decided against this due to the relatively small amount of available training data and the increased computational overhead.
@@ -57,7 +57,7 @@ The SP-2 features are to be engineered based on the activity names, as the name 
 
 \section{Encoding subsequence occurrence}
 \label{sec:contrib:pfs-inspiration}
-Klinkmüller et al. compared different feature representations and found that sub-trace occurrence features can help models cover a broader variety of relationships~\cite{klinkmuller2018reliablemonitoring}. While they found this to be true for random forests, we want to investigate the applicability of such features for LSTM neural networks since we established the similarity of traces and sequences. The results from Francescomarino et al. are discouraging~\cite{francescomarino2017}, another network architecture could make a difference.
+Klinkmüller et al. compared different feature representations and found that sub-trace occurrence features can help models cover a broader variety of relationships~\cite{klinkmuller2018reliablemonitoring}. While they found this to be true for random forests, we want to investigate the applicability of such features for LSTM neural networks since we established the similarity of traces and sequences. Francescomarino et al. tried this in their work, and achieved discouraging accuracies below $0.10$~\cite{francescomarino2017}. We are convinced, that another network architecture could make a difference, as Francescomarino did not make use of LSTM layers.
 
 Since SP-2 features already encode history and subsequence encodings do the same on a higher level of abstraction, we take the SP2 model architecture and inject different features in place of the SP-2 features. Said features and the corresponding architecture will henceforth be referred to as PFS, as illustrated in \autoref{fig:pfs-architecture}. The acronym PFS originates from the word PrefixSpan, which is the name of the algorithm used in \autoref{chap:evaluation} to mine the subsequences. Both PFS and SP2 models will also be evaluated in \autoref{chap:evaluation}.
 

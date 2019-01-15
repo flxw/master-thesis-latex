@@ -1,5 +1,5 @@
 \chapter{Background}\label{chap:background}
-To predict the next element in a running case, we bring together the domains of Process Science, Predictive Modeling and Deep Learning. This background chapter gives a comprehensive insight into those parts of the domains which will be used and referenced throughout this thesis. The chapter approaches them in a top-down fashion, starting with the high-level perspective from Process Science and how Process Mining is distinguished from Predictive Process Monitoring in \autoref{sec:process-science}. The section ends with information on how the process logs usually come into existence and which requirements these logs need to fulfill to be used in a prediction scenario.
+To predict the next element in a running case, we bring together the domains of Process Science, Predictive Modeling and Deep Learning. This background chapter gives a comprehensive insight into those parts of the domains which are used and referenced throughout this thesis. The chapter approaches them in a top-down fashion, starting with the high-level perspective from Process Science and how Process Mining is distinguished from Predictive Process Monitoring in \autoref{sec:process-science}. The section ends with information on how the process logs usually come into existence and which requirements these logs need to fulfill to be used in a prediction scenario.
 With the data origin explained, \autoref{sec:predictive-modeling} introduces a process along which predictive model development usually takes place.
 \autoref{sec:artificial-neural-networks} gives an in-depth look at neural networks and the components relevant to this thesis, especially stressing the importance of long short-term memory cells.
 Finally, \autoref{sec:background:feature-engineering} highlights the peculiarities encountered when dealing with sequential data and introduces popular approaches to deal with them.
@@ -28,7 +28,7 @@ With the help of workflow management systems (WFMS), it is possible to embed and
 The event logs give rise to the disciplines of Process Mining and Predictive Process Monitoring. These disciplines revolve around analyzing the information contained in those logs~\cite{Aalst2016}. Because of the paramount importance of logs for this work, this section begins with \autoref{sec:log-structure} defining the properties and structure of a log. \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast Process Mining and Predictive Process Monitoring.
 
 \subsection{Process logs}\label{sec:log-structure}
-A process log tracks the execution history of a process and can be understood in a hierarchical manner. Each log of a process consists of cases, which represent instances of a process. A case itself consists of a trace of events, i.e. a sequence that only belongs to a single case. Each event can have attributes attached~\cite{Aalst2016}.
+A process log tracks the execution history of a process and can be understood in a hierarchical manner. Each log of a process consists of cases, which represent instances of a process. A case itself consists of a trace of events, i.e., a sequence that only belongs to a single case. Each event can have attributes attached~\cite{Aalst2016}.
 
 \begin{figure}
     \centering
@@ -41,7 +41,7 @@ A process log tracks the execution history of a process and can be understood in
 
 Process event logs are typically made available via XES files. XES is an abbreviation for the \textit{eXtensible Event Stream} standard~\cite{gunther2013xes}. An excerpt from a case extracted from the BPIC12 XES file~\cite{BPIC2012} is displayed in \autoref{fig:process-log}. In this particular excerpt, a variety of state transitions are tracked, as evidenced by the values in the \verb=lifecycle:transition= column.\\
 
-Formally, a log $L$ is defined as follows~\cite{Aalst2016}. It is made up of cases $c \in \mathscr{C}$, where $\mathscr{C}$ is the case universe. Similar to events, cases have attributes, e.g. a name. The operator $\#_{attr}(c)$ returns the value of the attribute $attr$ on a case $c$. The function $attribute\_names$ lists the names of all attributes that an event possesses. A mandatory attribute of any case is its trace $\#_{trace}(c)$, which is especially relevant for our work.
+Formally, a log $L$ is defined as follows~\cite{Aalst2016}. It is made up of cases $c \in \mathscr{C}$, where $\mathscr{C}$ is the case universe. Similar to events, cases have attributes, e.g., a name. The operator $\#_{attr}(c)$ returns the value of the attribute $attr$ on a case $c$. The function $attribute\_names$ lists the names of all attributes that an event possesses. A mandatory attribute of any case is its trace $\#_{trace}(c)$, which is especially relevant for our work.
 Each trace represents a finite sequence of events $e \in \mathscr{E}$. $\mathscr{E}$ is the set of all events.
 
 $$ \#_{trace}(c) = \langle e_1, e_2, e_3 \dots, e_n \rangle $$
@@ -75,18 +75,18 @@ Predictive Process Monitoring is aimed at the use of online data to make stateme
 The answers to these questions can give case workers the opportunity to intervene if a case takes an unwanted course or might fail to meet requirements. Furthermore, this approach only requires sufficient amounts of historical case executions to train the predictive models. What this entails is explained in the following chapter.
 
 \section{Predictive Modeling}\label{sec:predictive-modeling}
-Predictive Modeling is a domain that deals with creating models from learned statistical properties of data to predict outcomes~\cite{sivaganesan1994predictive}. These models are referred to as predictive models, and are not related to process models. This section introduces a common process for predictive model generation in \autoref{sec:predictive-model-development}.
+Predictive Modeling is a domain that deals with creating models from learned statistical properties of data to predict outcomes~\cite{sivaganesan1994predictive}. These models are referred to as predictive models and are not related to process models. This section introduces a common process for predictive model generation in \autoref{sec:predictive-model-development}.
 As we aim to transfer a method from NLP to Predictive Process Monitoring, we introduce a definition of sequences in \autoref{sec:background:sequences}. Then, we frame the problem in \autoref{sec:background:sequence-prediction} that is fundamental to this thesis: next-element predictions in a sequence.
 
 \subsection{Predictive model development}
 \label{sec:predictive-model-development}
 \begin{figure}
-	\centering
-	\includegraphics[width=\textwidth]{gfx/kdd_process.png}
-	\caption{The process for \textit{Knowledge Discovery in Databases}~\cite{fayyad1996data}}
-	\label{fig:kdd_process}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/kdd_process.png}
+    \caption{The process for \textit{Knowledge Discovery in Databases}~\cite{fayyad1996data}}
+    \label{fig:kdd_process}
 \end{figure}
-In 1996 Fayyad et al. published what came to be known as the Knowledge Discovery in Databases (KDD) process~\cite{fayyad1996data}. Published over 20 years ago and aimed at data mining, it is also applicable to predictive model building. It is illustrated in \autoref{fig:kdd_process}, and shall be explained step by step in the following with technical details relevant for this thesis. The process is highly iterative, is focused intensely on the data, and jumps between every step are possible~\cite{kuhn2013applied}.\\
+In 1996 Fayyad et al. published what came to be known as the Knowledge Discovery in Databases (KDD) process~\cite{fayyad1996data}. Published over 20 years ago and aimed at data mining, it is also applicable to predictive model building. It is illustrated in \autoref{fig:kdd_process} and shall be explained step by step in the following with technical details relevant for this thesis. The process is highly iterative, is focused intensely on the data, and jumps between every step are possible~\cite{kuhn2013applied}.\\
 
 Predictive models are the statistical tools that are used to make predictions. They work on \textit{samples}, which are comprised of a number of \textit{features} - variables that are considered useful for the prediction of the \textit{target variable}. The target variable may either be a continuous or discrete value. In the latter case, the output is referred to as classification. Activities are discrete, and as such this thesis deals with classification. In the exemplary log in \autoref{fig:process-log}, each row can be understood as a sample and each column as a single feature. Features are sometimes also referred to as predictor variables.
 
@@ -94,23 +94,22 @@ Predictive models are the statistical tools that are used to make predictions. T
 During the first step of the KDD process in \autoref{fig:kdd_process}, features are chosen as predictors based on differed criteria such as their predictive power or inter-feature correlations. Based on the latter, features can also be omitted from the original dataset.
 
 \subsubsection*{Pre-processing}
-The second step of the KDD process is focused on data quality. Features may be sparse or contain data of low quality, i.e. different spelling of the same entity or typing errors. With data cleansing, these issues are resolved and appropriate values imputed where they are missing.
+The second step of the KDD process is focused on data quality. Features may be sparse or contain data of low quality, i.e., different spelling of the same entity or typing errors. With data cleansing, these issues are resolved, and appropriate values imputed where they are missing.
 
 \subsubsection*{Transformation}\label{sec:predictive-model-development:transformation}
-The third step of the KDD process is aimed at making the data accessible for machine learning methods. During transformation, some features might be aggregated, normalized or encoded differently to assist the predictive model in picking up relations between variables. Common tasks are one-hot or dictionary encoding of discrete values such as strings, e.g. activity names. Variable concatenations or complex aggregations might also be added as \textit{engineered} features~\cite{kuhn2013applied}.
+The third step of the KDD process is aimed at making the data accessible for machine learning methods. During transformation, some features might be aggregated, normalized or encoded differently to assist the predictive model in picking up relations between variables. Common tasks are one-hot or dictionary encoding of discrete values such as strings, activity names for instance. Variable concatenations or complex aggregations might also be added as \textit{engineered} features~\cite{kuhn2013applied}.
 
 \subsubsection*{Data Mining}
 Data mining deals with the extraction of implicit, previously unknown, and potentially useful information from data. Machine learning provides a technical basis for this~\cite{Aalst2016}. The goal of predicting the next activity is a classification task for which a wide array of applicable predictive models is available, such as decision trees, random forests, support vector machines (SVM) or artificial neural networks (ANN)~\cite{kuhn2013applied}.
 
 The data prepared in the previous steps are used to \textit{train} the model. During this training phase, the model uses accuracy metrics to assess the accuracy of its predictions, learn the statistical properties of the data and adjust its internals accordingly. The accuracy is calculated on the target labels, i.e. the predictions that the model should produce on known data.
-%Working with labeled training data is referred to as supervised learning. There are other categories, such as reinforcement learning or unsupervised learning, which this thesis does not deal with.
-Certain input parameters of the model are adjusted during this phase as well, an activity referred to as \textit{hyper-parameter tuning}.
+Certain input parameters of the model are adjusted during this phase as well; an activity referred to as \textit{hyper-parameter tuning}.
 
 \subsubsection*{Evaluation}
-Typically, not all of the available data are used for training. This is to make sure that the model generalizes well, i.e. predicts as good on data that it has not seen before, as on data it was trained on. If a model is not generalizing, it is said to be \textit{overfitting}. A model is said to be overfitting when it has learned the properties of the training data too well and thus shows poor generalization capabilities. A simple and effective method to avoid bias is to divide the available data into two sets: 75\% as the training set to train the model on, and 25\% of it as the test set to verify the model's performance on unseen data~\cite{kuhn2013applied, lessmannBADS}.
+Typically, not all of the available data are used for training. This is to make sure that the model generalizes well, i.e., predicts as good on data that it has not seen before, as on data it was trained on. If a model is not generalizing, it is said to be \textit{overfitting}. A model is said to be overfitting when it has learned the properties of the training data too well and thus shows poor generalization capabilities. A simple and effective method to avoid bias is to divide the available data into two sets: 75\% as the training set to train the model on, and 25\% of it as the test set to verify the model's performance on unseen data~\cite{kuhn2013applied, lessmannBADS}.
 
 \subsection{Sequences}\label{sec:background:sequences}
-This section presents a formal definition of sequences that lays the groundwork for sequence prediction. This definition will later be connected with that of case traces to facilitate the process prediction problem at hand.
+This section presents a formal definition of sequences that lays the groundwork for sequence prediction. The definition is according to van der Aalst~\cite{Aalst2016}.
 
 A sequence is made up of ordered, individual steps, which are referred to as items~\cite{han2000freespan}. An item could represent a word, a letter, or anything that can be modeled as a sequence. Each item is an element of the set $\mathscr{I}$ of all items, and each \textit{itemset} $s$ is a subset of $\mathscr{I}$. A \textit{sequence} $seq$ is an ordered list of itemsets:
 
@@ -124,7 +123,7 @@ A sequence is made up of ordered, individual steps, which are referred to as ite
 
 Then, $S$ defines the infinite set of all possible sequences. It is infinite because sequences can be arbitrarily long, with each itemset containing an arbitrary number of items. For  subsequences, the notation $seq_{i,k}$ denotes that elements from index $i$ through $k$ from the original sequence are contained consecutively: $seq_{1,2} = \langle s_1,s_2 \rangle$. The relationship itself is noted as $seq_{1,2} \sqsubseteq seq$.\\
 
-Under the assumption of the Markovian hypothesis that "the probability of each event depends only on the state attained in the previous event"~\cite{gagniuc2017markov}, a predictive model can be trained on a database of sequences to predict the progress of a sequence. This will be shown in the next sub-section.
+Under the assumption of the Markovian hypothesis that "the probability of each event depends only on the state attained in the previous event"~\cite{gagniuc2017markov}, a predictive model can be trained on a database of sequences to predict the progress of a sequence. This is shown in the next sub-section.
 
 \subsection{Sequence prediction}\label{sec:background:sequence-prediction}
 \begin{figure}[!htb]
@@ -146,7 +145,7 @@ A function $predict$ takes in a sequence $seq_{in}$ and gives out an output $\ha
 \label{eq:prediction-from-sequence}
 \end{equation}
 
-Many-to-many predictions are common in the domains of machine translation. For example, the translation of the sentence \textit{"I am writing my master's thesis"} into the german sentence \textit{"Ich schreibe meine Masterarbeit"} can easily be mapped onto the notation previously described. With the alphabet as $\mathscr{I}$ and each itemset representing a single word, the input and target sequences can be noted as:
+Many-to-many predictions are common in the domains of machine translation. For example, the translation of the sentence \textit{"I am writing my master's thesis"} into the German sentence \textit{"Ich schreibe meine Masterarbeit"} can easily be mapped onto the notation previously described. With the alphabet as $\mathscr{I}$ and each itemset representing a single word, the input and target sequences can be noted as:
 
 \begin{equation*}
 \begin{split}
@@ -164,13 +163,13 @@ seq_{in}  &= \langle(I),(am) (writing),(my)\rangle\\
 \end{split}
 \end{equation*}
 
-In this thesis, we focus on many-to-one predictions, because we aim to predict the next activity in a running case based on its trace. To formally bring a sequence understanding onto the process prediction problem, we connect both definitions in \autoref{sec:contrib:case-sequence-understanding}. How neural networks are especially suited for sequence prediction will be explained in the next chapter.
+In this thesis, we focus on many-to-one predictions, because we aim to predict the next activity in a running case based on its trace. To formally bring a sequence understanding onto the process prediction problem, we connect both definitions in \autoref{sec:contrib:case-sequence-understanding}. How neural networks are especially suited for sequence prediction is explained in the next chapter.
 
 \section{Artificial Neural Networks}\label{sec:artificial-neural-networks}
 An artificial neural network (ANN) mimics the inner workings of a human brain in that it is made up of connected nodes referred to as neurons. These neurons are interconnected and act on the incoming signals from each connection. This section first gives background on the general structure of a basic neural network in \autoref{sec:feedforward-networks} and then highlights two enhancements for sequence learning in \autoref{sec:recurrent-networks} and \autoref{sec:lstm}.
 
 \subsection{Feedforward neural networks}\label{sec:feedforward-networks}
-The first and most trivial type of ANN is the feedforward neural network~\cite{schmidhuber2015deep}. It is not optimally suited for sequence prediction but serves as a sufficiently complex example to explain the inner workings of an ANN, and for pointing out why long-short term memory networks are more suited to the task at hand.
+The first and most trivial type of ANN is the feedforward neural network~\cite{schmidhuber2015deep}. It is not optimally suited for sequence prediction but serves as a sufficiently complex example to explain the inner workings of an ANN, and for pointing out why long short-term memory networks are more suited to the task at hand.
 
 \begin{figure}[!htb]
     \centering
@@ -181,15 +180,15 @@ The first and most trivial type of ANN is the feedforward neural network~\cite{s
 
 The nodes in any ANN are organized in layers, with each neuron connecting to every neuron in the adjacent layers, resulting in fully connected layers. The samples are fed into the input layer in the form of a vector of features. The prediction ultimately comes out of the output layer. The layers between the input and output layers are referred to as \textit{hidden layers} and can be greater in number.
 
-\autoref{fig:feedforward-ann} shows an exemplary ANN with a single hidden layer. The features $x_1$ to $x_m$ are fed into the network as one vector, and their numeric values are passed along the edges to every neuron in the next layer. For each neuron, the incoming values are multiplied with the respective edge weight $\beta$ and summed up, as depicted by the $\sum$ symbol in each circle. The sum is passed to a function called \textit{activation function} - illustrated by the sigmoid curve - which controls whether the neuron emits a signal or not. The outputs are passed along the output edges of the respective neurons and the process is repeated for the next layer until the results have reached the output layer. This process of continually feeding the outputs forward to the next layer also gives this type of ANN its name.
+\autoref{fig:feedforward-ann} shows an exemplary ANN with a single hidden layer. The features $x_1$ to $x_m$ are fed into the network as one vector, and their numeric values are passed along the edges to every neuron in the next layer. For each neuron, the incoming values are multiplied with the respective edge weight $\beta$ and summed up, as depicted by the $\sum$ symbol in each circle. The sum is passed to a function called \textit{activation function} - illustrated by the sigmoid curve - which controls whether the neuron emits a signal or not. The outputs are passed along the output edges of the respective neurons, and the process is repeated for the next layer until the results have reached the output layer. This process of continually feeding the outputs forward to the next layer also gives this type of ANN its name.
 
-The weights $\beta$ are adjusted during training to increase prediction accuracy. For this purpose, the training samples are grouped into \textit{batches}. The samples in a batch are passed into the network, and the predictions for this batch are compared to the target labels. At this point, the \textit{loss function} calculates how far the network's predictions missed the labels. The weights are then adjusted to reduce the loss in the next batch.  Once all batches have passed through the network once, an \textit{epoch} has elapsed. Because the goal of the training algorithm is to minimize the network's loss, it can happen that the weights are adapted too well to the training set, making the network overfit.
+The weights $\beta$ are adjusted during training to increase prediction accuracy. For this purpose, the training samples are grouped into \textit{batches}. The samples in a batch are passed into the network, and the predictions for this batch are compared to the target labels. At this point, the \textit{loss function} calculates how far the network's predictions missed the labels. The weights are then adjusted to reduce the loss in the next batch.  Once all batches have passed through the network once, an \textit{epoch} has elapsed. Because the goal of the training algorithm is to minimize the network's loss, the weights can be adapted too well to the training set, making the network overfit.
 
 Overfitting an ANN during training can be avoided by calculating the network's loss both on the training set as well as on the test set. The weight adjustments are made based on the loss on the training set, but the training is stopped once the loss on the test set has ceased to improve for a certain number of epochs. This technique is referred to as early stopping.\\
 
 Because feed-forward ANNs are passing the layer outputs toward the output layer, and the neurons have no memory, this type of network does not have any capacity for persisting what it has previously processed. However, this is a desirable capability for sequence predictions, as several samples can belong to a single sequence.
 
-The next subsection will show how recurrent neural networks (RNN) have been created with this capacity in mind, making them suited for working with sequential data. Long short-term memory builds on RNNs and enhances the capacity to remember even further.
+The next subsection shows how recurrent neural networks (RNN) have been created with this capacity in mind, making them suited for working with sequential data. Long short-term memory builds on RNNs and enhances the capacity to remember even further.
 
 \FloatBarrier
 \subsection{Recurrent neural networks}\label{sec:recurrent-networks}
@@ -206,12 +205,12 @@ A neuron receives an input $x_t$ and outputs a value $h_t$. The letter $t$ indic
 
 The introduction of the time dimension causes the perception of input data to change: It is now required to be three-dimensional. With feedforward ANNs, training data was two-dimensional and consisted of a list of unrelated samples. Samples were the same as a feature vector, but for RNNs, samples need to be understood as lists of feature vectors. This makes a sample suitable to represent a sequence because its feature vectors can represent the individual timesteps.
 
-While the loop in an RNN indeed allows recognizing short-term dependencies, the network as a whole will still underperform with long-term dependencies when the gaps between related inputs become too great. The root cause is that RNNs only loop back inputs, and lack memory to bridge those gaps. This problem has been thoroughly explored by Hochreiter et al.~\cite{hochreiter1991untersuchungen} who also proposed the long short-term memory fix presented in the following subsection.
+While the loop in an RNN indeed allows recognizing short-term dependencies, the network as a whole will still underperform with long-term dependencies when the gaps between related inputs become too big. The root cause is that RNNs only loop back inputs, and lack memory to bridge those gaps. This problem has been thoroughly explored by Hochreiter et al.~\cite{hochreiter1991untersuchungen} who also proposed the long short-term memory fix presented in the following subsection.
 
 \subsection{Long short-term memory}\label{sec:lstm}
 In recent years, RNNs were applied with great success to a variety of problems: speech recognition, language modeling or translation. This success can be attributed in part to the enhancement of RNNs with long short-term memory (LSTM) cells~\cite{jozefowicz2015empirical,kuhn2013applied,schmidhuber2015deep}.
 
-Hochreiter \& Schmidhuber published this enhancement in 1997~\cite{hochreiter1997} which now sees wide application. Essentially, the repeating neurons of an RNN are turned into cells by equipping them with a cell state $C$, that provides them with the capacity to remember.
+Hochreiter \& Schmidhuber published this enhancement in 1997~\cite{hochreiter1997} which now sees broad application. Essentially, the repeating neurons of an RNN are turned into cells by equipping them with a cell state $C$, that provides them with the capacity to remember.
 
 \begin{figure}[!htb]
     \centering
@@ -244,13 +243,13 @@ Then, relevant methods used for categorical variables are presented in \autoref{
 \end{figure}
 The curse of dimensionality describes a phenomenon that arises when using more and more features~\cite{Aalst2016} with the same number of samples impacts accuracy on test data negatively. It appears across various domains such as combinatorics, sampling optimization, and machine learning, and is especially prominent when features are engineered.
 
-The increase in dimensionality caused by the number of features increases the size of the solution space. This eventually causes problems for machine learning algorithms which require statistic significance, and as a result, the algorithm becomes less accurate. To counter this effect, more training data would be necessary. Thus, increasing the number of features for training a predictive model only improves accuracy to a certain extent when the number of samples is constant. This relationship is illustrated in \autoref{fig:dimensionality-vs-performance}.
+The increase in dimensionality caused by the number of features increases the size of the solution space. A greater solution space eventually causes problems for machine learning algorithms which require statistic significance, making the algorithm less accurate. To counter this effect, more training data would be necessary. Thus, increasing the number of features for training a predictive model only improves accuracy to a certain extent when the number of samples is constant. This relationship is illustrated in \autoref{fig:dimensionality-vs-performance}.
 
 \subsection{Feature engineering for categorical features}\label{sec:categorical-feature-engineering}
 While ordinal features are most often normalized, categorical features can be encoded in a variety of ways. Categorical features could be strings like \textit{red} and \textit{black}, which have no numerical format and may or may not be relative to each other. Where one-hot and dictionary encodings are traditional approaches for these features, word embeddings represent a relatively new and promising approach.
 
 \subsubsection*{One-hot encoding}
-One-hot encoding is often used for features which have a small to medium-sized number of unique values. Using it, each line item of a feature is expanded to an $n$ column representation, where $n$ represents the number all possible values, also referred to as the alphabet. The columns hold boolean flags, of which only one is ever true in any given row. This type of encoding is also sometimes referred to as "dummy encoding"~\cite{web:pandas-get-dummies}. Thus, the first word of $seq1$ would be encoded as in \autoref{tab:one-hot}. As the alphabet becomes larger, $n$ increases and the feature vector becomes more sparse. Sparse is a word used to describe data which mostly contains zeros. This characteristic in combination with increasing dimensionality can easily cause symptoms of the curse of dimensionality to appear, which is why it is not used for very large $n$.
+One-hot encoding is often used for features which have a small to medium-sized number of unique values. Each feature is expanded to an $n$ column representation, where $n$ represents the number all possible values, also referred to as the alphabet. The columns hold boolean flags, of which only one is ever true in any given row. This type of encoding is also sometimes referred to as "dummy encoding"~\cite{web:pandas-get-dummies}. Thus, the first word of $seq1$ would be encoded as in \autoref{tab:one-hot}. As the alphabet becomes larger, $n$ increases and the feature vector becomes more sparse. Sparse is a word used to describe data which mostly contains zeros. This characteristic in combination with increasing dimensionality can easily cause symptoms of the curse of dimensionality to appear, which is why it is not used for very large $n$.
 
 \begin{table}[ht]
     \centering
@@ -266,7 +265,7 @@ One-hot encoding is often used for features which have a small to medium-sized n
 \subsubsection*{Dictionary encoding}
 Widely used in compression, in in-memory database systems~\cite{plattner2012memory} for example, dictionary encoding is also used to encode categorical values. Since predictive models only process numerical values, dictionary encoding is used to create a look-up table and map every value of a feature to a numeric code, like in \autoref{tab:dictionary-encoding}.
 
-In contrast to one-hot encoding, this dictionary encoding does not result in wide and sparse inputs, making it suitable for features with a large number of distinct features. However, it has one important ramification: It imposes order on features which previously might not have had one. In our example, the condition $Maria > Arthur$ holds true after encoding. The dictionary-encoded sequences would look like this:
+In contrast to one-hot encoding, this dictionary encoding does not result in wide and sparse inputs, making it suitable for features with a large number of distinct features. However, it has one important ramification: It imposes order on features which previously might not have had one. In our example, the condition $Maria > Arthur$ holds after encoding. The dictionary-encoded sequences would look like this:
 \begin{equation*}
     \begin{split}
         seq1 &= \langle1\ 2\ 7\ 5\rangle\\
@@ -294,13 +293,13 @@ $$
 \vec{v}_{king} - \vec{v}_{man} + \vec{v}_{women} = \vec{v}_{queen}
 $$
 
-A word embedding thus allows clustering of words by certain properties. Made popular by Google, word embeddings have motivated numerous publications~\cite{web:ahogrammer, goldberg2014word2vec}. Word embeddings are often available pre-trained on very large text databases, Wikipedia for instance. To use such a pre-trained embedding, the weights from it can be loaded into the respective layer before training the network.
+A word embedding thus allows clustering of words by specific properties. Made famous by Google, word embeddings have motivated numerous publications~\cite{web:ahogrammer, goldberg2014word2vec}. Word embeddings are often available pre-trained on very large text databases, Wikipedia for instance. To use such a pre-trained embedding, the weights from it can be loaded into the respective layer before training the network.
 
 \subsection{Feature engineering for sequences}\label{sec:sequential-feature-engineering}
 Predictive model inputs take in feature vectors of fixed size. As shown, sequences can be of arbitrary length, and thus these two requirements collide. To bring variable length inputs into a usable format for predictive models, several methods of formatting have been invented. As some of their names suggest, these come from the domain of Natural Language Processing (NLP), but can easily be transferred to the problem at hand.
 
 \subsubsection*{Sliding Window}
-The sliding window format is very common in the areas of NLP and Time Series Forecasting. The sequences are divided into chunks of width $c$. This results in several input tuples for every sequence and creates the desired tabular format for feeding into the model - illustrated in \autoref{tab:sliding-window}.
+The sliding window format is widespread in the areas of NLP and Time Series Forecasting. The sequences are divided into chunks of width $c$. Chunking results in several input tuples for every sequence and creates the desired tabular format for feeding into the model - illustrated in \autoref{tab:sliding-window}.
 
 \begin{table}
     \centering
