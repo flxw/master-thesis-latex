@@ -1,9 +1,11 @@
-\chapter{A process prediction training Framework}\label{chap:training-framework}
-During development of the models, we realized that there are highly divergent understandings regarding the batch construction for next-element predictions with sequences. We believe that these different understandings strongly impact the reproducibility of prediction approaches. Therefore we present here a framework that enables researchers to compare the different understandings and easily try out new model architectures. In doing so, we hope to contribute to Area 1 and 2 in \autoref{sec:intro:motivation}.
+\chapter{Batch construction strategies}\label{chap:training-framework}
+During development of the models, we realized that there are highly divergent understandings regarding the batch construction for sequential data. We believe that these different understandings strongly impact the reproducibility of any prediction approach.
+Furthermore, we needed to automate the training of the networks because we did so on five datasets.
+We present a solution to both challenges here with a model training framework. We share it because we believe that it enables researchers to compare the different understandings and easily try out new model architectures. In doing so, we hope to contribute to Improvement Area 1 and 2 in \autoref{sec:intro:motivation}.
 
 In this chapter, we show a selection of possible batch construction strategies in \autoref{sec:contrib:input-formatting} and the underlying technical reasons. Finally, we present the training framework in \autoref{sec:contrib:training-framework}.
 
-\section{Contrasts among batching strategies}\label{sec:contrib:input-formatting}
+\section{Contrasts among current strategies}\label{sec:contrib:input-formatting}
 We implemented the SP2 and PFS models as well as the comparison models using Python and the Keras neural networks API. While doing so, a wide range of recommended possibilities to train the models were noted in relevant publications and on online platforms.\\
 
 Some recommend sliding window approaches, while others deem this against the concept of LSTM cells. Especially Klinkmüller et al. argue against it: "[...]the popular strategy of cutting traces to certain prefix lengths to learn prediction models for ongoing instances is prone to yield unreliable models"~\cite{klinkmuller2018reliablemonitoring}. Again others argue that padding and truncating sequences to the same length makes training faster and does not affect accuracy. The batch size strongly affects convergence properties of any neural network, making it an important hyper-parameter to tune~\cite{keskar2016large}. No guidelines how to sort traces into batches were found. We believe that the understanding of the merits of each batch construction strategy can be of general value to any application of sequence prediction.\\
@@ -37,7 +39,7 @@ The four batching strategies are labeled in the order of the preceding presentat
 \item\textbf{Windowed}: Windowed samples, as used by Evermann and Schönig
 \end{itemize}
 
-\section{A next-event predictive model training framework}
+\section{A training framework for sequential data}
 \label{sec:contrib:training-framework}
 We realize that making different process prediction approaches comparable is not only a technical but also a data-related challenge - no established benchmarking datasets for Predictive Process Monitoring exist yet.
 To mitigate this situation, we designed a software framework that helped us compare the sixteen total model-batching-strategy combinations on a variety of datasets in an extensible way. We want to make this framework accessible to future researchers to facilitate model development and sharing of implementations.\\
@@ -57,7 +59,12 @@ The proposed framework provides a simple training frontend and integrates two co
 
 \noindent The \verb=model_runner= frontend ties these two concepts together with training logic and provides a basic command-line interface as \autoref{fig:framework-frontend} shows. It allows for flexible training of a model with a specific Builder and a specific Batcher. It also permits placing the training process on a specific GPU and defining the output directory for the model and performance measurement files. The training algorithm also implements early stopping, of which the thresholds can be configured via a configuration file.\\
 
-With the help of this framework, future researchers only need to subclass \verb=AbstractBuilder=, and can directly evaluate the model performance on any given dataset without having to implement the whole training environment. By simply sharing their Builder and Batcher implementations, it will be much easier for other researchers to reproduce findings. The framework and detailed documentation is hosted under \href{https://github.com/flxw/nitro4ppm}{github.com/flxw/nitro4ppm}.
+With the help of this framework, future researchers only need to subclass \verb=AbstractBuilder=, and can directly evaluate the model performance on any given dataset without having to implement the whole training environment. By simply sharing their Builder and Batcher implementations, it will be much easier for other researchers to reproduce findings. The framework and detailed documentation is hosted under \href{https://github.com/flxw/nitro4ppm}{github.com/flxw/nitro4ppm}.\\
+
+This concludes the presentation of the batching problem with sequential data,
+and how the training framework helps to address it.
+In the next chapter we explain which datasets we use the framework with,
+and how each model was configured.
 
 \begin{figure}
 \centering

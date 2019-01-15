@@ -1,7 +1,16 @@
 \chapter{Conclusion} \label{chap:conclusion}
 In order to present our final conclusions, we divide this chapter into two sections.
-In \autoref{sec:conclusion:future-work}, we want to take the opportunity to elaborate on steps with which to carry research further in publications or subsequent master theses.
-We recapitulate our work and draw it to a conclusion in \autoref{sec:conclusion:verdict}.
+We recapitulate the results of our work \autoref{sec:conclusion:verdict}.
+In \autoref{sec:conclusion:future-work}, we want to take the opportunity to elaborate on steps with which to carry research further in publications or subsequent master theses. This draws the thesis to a conclusion.
+
+\section{Summary of the results} \label{sec:conclusion:verdict}
+In this thesis, we compared four different neural network models for their performance in predicting the next activity in a running case. The comparison was implemented in Python and Keras and yielded a neural network training framework for sequence prediction.
+
+The framework not only allows for a trivial execution of numerous model-strategy-dataset combinations but also tackles an issue within current research: comparability. Most publications in Predictive Process Monitoring use different datasets and do not publicize their implementation, thus making comparisons hard. The framework could help researchers get results faster and on more datasets until benchmarking datasets are established.\\
+
+Two of the four neural network models were reimplemented from publications by Evermann et al. and Schoenig et al. to establish a baseline~\cite{evermann2016, schoenig2018}. We then ported an approach from NLP to result in a third model~\cite{shibata2016bipartite}. Also, we adapted the input features according to the findings of another publication~\cite{klinkmuller2018reliablemonitoring} for a fourth model. The four models are referred to as EVM, SCH, SP2, and PFS.
+
+The SP2 model consistently ranked at the top or among the best performing models, which we attribute to the use of SP-2 features. In a comparison with recently published accuracy numbers on the BPIC12 dataset, the SP2 model was more accurate by $0.05$~\cite{boehmer2018probability, evermann2016}. Furthermore, we established that grouping traces by length to produce batches contributes to the highest accuracies. Generally, the batching approaches which supply complete history to the model perform best, with the strategy of a single trace per batch seeing the smallest advantages. Hereby, we could confirm the findings from Klinkmüller et al. that omitting history from traces negatively impacts accuracy~\cite{klinkmuller2018reliablemonitoring}.
 
 \section{Future Work} \label{sec:conclusion:future-work}
 We cluster the future work by items which why we believe to be of importance for future research around Predictive Process Monitoring:\\
@@ -16,13 +25,6 @@ We cluster the future work by items which why we believe to be of importance for
 
 \noindent\textbf{Word Embeddings:} In \autoref{sec:background:feature-engineering} we hinted at the fact that the weights for word embeddings in NLP applications can be imported from pre-trained models. This could be transferred to Predictive Process Monitoring by providing Embeddings for process categories. As evidenced in \autoref{sec:eval:discussion}, this is tied to larger datasets. It is worth exploring how well activity names are similar across processes to gauge the reusability of a word embedding produced on one process for another.
 
-\section{Verdict} \label{sec:conclusion:verdict}
-In this thesis, we compared four different neural network models for their performance in predicting the next activity in a running case. The performance measurement was threefold, based on total accuracy, training time and stability accuracy over the progress of the test traces. The comparison was implemented in Python and Keras and yielded a neural network training framework for Predictive Process Monitoring, which we also presented in this thesis.
+\section{Implications for research and practice}
 
-The framework not only allows for a trivial execution of numerous model-strategy-dataset combinations but also tackles an issue within current research: comparability. Most publications in Predictive Process Monitoring use different datasets and do not publicize their implementation, thus making comparisons hard. The framework could help researchers get results faster and on more datasets until benchmarking datasets are established.\\
-
-Two of the four neural network models were reimplemented from publications by Evermann et al. and Schoenig et al. to establish a baseline~\cite{evermann2016, schoenig2018}. We then ported an approach from NLP to result in a third model~\cite{shibata2016bipartite}. Also, we adapted the input features according to the findings of another publication~\cite{klinkmuller2018reliablemonitoring} for a fourth model. The four models are referred to as EVM, SCH, SP2, and PFS.
-
-The SP2 model consistently ranked at the top or among the best performing models, which we attribute to the engineered features. In a comparison with recently published accuracy numbers on the BPIC12 dataset, the SP2 model also outperformed~\cite{boehmer2018probability, evermann2016}. Furthermore, we established that grouping traces by length to produce batches contributes to the highest accuracies. Generally, the batching approaches which supply complete history to the model perform best, with the strategy of a single trace per batch seeing the smallest advantages. Hereby, we could confirm the findings from Klinkmüller et al. that omitting history from traces negatively impacts accuracy~\cite{klinkmuller2018reliablemonitoring}.\\
-
-We believe that by focusing on the technicalities of input data, this research improves the groundwork for better comparability in Predictive Process Monitoring publications. We also hope that it furthers the understanding of the impact that batching strategies can have on model accuracy.
+%We believe that by focusing on the technicalities of input data, this research improves the groundwork for better comparability in Predictive Process Monitoring publications. We also hope that it furthers the understanding of the impact that batching strategies can have on model accuracy.

@@ -1,10 +1,10 @@
-\chapter{Sequence prediction for running cases}
+\chapter{Sequence prediction with traces}
 \label{chap:taking-inspiration}
-Previos works have demonstrated the applicability of LSTM neural networks to Predictive Process Monitoring, most have left out a perspective on the sequence prediction problem from Natural Language Processing (NLP). In this chapter, we outline how we take inspiration from sequence prediction in NLP, and thus add to improvement area 3 from \autoref{sec:intro:contribution}.
+Previous works have demonstrated the applicability of LSTM neural networks to Predictive Process Monitoring. However, only the use of Embedding layers was inspired by Natural Language Processing (NLP) until now~\cite{evermann2016}. We believe that more knowledge could be transferred because both domains revolve around sequential data. In this chapter, we outline how we take inspiration from sequence prediction in NLP, and thus add to Improvement Area 3 from \autoref{sec:intro:motivation}.
 
-We establish the connection between processes and sequences by connecting their definitions in \autoref{sec:contrib:case-sequence-understanding}. This provides the underpinning for introducing two NLP-inspired approaches for predicting the next activity in a case. These are presented in \autoref{sec:contrib:sp2-inspiration} and \autoref{sec:contrib:pfs-inspiration}.
+We establish the connection between traces and sequences by connecting their definitions in \autoref{sec:contrib:case-sequence-understanding}. This provides the underpinning for introducing two NLP-inspired approaches for predicting the next activity in a case. These approaches are presented in \autoref{sec:contrib:sp2-inspiration} and \autoref{sec:contrib:pfs-inspiration}.
 
-\section{Sequence prediction for traces}\label{sec:contrib:case-sequence-understanding}
+\section{Understanding traces as sequences}\label{sec:contrib:case-sequence-understanding}
 The definition for sequences presented in \autoref{sec:background:sequence-prediction} and the definition of traces in \autoref{sec:log-structure} will be connected in this section to make it clear how events can be understood as itemsets.
 
 Both a trace $\#_{trace}(c)$ from a case $c$ and a sequence $seq$ are already defined in a very similar manner:
@@ -15,22 +15,27 @@ seq           &=  \langle s_1,s_2\cdots s_l \rangle\ |\ \forall\ 1 \leq j \leq l
 \end{split}
 \end{equation*}
 
-Any itemset consists of items $s = (i_1, i_2 \cdots i_n)$ with $i \in \mathscr{I}$. Events are made up of attributes that are accessed via the $\#$ operator.
+Any itemset consists of items $s = (i_1, i_2 \cdots i_n)$ with $i \in \mathscr{I}$.
+Events are made up of attributes that are accessed via the $\#$ operator.
 In a first step, attributes are defined as items, so that any possible value from any attribute can be understood as an item:
 
 $$\mathscr{I} = \{\#_{a}(e)\ |\ c \in L\wedge e \in \#_{trace}(c) \wedge a \in attribute\_names(e)\}$$
 
-In a second step, a schema is applied to the itemsets. Without it, the itemset that should represent an event could consist e.g. only out of timestamps, as $s \subseteq \mathscr{I}$ does not place any restrictions on the content of $s$.
-The schema also provides the tabular format required for machine learning applications, and is introduced as a direct mapping from event $e$ to itemset $s$:
+$s \subseteq \mathscr{I}$ does not place any restrictions on the content of $s$,
+and so an itemset could consist e.g. only out of timestamps.
+Therefore, a schema is enforced on the itemsets in a second step.
+The schema also provides the tabular format required for machine learning applications.
+It is introduced as a direct mapping from event $e$ to itemset $s$:
 
 $$ s = (i_1, i_2 \cdots i_n)\ |\ i_i = \#_{attrs(e)[i]}(e) $$
 
-The definition places each item on a specific place in the itemset, depending on the index in the attribute list $attribute\_names(e)$. Still, the original condition $s \subseteq \mathscr{I}$ hold true, and now permits sequence prediction on traces.
+The definition places each item on a specific place in the itemset, depending on the index in the attribute list $attribute\_names(e)$.
+Still, the original condition $s \subseteq \mathscr{I}$ hold true, and now permits sequence prediction on traces.
 
 In \autoref{sec:background:sequence-prediction}, a many-to-one prediction is defined to target the next itemset $\hat{s}$.
 In our case that would not only mean a timestamp, a resource and an activity name, but also all other data attributes used for events in the respective log. Since we specifically target the name of the next activity, the definition of the prediction function needs to be adjusted. The XES standard defines the activity name to be contained in the field \verb=concept:name=~\cite{Aalst2016}:
 
-$$ predict(seq_{in}) = \#_{concept:name}(\hat{s}) $$
+$$ \#_{concept:name}(\hat{s}) = predict(seq_{in})$$
 
 Having picked a single prediction target, we move on to presenting the network architectures for executing the prediction.
 
@@ -67,3 +72,8 @@ Since SP-2 features already encode history and subsequence encodings do the same
     \caption{The PFS network architecture}
     \label{fig:pfs-architecture}
 \end{figure}
+
+We presented two neural network architectures in this chapter. They incorporate
+learnings from a successful NLP competition submission, and a paper on feature engineering.
+Training these models on a multitude of datasets presented us with a challenge.
+We solved it by constructing a small training framework which we present in the next chapter.
