@@ -44,7 +44,7 @@ Process event logs are typically made available via XES files. XES is an abbrevi
 Formally, a log $L$ is defined as follows~\cite{Aalst2016}. It is made up of cases $c \in \mathscr{C}$, where $\mathscr{C}$ is the case universe. Similar to events, cases have attributes, e.g., a name. The operator $\#_{attr}(c)$ returns the value of the attribute $attr$ on a case $c$. The function $attribute\_names$ lists the names of all attributes that an event possesses. A mandatory attribute of any case is its trace $\#_{trace}(c)$, which is especially relevant for our work.
 Each trace represents a finite sequence of events $e \in \mathscr{E}$. $\mathscr{E}$ is the set of all events.
 
-$$ \#_{trace}(c) = \langle e_1, e_2, e_3 \dots, e_n \rangle $$
+$$ \#_{trace}(c) = \langle e_1, e_2, e_3 \cdots e_n \rangle $$
 
 The events are ordered by timestamp. In turn, each event $e$ has certain attributes associated with it. It is assumed that for a specific process, the type, number, and name of these attributes do not change. An example for common attributes are the activity name $\#_{activity}(e)$ or the timestamp $\#_{timestamp}(e)$ at which the event occurred.
 
@@ -82,8 +82,8 @@ As we aim to transfer a method from NLP to Predictive Process Monitoring, we int
 \label{sec:predictive-model-development}
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gfx/kdd_process.png}
-    \caption{The process for \textit{Knowledge Discovery in Databases}~\cite{fayyad1996data}}
+    \includegraphics[width=\textwidth]{gfx/kdd-process.pdf}
+    \caption{The process for \textit{Knowledge Discovery in Databases}}
     \label{fig:kdd_process}
 \end{figure}
 In 1996 Fayyad et al. published what came to be known as the Knowledge Discovery in Databases (KDD) process~\cite{fayyad1996data}. Published over 20 years ago and aimed at data mining, it is also applicable to predictive model building. It is illustrated in \autoref{fig:kdd_process} and shall be explained step by step in the following with technical details relevant for this thesis. The process is highly iterative, is focused intensely on the data, and jumps between every step are possible~\cite{kuhn2013applied}.\\

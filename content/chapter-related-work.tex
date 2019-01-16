@@ -60,12 +60,12 @@ The data was pre-processed with one-hot encoding for categorical variables and m
 \begin{figure}
 \centering
 \subfloat[][Architecture used by Evermann et al.~\cite{evermann2016}.]{
-    \includegraphics[width=0.3\textwidth]{gfx/evermann-network-architecture.png}
+    \includegraphics[width=0.5\textwidth,angle=-90,origin=c]{gfx/evermann-network-architecture.pdf}
     \label{fig:evermann-architecture}
 }
 \qquad
 \subfloat[][Architecture used by Schönig et al.~\cite{schoenig2018}.]{
-    \includegraphics[width=0.3\textwidth]{gfx/schoenig-network-architecture.png}
+    \includegraphics[width=0.5\textwidth,angle=-90,origin=c]{gfx/schoenig-network-architecture.pdf}
     \label{fig:schoenig-architecture}
 }
 \caption[Overview of the reverse-engineered networks]{An overview of the reverse-engineered networks that are used as a comparison in this thesis. $n$ denotes the dimensionality of the input vector, and $m$ the number of output classes, including the end-of-sequence marker.}
@@ -117,5 +117,6 @@ SP-$k$ languages are used to describe certain long-term dependencies through for
 From the literature review we were inspired to adapt Shibata's approach for Predictive Process Monitoring.
 We learned about the different understandings of next-event predictions, and how
 features that encode subsequences can help model learning. We address this in the next chapter.
-Also, we noted the contradiction of the findings of Klinkmüller et al. about training models on the complete history, while
-many others authors use windowing. How we deal with this fact is described in the chapter after that.
+Also, we noted the contradiction between the findings of Klinkmüller et al. about training models on the complete history,
+and the fact that many others authors use windowing.
+How we deal with this fact is described in the chapter after that.

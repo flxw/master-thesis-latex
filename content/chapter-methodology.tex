@@ -1,0 +1,261 @@
+\chapter{Methodology}\label{chap:methodology}
+In this chapter, we present how we processed the datasets, and which other methods we used to get the models ready for training.
+We present and justify our choice of datasets in \autoref{sec:method:dataset-choice}.
+As we follow the KDD process, we then lead through the data pre-processing phase in \autoref{sec:method:data-preprocessing}.
+We follow up with the data transformation phase in \autoref{sec:method:data-transformation}.
+The latter section also covers the used logic to engineer the features for the SP2 and PFS models.
+The system configuration and the used training strategy are presented in \autoref{sec:method:test-setup}.
+
+%Through the use of the framework described in the previous chapter, we can evaluate four different models for next-activity prediction side-by-side: Two implementations that mimic the networks by Evermann et al. and Schönig et al, and the PFS and SP2 approaches presented in \autoref{chap:taking-inspiration}.
+The reimplementations of Evermann's and Schönig's approaches will be referred to as EVM and SCH from here on.
+
+\section{Choice of datasets}\label{sec:method:dataset-choice}
+In \autoref{sec:intro:contribution}, we criticized the great variety of datasets used to evaluate approaches in Predictive Process Monitoring. While we can not establish a standard, we ensure comparability of our results to a variety of works by evaluating the four models on seven datasets:
+
+\begin{itemize}
+    \item BPIC11, an event log from cases in a Gynaecology department of a Dutch Academic Hospital~\cite{BPIC2011}
+    \item BPIC12, an event log for loan and overdraft applications from a Dutch Financial Institute~\cite{BPIC2012}
+    \item BPIC15 is divided into five logs. Each contains all building permit applications over a period of approximately four years from a Dutch municipality. They are referred to as BPIC15-1 to BPIC15-5 in the following~\cite{BPIC2015}
+\end{itemize}
+
+We picked the three BPIC datasets as we believe that they cover a spectrum of process complexity. We take the increasing number of distinct activities and variance in trace length to be indicators of complexity. \autoref{tab:dataset-characteristics} sums up these properties.
+
+The least complex traces are found in BPIC12, with a small variance in trace length and a very small number of different activities. From BPIC12, process models were also easily mined in competition submissions~\cite{adriansyah2012mining}.
+
+The process in BPIC11 seems to be the most complex, with long traces and an especially high number of distinct activities. Process models were barely obtained from it during the competition~\cite{bose2011analysis}.
+
+BPIC15 resides relatively in the middle of the two others in terms of complexity. The mined process models from it were more complex than for BPIC12~\cite{van2015benchmarking}.\\
+
+\noindent Additionally, the datasets allow us to compare our findings to the following works on next-element predictions. When comparing, it is important to differentiate between the works that focused on case-specific predictions like us and those that focused on whole event streams:
+
+\begin{itemize}
+    \item Predicting the next element in a stream, not specific to a case
+    \begin{itemize}
+        \item BPIC12: Tax et al.~\cite{tax2017}
+        \item BPIC12: Evermann et al.~\cite{evermann2016}
+    \end{itemize}
+    \item Predicting the next element for a specific case
+    \begin{itemize}
+        \item BPIC12: Böhmer et al.~\cite{boehmer2018probability}
+    \end{itemize}
+\end{itemize}
+
+\begin{table}
+  \centering
+  \begin{adjustbox}{center}
+  \begin{tabular}{lrrrrrrrr}
+  \textbf{Dataset} & \textbf{min $TL$} & \textbf{max $TL$} & \textbf{$\overline{TL}$} & \textbf{$\sigma_{TL}$} & \textbf{Traces} & \textbf{Events} & \textbf{Activities} \\
+  \hline
+  \textbf{BPIC12}   & 3 & 96  & 12.56 & 11.33 & 13 087 & 164 506 & 23\\
+  \textbf{BPIC15-4} & 1 & 116 & 44.91 & 14.63 & 1053 & 47 293 & 356\\
+  \textbf{BPIC15-3} & 3 & 124 & 42.35 & 16.05 & 1409 & 59 681 & 383\\
+  \textbf{BPIC15-5} & 6 & 154 & 51.10 & 15.82 & 1156 & 59 083 & 389\\
+  \textbf{BPIC15-1} & 2 & 101 & 43.55 & 16.74 & 1199 & 52 217 & 398\\
+  \textbf{BPIC15-2} & 1 & 132 & 53.31 & 20.32 & 832 & 44 354 & 410\\
+  \textbf{BPIC11}  & 1 & 1 814& 131.49&194.01 & 1 143 & 150 291 & 524
+  \end{tabular}
+  \end{adjustbox}
+  \caption[Trace properties in each dataset]{Properties of the traces contained in the used datasets, sorted by activity count. $TL$ abbreviates trace length}
+  \label{tab:dataset-characteristics}
+\end{table}
+
+\section{Data pre-processing}\label{sec:method:data-preprocessing}
+In the first step of the KDD process~\cite{fayyad1996data}, the data is pre-processed to prepare it for a data mining use case. In this step, generally known properties that hinder machine learning model performance are eliminated. In our case, this encompassed three steps for all datasets:
+
+\begin{enumerate}
+    \item Filter for completed events
+    \item Drop all columns which contain only a single value
+    \item Eliminate features which correlate strongly
+\end{enumerate}
+
+In step 1, the \verb=lifecycle:transition= feature was filtered so that only completed events were left. This was done to reduce dimensionality and improve comparability because BPIC11 only contains completed events.
+
+In step 2, the \verb=lifecycle:transition= feature was removed in every dataset since it had been filtered before. No other features exhibited zero entropy.
+
+In step 3, the correlation between features was calculated in a pair-wise fashion. We did so with the bias-corrected version of Cramér's~V to incorporate categorical features~\cite{bergsma2013bias}. The resulting heatmaps are shown in \autoref{appendix:correlation-heatmaps}. We removed a feature if its correlation value with another feature was large in relation to the other values. As evidenced in the respective heatmap, the BPIC12 dataset with its small number of features did not require any removals. \autoref{tab:dataset-preprocessing} summarizes which features were removed and which ones were kept after the three steps.
+
+\begin{table}[!htb]
+\centering
+\begin{adjustbox}{center}
+\begin{tabular}{lp{6cm}p{6cm}}
+\textbf{Dataset} & \textbf{Omitted features} & \textbf{Remaining features}\\
+\hline
+\textbf{BPIC11} & \verb=lifecycle:transition=, \verb=Producer code=,  \verb=Activity code=,  \verb=Specialism code= & \verb=time:timestamp=, \verb=concept:name=, \verb=org:group=, \verb=Number of executions=, \verb=Activity code=, \verb=Producer code=, \verb=Specialism code=, \verb=Section=\\
+\textbf{BPIC12} & \verb=lifecycle:transition= & \verb=org:resource=, \verb=concept:name=, \verb=time:timestamp=\\
+\textbf{BPIC15} & \verb=lifecycle:transition=, \verb=activityNameNL=, \verb=activityNameEN=, \verb=action_code=, \verb=dueDate= & \verb=time:timestamp=, \verb=dateFinished=, \verb=planned=, \verb=concept:name=, \verb=monitoringResource=, \verb=org:resource=,     \verb=question=
+\end{tabular}
+\end{adjustbox}
+\caption{Omitted features during pre-processing}
+\label{tab:dataset-preprocessing}
+\end{table}
+
+The activities described above were conducted in JupyterLab notebooks~\cite{web:jupyter}, where Anaconda~\cite{web:anaconda} was used to create a stable development environment. The OpyenXes~\cite{web:opyenxes} library proved to be especially useful for transferring raw XES logs into more usable data types.
+
+\section{Data transformation}\label{sec:method:data-transformation}
+After selecting suitable features in the first step, the second step of the KDD process~\cite{fayyad1996data} suggests the transformation of these features into representations that are better received by predictive models. Also, feature engineering is part of this step, and so the construction of the SP-2 and PFS features is explained in the following subsections.
+
+\subsection*{Transforming basic features}
+The features remaining after selection can be divided into three categories: timestamps, numerical and categorical. The transformation applied to each category of feature is described briefly in the following:
+
+Timestamps are converted to numerical features for each trace, i.e. each timestamp $t_i$ is made relative to the beginning of a trace by replacing it with the result of $t_i - t_0$. Relative timestamps have been shown to work with sequential data~\cite{lessmannBADS}.
+
+Each numerical feature $x$ is normalized using the min-max method with min- and max-values specific to each trace. This also includes the relative timestamps. For the traces that are so short that $min(x)$ equals $max(x)$, an edge case is introduced:
+
+$$normalize(x) =
+\begin{cases}
+\frac{x-min(x)}{max(x)-min(x)} & \text{if } min(x) \neq max(x)\\
+1 & \text{otherwise}
+\end{cases}
+$$
+
+Categorical features were encoded using one-hot encoding, since no ordinal relationships were present in the data, and the dimensions were not too large.
+
+\subsection*{Engineering the SP-2 features}
+SP-2 features were proposed in the SPiCe submission by Shibata et al.~\cite{shibata2016bipartite}. In a binary bag-of-words feature vector, they mark whether an element has occurred in the past. As such, these features are engineered in an iterative fashion. \autoref{lst:sp2-generation} shows the construction of the feature vector in Python.
+
+For every trace \verb=t=, a new feature vector \verb=sp2_df= is created and the occurrence of the first activity, contained in the column \verb=target_col=, is marked inside it. Then, a loop begins over the remaining steps, where each previous row inside \texttt{sp2\_df} is copied into the currently indexed row and the presence of the current activity is marked. This repeats itself until the trace has been processed completely, leaving behind a complete SP-2 feature vector for a trace.
+
+\begin{listing}[ht]
+\begin{minted}[linenos]{python}
+# Dataframe initialization with zeroes
+sp2_df = pd.DataFrame(columns=activity_labels,
+                      index=range(0,len(t)),
+                      dtype=np.bool)
+for col in sp2_df.columns: sp2_df[col].values[:] = 0
+
+# mark first occuring activity
+cname = "{0}{1}".format(sp2_prefix, t[target_col][0])
+sp2_df[cname].values[0]  = 1
+
+# copy over values from last row and
+# set activity labels accordingly
+for i in range(1,len(t)):
+    first_activity_name = t[target_col].iloc[i]
+    col = "{0}{1}".format(sp2_prefix,first_activity_name)
+
+    sp2_df.values[i] = sp2_df.values[i-1]
+    sp2_df[col].values[i] = 1
+\end{minted}
+\caption{Generating SP-2 features for a single trace \texttt{t} and a specific target column \texttt{target\_col}.}
+\label{lst:sp2-generation}
+\end{listing}
+
+\FloatBarrier
+\subsection*{Engineering the PFS features}
+As presented in \autoref{sec:contrib:pfs-inspiration}, PFS features encode subsequence occurrences. Klinkmüller et al. claim that these features can help models cover a broader variety of relationships~\cite{klinkmuller2018reliablemonitoring}.
+
+The features for the PFS model were created with the help of the PrefixSpan algorithm implementation from the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. Similarly to the SP-2 features, they are based on the target variable.
+
+\begin{listing}[ht]
+\begin{minted}[linenos]{python}
+prefixspan_traces = PrefixSpan(encoded_traces)
+closed_sequences = prefixspan_traces.topk(25, closed=True)
+\end{minted}
+\caption{Obtaining closed sequences using the \textit{prefixspan-py} library.}
+\label{lst:pfs-mining}
+\end{listing}
+
+As \autoref{lst:pfs-mining} shows, prefixspan-py greatly facilitates obtaining subsequences. The depicted function call returns the top 25 closed subsequences ranked by their support metric. Mined from the entirety of traces, these subsequences are picked as features to be encoded. By choosing $l=25$, we stay well above the minimum support requirement of $0.05$ chosen by Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}.
+
+After mining the sequences, a loop is executed for every trace \verb=t= - shown in \autoref{lst:subsequence-feature-creation}. This loop constructs the PFS feature vector in an iterative fashion.
+
+First, the binary feature vector \verb=subseq_df= is initialized. For each index \verb=i= it is checked whether any of the mined subsequences starts at that position. This is checked by peeking ahead of \verb=i= for the length of the subsequence, indicated by \verb=j=. As in the case of the SP-2 features, the occurrence of a subsequence is marked with a boolean flag in the feature vector \verb=subseq_df= from the row that it occurred in onwards.
+
+\begin{listing}[ht]
+\begin{minted}[linenos]{python}
+# Initialize the feature vector
+# subsequences have not happened yet
+subseq_df = pd.DataFrame(columns=subseq_labels,
+                         index=range(0,len(t)),
+                         dtype=np.bool)
+subseq_df[:].values[:] = False
+tlen = len(t)
+
+# Dictionary encode activity names, entire trace
+activity_codes = t[target_col].map(name_to_int)
+
+for i in range(0, tlen):
+  # loop through all subsequences
+  for subseq_idx, subseq in enumerate(ps):
+    if tlen <= i+len(subseq): continue
+
+    # check if subsequence starts at offset j+i
+    # abort at first mismatch
+    subsequence_found = True
+    j = 0
+
+    while subsequence_found and j < len(subseq):
+      if subseq[j] != activity_codes[j+i]:
+        subsequence_found = False
+        j += 1
+
+    # if subseq took place, subsequence_found is still true
+    if subsequence_found:
+      subseq_df.values[j+i:,subseq_idx] = True
+\end{minted}
+\caption{Enriching a trace \texttt{t} with subsequence features by detecting those that are contained inside it.}
+\label{lst:subsequence-feature-creation}
+\end{listing}
+
+\subsection*{Constructing prediction labels}
+For each event $e_t$ at a given timestep $t$, the prediction label $\#_{activity name}(e_{t+1})$ was constructed, essentially picking the activity name from the following event. For the target of the final event of a trace, a marker for denoting the end of the sequence was introduced with \verb=EOS=.
+
+To finally work with the data, the column containing the activity name needed to be identified.
+The XES standard states that this column is called \verb=concept:name=~\cite{Aalst2016}.
+
+\subsection*{Splitting the datasets}
+To verify model performance on unseen data, a portion of the dataset is often put aside for testing purposes.
+
+We split all datasets into training and validation sets of complete traces. While $25\%$ of the traces were used for validation, the remaining $75\%$ were used for training purposes~\cite{kuhn2013applied}. The traces were shuffled and stratified to contain an approximately similar distribution of trace lengths. This avoids possible biases towards trace lengths. The event order in a trace was not changed.
+
+\section{Training configuration}\label{sec:method:test-setup}
+This section highlights the model configuration, and the employed hyper-parameters for each model, as well as batch sizes of each batching strategy.
+
+We made use of the framework described in \autoref{chap:training-framework}, which implements early stopping, and saves model snapshots when its validation loss hits a new record low. We configured it to stop training if the validation loss did not improve for 10 epochs.
+
+The implementation of the padding strategy required a small cue: The padding values incurred a large memory overhead so that BPIC11 could not be fit into GPU memory. For this reason, we filtered out $20\%$ of the longest traces. With regard to the length distribution in \autoref{fig:bpic2011-length-distribution}, these seem to be strong outliers.
+
+\begin{table}[!htb]
+\centering
+\begin{tabular}{lcccc}
+\textbf{Network}&\textbf{EVM}&\textbf{SCH}&\textbf{SP2}&\textbf{PFS}\\
+\hline
+\textbf{Optimizer} & SGD & \multicolumn{3}{c}{RMSprop} \\
+\textbf{Loss}      &\multicolumn{4}{c}{Categorical crossentropy}\\
+\textbf{Weight initializer} & Zeros & None & \multicolumn{2}{c}{Glorot normal}\\
+\textbf{Epochs}    & 50 & 100 & 150 & 150\\
+\textbf{Features}  & \makecell{Activity +\\Resource} & \multicolumn{3}{c}{All event attributes}\\
+\end{tabular}
+\caption{Used hyper-parameters for each model}
+\label{tab:model-setup}
+\end{table}
+
+The models themselves were trained with different optimizers, and various initialization strategies for weights, depending on the original author's choice~\cite{evermann2016, schoenig2018}. \autoref{tab:model-setup} shows these hyper-parameters per network side-by-side and recapitulates the used event attributes. The batch size is also an important hyper-parameter. It depends on the respective batching strategy and is shown in \autoref{tab:batch-sizes}.
+
+To conduct the experiments, Docker containers were built with an Anaconda environment inside them~\cite{web:docker}. Using a version of Docker for GPU applications running on NVIDIA hardware~\cite{web:nvidia-docker}, each network-batch-formatting combination was trained and evaluated on a single NVIDIA K80 GPU. The HPI FutureSOC Lab~\cite{web:fsoc} provided the computational infrastructure and multiple GPUs so that multiple models could be trained and evaluated simultaneously. The complete code is available at \href{https://github.com/flxw/master-thesis-code}{github.com/flxw/master-thesis-code}.\\
+
+This concludes the presentation of the methodology.
+We highlighted the processes which the used logs were obtained from, and the
+characteristics of the traces contained in each.
+We chose the logs so that they cover a spectrum of process complexity in terms of activity count and trace length.
+Then, highlighted the pre-processing through filtering of correlating values.
+Afterwards, we covered the transformation of the data into machine-readable input with min-max-normalization and one-hot-encoding.
+We ended the chapter with an explanation of the conditions under which the experiments were run.
+The results of the experiments are presented and discussed in the next chapter.
+
+\begin{table}[!htb]
+\centering
+\begin{tabular}{c|rrrr}
+Dataset & Individual & Grouped & Padded & Windowed \\
+\hline
+BPIC11    & 1 & $2.80 , \sigma 4.99$ & 7 & 1054\\
+BPIC 12   & 1 & $129.14 , \sigma 333.58$ & 89 & 939\\
+BPIC 15-1 & 1 & $10.33 , \sigma 11.45$ & 9 & 365\\
+BPIC 15-2 & 1 & $6.17 , \sigma 7.57$ & 5 & 316\\
+BPIC 15-3 & 1 & $12.27 , \sigma 19.28$ & 10 & 414\\
+BPIC 15-4 & 1 & $9.17 , \sigma 14.59$ & 8 & 334\\
+BPIC 15-5 & 1 & $9.52 , \sigma 14.36$ & 7 & 420\\
+\end{tabular}
+\caption[Batch sizes for each dataset and strategy]{Traces per batch for the different datasets and batching strategies. Since the grouped batches vary in size, their size is stated as \textit{average} $,~\sigma$ \textit{standard deviation}}
+\label{tab:batch-sizes}
+\end{table}

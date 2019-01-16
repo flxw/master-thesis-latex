@@ -1,24 +1,41 @@
 \chapter{Batch construction strategies}\label{chap:training-framework}
-During development of the models, we realized that there are highly divergent understandings regarding the batch construction for sequential data. We believe that these different understandings strongly impact the reproducibility of any prediction approach.
-Furthermore, we needed to automate the training of the networks because we did so on five datasets.
-We present a solution to both challenges here with a model training framework. We share it because we believe that it enables researchers to compare the different understandings and easily try out new model architectures. In doing so, we hope to contribute to Improvement Area 1 and 2 in \autoref{sec:intro:motivation}.
+During development of the models, we realized that there are highly divergent understandings regarding the construction of batches from sequential data.
+We were convinced that these different understandings have a strong impact on the reproducibility of any prediction approach.
+Furthermore, we needed to automate the training of the networks because we used multiple datasets.
+We present here a model training framework as a solution to both challenges.
+We share it because we believe that it enables researchers to compare the different understandings and easily try out new model architectures.
+In doing so, we hope to contribute to Improvement Area 1 and 2 in \autoref{sec:intro:motivation}.
 
-In this chapter, we show a selection of possible batch construction strategies in \autoref{sec:contrib:input-formatting} and the underlying technical reasons. Finally, we present the training framework in \autoref{sec:contrib:training-framework}.
+We show a selection of possible batch construction strategies in \autoref{sec:contrib:input-formatting} and the underlying technical reasons. Finally, we present the training framework in \autoref{sec:contrib:training-framework}.
 
 \section{Contrasts among current strategies}\label{sec:contrib:input-formatting}
-We implemented the SP2 and PFS models as well as the comparison models using Python and the Keras neural networks API. While doing so, a wide range of recommended possibilities to train the models were noted in relevant publications and on online platforms.\\
+We implemented the SP2 and PFS models as well as the comparison models using Python and the Keras neural networks API.
+While doing so, a wide range of recommended possibilities to train the models were noted in relevant publications and on online platforms.\\
 
-Some recommend sliding window approaches, while others deem this against the concept of LSTM cells. Especially Klinkmüller et al. argue against it: "[...]the popular strategy of cutting traces to certain prefix lengths to learn prediction models for ongoing instances is prone to yield unreliable models"~\cite{klinkmuller2018reliablemonitoring}. Again others argue that padding and truncating sequences to the same length makes training faster and does not affect accuracy. The batch size strongly affects convergence properties of any neural network, making it an important hyper-parameter to tune~\cite{keskar2016large}. No guidelines how to sort traces into batches were found. We believe that the understanding of the merits of each batch construction strategy can be of general value to any application of sequence prediction.\\
+Some recommend sliding window approaches, while others deem this against the concept of LSTM cells.
+Especially Klinkmüller et al. argue against it: "[...]the popular strategy of cutting traces to certain prefix lengths to learn prediction models for ongoing instances is prone to yield unreliable models"~\cite{klinkmuller2018reliablemonitoring}.
+Again others argue that padding and truncating sequences to the same length makes training faster and does not affect accuracy.
+The batch size strongly affects convergence properties of any neural network, making it an important hyper-parameter to tune~\cite{keskar2016large}.
+No guidelines how to sort traces into batches were found.
+We believe that the understanding of the merits of each batch construction strategy can be of general value to any application of sequence prediction.\\
 
-Keras' implementation of LSTM is stateful \textit{during} a batch, and resets the cell state $C$ before the next batch~\cite{web:keras}. This is configurable, but for the sake of simplicity, it is advisable to keep related timesteps inside a single batch. Translated to traces, this means keeping a trace completely inside a batch. A Keras LSTM layer requires input data to be formatted in a three-dimensional array of fixed size for every batch. Each dimension has a defined meaning:
+Keras' implementation of LSTM is stateful \textit{during} a batch, and resets the cell state $C$ before the next batch~\cite{web:keras}. This is configurable, but for the sake of simplicity, it is advisable to keep related timesteps inside a single batch. Translated to traces, this means keeping a trace completely inside a batch. A Keras LSTM layer requires input data to be formatted in a three-dimensional array of fixed size for every batch. Each dimension has a defined meaning as indicated by the suffix:
 
 $$(n_{samples}, n_{timesteps}, n_{features})$$
 
-Each sample contains a number of timesteps $n_{timesteps}$ containing a number of features $n_{features}$. $n_{features}$ is constant, as it represents the feature vector dimensions. For each sample, the Keras LSTM layer cells maintain a separate state, meaning that several traces can be trained on simultaneously~\cite{web:keras-lstm-state}. As the batches themselves do not need to have the same dimensions, this definition opens up a range of possibilities to construct batches. We highlight four of them in the following paragraphs. To the best of our knowledge, these have not been compared in this context yet.\\
+Each sample contains a $n_{timesteps}$ feature vectors.
+This vector has $n_{features}$ dimensions.
+Its dimensions are constant, because the input size is fixed.
+For each sample, the Keras LSTM layer cells maintain a separate state.
+This means that several traces can be trained on simultaneously~\cite{web:keras-lstm-state}.
+As the batches themselves do not need to have the same dimensions, this definition opens up a range of possibilities to construct batches from traces of variable length.
+We highlight four of them in the following paragraphs.
+To the best of our knowledge, these have not been compared in this context yet.\\
 
 First and easiest, one trace can be trained per batch. This fulfills the requirement of constant dimensions since only a single sample is used.
 
-Second, \textit{some} traces can be trained inside a single batch. This is possible if all traces inside the batch have the same number of timesteps, i.e. have the same length. The number of samples and timesteps may vary between batches. A look at \autoref{fig:bpic2011-length-distribution} reveals a power-law distribution of trace lengths. Because of this, grouped batching could bias the model toward the long tail of the distribution, as longer and fewer traces are put into batches of their own.
+Second, \textit{some} traces can be trained inside a single batch. This is possible if all traces inside the batch have the same number of timesteps, i.e. have the same length. The number of samples and timesteps may vary between batches. A look at \autoref{fig:bpic2011-length-distribution} reveals a power-law distribution of trace lengths in BPIC11.
+The grouped batching could bias the model toward the long tail of the distribution, as longer and fewer traces are put into batches of their own.
 
 \begin{figure}[ht!]
     \centering
@@ -27,11 +44,21 @@ Second, \textit{some} traces can be trained inside a single batch. This is possi
     \label{fig:bpic2011-length-distribution}
 \end{figure}
 
-Third, there is the possibility of padding the number of time-steps in a sequence to the same length and using a Masking layer to then filter out the padded values during training~\cite{web:keras}. The padding length is dictated by the maximum trace length and may incur a large memory overhead if it is a large outlier value like in BPIC11.
+Third, there is the possibility of padding the number of timesteps in a sequence to the same length.
+The padded values are then filtered out using a Masking layer during training~\cite{web:keras}.
+The padding length is dictated by the maximum trace length and may incur a large memory overhead.
+This is especially the case for large outlier values like in BPIC11.
 
-Fourth and finally, there is also the possibility to split the trace into samples by sliding a window along it. This results in $l-w+1$ samples for a trace of length $l$ and a window width $w$. Taking \autoref{tab:sliding-window} in \autoref{sec:background:feature-engineering} as an example, the window would be two timesteps wide. While this approach solves the problem of unequal sample lengths and facilitates batch construction, the model can only use a maximum of $w$ timesteps per sample for training and might lose potential long-term dependencies. As both Evermann et al.~\cite{evermann2016} and Schönig et al.~\cite{schoenig2018} use this format and it directly opposes the findings of Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}, we investigate it. Furthermore, we are convinced that a windowed training data format misses out on LSTM potential.\\
+Fourth and finally, there is also the possibility to split the trace into samples by sliding a window along it.
+This results in $l-w+1$ samples for a trace of length $l$ and a window width $w$.
+Taking \autoref{tab:sliding-window} in \autoref{sec:background:feature-engineering} as an example, the window would be two timesteps wide.
+This approach solves the problem of unequal sample lengths and facilitates batch construction.
+Unfortunately, it only allows the model to use a maximum of $w$ timesteps per sample for training.
+This might cause the model to miss potential long-term dependencies.
+As both Evermann et al.~\cite{evermann2016} and Schönig et al.~\cite{schoenig2018} use this format and it directly opposes the findings of Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}, we investigate it.
+Furthermore, we are convinced that use of a windowed training data format misses out on LSTM potential.\\
 
-The four batching strategies are labeled in the order of the preceding presentation for easier reference in the next chapter, where they are evaluated:
+The four batching strategies are labeled in the order of the preceding presentation for easier reference in the following chapters:
 \begin{itemize}
 \item\textbf{Individual}: One trace per batch
 \item\textbf{Grouped}: Same-length traces in one batch
@@ -41,8 +68,11 @@ The four batching strategies are labeled in the order of the preceding presentat
 
 \section{A training framework for sequential data}
 \label{sec:contrib:training-framework}
-We realize that making different process prediction approaches comparable is not only a technical but also a data-related challenge - no established benchmarking datasets for Predictive Process Monitoring exist yet.
-To mitigate this situation, we designed a software framework that helped us compare the sixteen total model-batching-strategy combinations on a variety of datasets in an extensible way. We want to make this framework accessible to future researchers to facilitate model development and sharing of implementations.\\
+We realize that making different process prediction approaches comparable is not only a technical but also a data-related challenge.
+No established benchmarking datasets for Predictive Process Monitoring exist yet, which complicates comparison.
+As a result, more and more datasets are used and demand more and more work to establish comparisons.
+To mitigate this situation, we designed a software framework that helped us compare the sixteen total model-batching-strategy combinations on a variety of datasets in an extensible way.
+We want to make this framework accessible to future researchers to facilitate model development and sharing of implementations.\\
 
 \begin{figure}
     \centering
@@ -57,16 +87,19 @@ The proposed framework provides a simple training frontend and integrates two co
 
 \noindent\textbf{Batchers} take the pre-formatted data sets and structure them into batches. For each batching strategy, a class inherits from the abstract base class \verb=AbstractBuilder=.\\
 
-\noindent The \verb=model_runner= frontend ties these two concepts together with training logic and provides a basic command-line interface as \autoref{fig:framework-frontend} shows. It allows for flexible training of a model with a specific Builder and a specific Batcher. It also permits placing the training process on a specific GPU and defining the output directory for the model and performance measurement files. The training algorithm also implements early stopping, of which the thresholds can be configured via a configuration file.\\
+\noindent The \verb=model_runner= frontend ties these two concepts together with training logic and provides a basic command-line interface as \autoref{fig:framework-frontend} shows. It allows for flexible training of a model with a specific Builder and a specific Batcher. The frontend permits placing the training process on a specific GPU and allows defining the output directory for the model and performance measurement files. The training algorithm also implements early stopping, thresholds of which can be configured via a configuration file.\\
 
-With the help of this framework, future researchers only need to subclass \verb=AbstractBuilder=, and can directly evaluate the model performance on any given dataset without having to implement the whole training environment. By simply sharing their Builder and Batcher implementations, it will be much easier for other researchers to reproduce findings. The framework and detailed documentation is hosted under \href{https://github.com/flxw/nitro4ppm}{github.com/flxw/nitro4ppm}.\\
+With the help of this framework, future researchers only need to subclass \verb=AbstractBuilder=, and can directly evaluate the model performance on any given dataset without having to set up the whole training environment. By simply sharing their Builder and Batcher implementations, it will be much easier for other researchers to reproduce findings. The framework and detailed documentation is hosted under \href{https://github.com/flxw/nitro4ppm}{github.com/flxw/nitro4ppm}.\\
 
-This concludes the presentation of the batching problem with sequential data,
-and how the training framework helps to address it.
-In the next chapter we explain which datasets we use the framework with,
+In this chapter, we presented how Keras requires the lengths of samples in a batch to be constant,
+and outlined four strategies to deal with this requirement.
+The strategies present ways to construct batches from variable-length sequential data that honor Keras' requirement.
+We also presented how the training framework integrates these strategies, and
+facilitates training models with multiple strategies on multiple datasets.
+In the next chapter we explain which datasets we use to train the models,
 and how each model was configured.
 
-\begin{figure}
+\begin{figure}[!htb]
 \centering
 \begin{verbatim}
 usage: model_runner.py [-h] [--gpu GPU]
