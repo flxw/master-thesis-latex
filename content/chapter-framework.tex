@@ -4,13 +4,13 @@ We are convinced that these different understandings have a substantial impact o
 Furthermore, we needed to automate the training of the networks because we used multiple datasets.
 We present here a model training framework as a solution to both challenges.
 We share it because we believe that it enables researchers to compare the different understandings and quickly try out new model architectures.
-In doing so, we hope to contribute to Improvement Area 1 and 2 in \autoref{sec:intro:motivation}.
+In doing so, we hope to contribute to Improvement Area 2 and 3 in \autoref{sec:intro:motivation}.
 
 We show a selection of possible batch construction strategies in \autoref{sec:contrib:input-formatting} and the underlying technical reasons. Finally, we present the training framework in \autoref{sec:contrib:training-framework}.
 
 \section{Contrasts among current strategies}\label{sec:contrib:input-formatting}
 We implemented the SP2 and PFS models as well as the comparison models using Python and the Keras neural networks API.
-While doing so, a wide range of recommended possibilities to train the models were noted in relevant publications and on online platforms.\\
+While doing so, a wide range of recommended possibilities to train the models on sequential data were noted in relevant publications and on online platforms.\\
 
 Some recommend sliding window approaches, while others deem this against the concept of LSTM cells.
 Especially Klinkmüller et al. argue against it: "[...]the popular strategy of cutting traces to certain prefix lengths to learn prediction models for ongoing instances is prone to yield unreliable models"~\cite{klinkmuller2018reliablemonitoring}.
@@ -23,9 +23,9 @@ Keras' implementation of LSTM is stateful \textit{during} a batch, and resets th
 
 $$(n_{samples}, n_{timesteps}, n_{features})$$
 
-Each sample contains a $n_{timesteps}$ feature vectors.
-This vector has $n_{features}$ dimensions.
-Its dimensions are constant because the input size is fixed.
+Every sample contains a $n_{timesteps}$ feature vectors.
+Each of these vectors has $n_{features}$ dimensions.
+The feature vector size is constant because the input layer size is fixed.
 For each sample, the Keras LSTM layer cells maintain a separate state.
 This means that several traces can be trained on simultaneously~\cite{web:keras-lstm-state}.
 As the batches themselves do not need to have the same dimensions, this definition opens up a range of possibilities to construct batches from traces of variable length.
@@ -39,7 +39,7 @@ The grouped batching could bias the model toward the long tail of the distributi
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[width=.9\textwidth]{gfx/frequency-distribution.png}
+    \includegraphics[width=\textwidth]{gfx/bpic11-length-frequency.pdf}
     \caption{Distribution of trace lengths in BPIC11}
     \label{fig:bpic2011-length-distribution}
 \end{figure}
@@ -76,7 +76,7 @@ We want to make this framework accessible to future researchers to facilitate mo
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gfx/training-framework-classes.png}
+    \includegraphics[width=\textwidth]{gfx/training-framework-classes.pdf}
     \caption[UML diagram of the framework classes]{Unified Modeling Language (UML) diagram of the abstract base class inheritance structure of Builders and Batchers}
     \label{fig:trainig-framework-classes}
 \end{figure}
@@ -91,7 +91,7 @@ The proposed framework provides a simple training frontend and integrates two co
 
 With the help of this framework, future researchers only need to subclass \verb=AbstractBuilder=, and can directly evaluate the model performance on any given dataset without having to set up the whole training environment. By merely sharing their Builder and Batcher implementations, it will be much easier for other researchers to reproduce findings. The framework and detailed documentation is hosted under \href{https://github.com/flxw/nitro4ppm}{github.com/flxw/nitro4ppm}.\\
 
-In this chapter, we presented how Keras requires the lengths of samples in a batch to be constant,
+In this chapter, we explained how Keras requires the dimensions of samples in a batch to be constant,
 and outlined four strategies to deal with this requirement.
 The strategies present ways to construct batches from variable-length sequential data that honor Keras' requirement.
 We also presented how the training framework integrates these strategies, and

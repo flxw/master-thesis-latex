@@ -1,21 +1,22 @@
 \chapter{Methodology}\label{chap:methodology}
-In this chapter, we present how we processed the datasets, and which other methods we used to get the models ready for training.
-We present and justify our choice of datasets in \autoref{sec:method:dataset-choice}.
-As we follow the KDD process, we then lead through the pre-processing phase in \autoref{sec:method:data-preprocessing}.
-We follow up with the transformation phase in \autoref{sec:method:data-transformation}.
-The latter section also covers the used logic to engineer the features for the SP2 and PFS models.
-The system configuration and the used training strategy are presented in \autoref{sec:method:test-setup}.
+In this chapter, we detail how we processed the datasets, and which other methods we used to get the models ready for training.
+To prepare the data, we follow the KDD process, a routine to prepare data for Data Mining use cases.
+First, we present and justify our data selection in \autoref{sec:method:dataset-choice}.
+We then lead through the pre-processing phase in \autoref{sec:method:data-preprocessing}, and follow up with the transformation phase in \autoref{sec:method:data-transformation}.
+This section also covers the used logic to engineer the features for the SP2 and PFS models.
+Finally, the system configuration and the used training strategies are presented in \autoref{sec:method:test-setup}.
 
 %Through the use of the framework described in the previous chapter, we can evaluate four different models for next-activity prediction side-by-side: Two implementations that mimic the networks by Evermann et al. and Schönig et al., and the PFS and SP2 approaches presented in \autoref{chap:taking-inspiration}.
 The reimplementations of Evermann's and Schönig's approaches are referred to as EVM and SCH from here on.
 
-\section{Choice of datasets}\label{sec:method:dataset-choice}
+\section{Data selection}\label{sec:method:dataset-choice}
+The first step of the KDD process is about picking the right data for the right problem.
 In \autoref{sec:intro:contribution}, we criticized the great variety of datasets used to evaluate approaches in Predictive Process Monitoring. While we can not establish a standard, we ensure comparability of our results to a variety of works by evaluating the four models on seven datasets:
 
 \begin{itemize}
     \item BPIC11, an event log from cases in a Gynaecology department of a Dutch Academic Hospital~\cite{BPIC2011}
     \item BPIC12, an event log for loan and overdraft applications from a Dutch Financial Institute~\cite{BPIC2012}
-    \item BPIC15 consists of five different logs. Each contains building permit application cases of approximately four years from a Dutch municipality. The process is the same, but local deviations are present. The logs are referred to as BPIC15-1 to BPIC15-5 in the following~\cite{BPIC2015}
+    \item BPIC15, five event logs that contain building permit application cases of approximately four years from Dutch municipalities. One log contains data from one municipality. The process is the same, but local deviations are present. The logs are referred to as BPIC15-1 to BPIC15-5 in the following~\cite{BPIC2015}
 \end{itemize}
 
 We picked the three BPIC datasets as we believe that they cover a spectrum of process complexity. We take the increasing number of distinct activities and variance in trace length to be indicators of complexity. \autoref{tab:dataset-characteristics} sums up these properties.
@@ -31,12 +32,12 @@ BPIC15 resides relatively in the middle of the two others in terms of complexity
 \begin{itemize}
     \item Predicting the next element in a stream, not specific to a case
     \begin{itemize}
-        \item BPIC12: Tax et al.~\cite{tax2017}
         \item BPIC12: Evermann et al.~\cite{evermann2016}
     \end{itemize}
     \item Predicting the next element for a specific case
     \begin{itemize}
         \item BPIC12: Böhmer et al.~\cite{boehmer2018probability}
+        \item BPIC12: Tax et al.~\cite{tax2017}
     \end{itemize}
 \end{itemize}
 
@@ -59,8 +60,10 @@ BPIC15 resides relatively in the middle of the two others in terms of complexity
   \label{tab:dataset-characteristics}
 \end{table}
 
+After the logs are chosen, the contained data can be preprocessed.
+
 \section{Data pre-processing}\label{sec:method:data-preprocessing}
-In the first step of the KDD process~\cite{fayyad1996data}, the data is pre-processed to prepare it for a data mining use case. In this step, generally known properties that hinder machine learning model performance are eliminated. In our case, this encompassed three steps for all datasets:
+In the second step of the KDD process~\cite{fayyad1996data}, the data is pre-processed to prepare it for a data mining use case. In this step, we eliminate generally known properties that hinder machine learning model performance. This encompassed three steps for each dataset:
 
 \begin{enumerate}
     \item Filter for completed events
@@ -72,7 +75,11 @@ In step 1, the \verb=lifecycle:transition= feature was filtered so that only com
 
 In step 2, the \verb=lifecycle:transition= feature was removed in every dataset since it had been filtered before. No other features exhibited zero entropy.
 
-In step 3, the correlation between features was calculated in a pair-wise fashion. We did so with the bias-corrected version of Cramér's~V to incorporate categorical features~\cite{bergsma2013bias}. The resulting heatmaps are shown in \autoref{appendix:correlation-heatmaps}. We removed a feature if its correlation value with another feature was large in relation to the other values. As evidenced in the respective heatmap, the BPIC12 dataset with its small number of features did not require any removals. \autoref{tab:dataset-preprocessing} summarizes which features were removed and which ones were kept after the three steps.
+In step 3, the correlation between features was calculated in a pair-wise fashion.
+Correlating features often harm prediction accuracy~\cite{kuhn2013applied}.
+We calculated the correlation with the bias-corrected version of Cramér's~V to incorporate categorical features~\cite{bergsma2013bias}.
+The resulting heatmaps are shown in \autoref{appendix:correlation-heatmaps}.
+We removed a feature if its correlation with another feature was large in relation to the other correlations. As evidenced in the respective heatmap, the BPIC12 dataset with its small number of features did not require any removals. \autoref{tab:dataset-preprocessing} summarizes which features were removed and which ones were kept after the three steps.
 
 \begin{table}[!htb]
 \centering
@@ -89,10 +96,10 @@ In step 3, the correlation between features was calculated in a pair-wise fashio
 \label{tab:dataset-preprocessing}
 \end{table}
 
-The activities described above were conducted in JupyterLab notebooks~\cite{web:jupyter}, where Anaconda~\cite{web:anaconda} was used to create a stable development environment. The OpyenXes~\cite{web:opyenxes} library proved to be especially useful for transferring raw XES logs into more usable data types.
+The activities described above were conducted in JupyterLab notebooks~\cite{web:jupyter}, where Anaconda~\cite{web:anaconda} was used to create a stable development environment. The OpyenXes~\cite{web:opyenxes} library proved to be especially useful for transferring raw XES logs into more usable data types. This concludes step two of the KDD process.
 
 \section{Data transformation}\label{sec:method:data-transformation}
-After selecting suitable features in the first step, the second step of the KDD process~\cite{fayyad1996data} suggests the transformation of these features into representations that are better received by predictive models. Also, feature engineering is part of this step, and so the construction of the SP-2 and PFS features is explained in the following subsections.
+After selecting suitable features, the third step of the KDD process~\cite{fayyad1996data} suggests the transformation of these features into representations that are better received by predictive models. Feature engineering is an additional part of this step. Thus, the constructions of the SP-2 and PFS features are explained in the following subsections.
 
 \subsection*{Transforming basic features}
 The features remaining after selection can be divided into three categories: timestamps, numerical and categorical. The transformation applied to each category of feature is described briefly in the following:
@@ -112,8 +119,9 @@ Categorical features were encoded using one-hot encoding, since no ordinal relat
 
 \subsection*{Engineering the SP-2 features}
 SP-2 features were proposed in the SPiCe submission by Shibata et al.~\cite{shibata2016bipartite}. In a binary bag-of-words feature vector, they mark whether an element has occurred in the past. As such, these features are engineered iteratively. \autoref{lst:sp2-generation} shows the construction of the feature vector in Python.
+\autoref{tab:sp2-encoding} in \autoref{sec:related-work-sequence-prediction} illustrates how such a vector could look like.
 
-For every trace \verb=t=, a new feature vector \verb=sp2_df= is created and the occurrence of the first activity, contained in the column \verb=target_col=, is marked inside it. Then, a loop begins over the remaining steps, where each previous row inside \texttt{sp2\_df} is copied into the currently indexed row, and the presence of the current activity is marked. This repeats itself until the trace has been processed completely, leaving behind a complete SP-2 feature vector for a trace.
+For every trace \verb=t=, a new feature vector \verb=sp2_df= is created and the occurrence of the first activity, contained in the column \verb=target_col=, is marked inside it (line 7). A loop begins over the remaining steps, where each previous row inside \texttt{sp2\_df} is copied into the currently indexed row (line 17). After copying, the presence of the current activity gets marked (line 18). This repeats itself until the trace is processed completely, leaving behind a complete SP-2 feature vector for a trace.
 
 \begin{listing}[ht]
 \begin{minted}[linenos]{python}
@@ -151,15 +159,17 @@ The features for the PFS model were created with the help of the PrefixSpan algo
 prefixspan_traces = PrefixSpan(encoded_traces)
 closed_sequences = prefixspan_traces.topk(25, closed=True)
 \end{minted}
-\caption{Obtaining closed sequences using the \textit{prefixspan-py} library.}
+\caption{Obtaining closed sequences with \textit{prefixspan-py}}
 \label{lst:pfs-mining}
 \end{listing}
 
-As \autoref{lst:pfs-mining} shows, prefixspan-py greatly facilitates obtaining subsequences. The depicted function call returns the top 25 closed subsequences ranked by their support metric. These subsequences are picked as features to be encoded. By choosing $l=25$, we stay well above the minimum support requirement of $0.05$ chosen by Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}.
+As \autoref{lst:pfs-mining} shows, prefixspan-py greatly facilitates obtaining subsequences. The depicted function call returns the top 25 closed subsequences ranked by their support metric. These subsequences are picked as features to be encoded.
+We choose the number of subsequence features $l=25$.
+With this choice, the selected subsequence features are well above the minimum support of $0.05$ proposed by Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}.
 
 After mining the sequences, a loop is executed for every trace \verb=t= - shown in \autoref{lst:subsequence-feature-creation}. This loop iteratively constructs the PFS feature vector.
 
-First, the binary feature vector \verb=subseq_df= is initialized. For each index \verb=i=, it is checked whether any of the mined subsequences starts at that position. This is done by peeking ahead of \verb=i= for the length of the subsequence, indicated by \verb=j=. As in the case of the SP-2 features, the occurrence of a subsequence is marked with a boolean flag in the feature vector \verb=subseq_df= from the row that it occurred in onwards.
+First, the binary feature vector \verb=subseq_df= is initialized (line 3). For each index \verb=i=, it is checked whether any of the mined subsequences starts at that position (lines 14-25). This is done by peeking ahead of \verb=i= for the length of the subsequence, indicated by \verb=j=. As in the case of the SP-2 features, the occurrence of a subsequence is marked with a boolean flag in the feature vector \verb=subseq_df= from the row that it occurred in onwards.
 
 \begin{listing}[ht]
 \begin{minted}[linenos]{python}
@@ -200,16 +210,19 @@ for i in range(0, tlen):
 \subsection*{Constructing prediction labels}
 For each event $e_t$ at a given timestep $t$, the prediction label $\#_{activity name}(e_{t+1})$ was constructed, essentially picking the activity name from the following event. For the target of the final event of a trace, a marker for denoting the end of the sequence was introduced with \verb=EOS=.
 
-To finally work with the data, the column containing the activity name needed to be identified.
-The XES standard states that this column is called \verb=concept:name=~\cite{Aalst2016}.
+To finally work with the data, we needed to identify the column containing the activity name.
+The XES standard states that this column is called \verb=concept:name=~\cite{Aalst2016}, which is subsequently used.
 
 \subsection*{Splitting the datasets}
 To verify model performance on unseen data, it is common to set aside a portion of the dataset for testing purposes.
 
-We split all datasets into training and validation sets of complete traces. While $25\%$ of the traces were used for validation, the remaining $75\%$ were used for training purposes~\cite{kuhn2013applied}. The traces were shuffled and stratified to contain an approximately similar distribution of trace lengths. This avoids possible biases towards trace lengths. The event order in a trace was not changed.
+We split all datasets into training and validation sets of complete traces. While $25\%$ of the traces were used for validation, the remaining $75\%$ were used for training purposes~\cite{kuhn2013applied}. The traces were shuffled and stratified to contain an approximately similar distribution of trace lengths. This avoids possible biases towards trace lengths. The event order in a trace was not changed.\\
+
+With the logs selected, preprocessed, transformed, and organized in separate sets, the models can be trained. How we approached this will be shown in the next section.
 
 \section{Training configuration}\label{sec:method:test-setup}
-This section highlights the model configuration, and the employed hyper-parameters for each model, as well as batch sizes of each batching strategy.
+This section highlights the model configuration, and the employed hyper-parameters for each model.
+The batch sizes of each batching strategy are discussed, too.
 
 We made use of the framework described in \autoref{chap:training-framework}, which implements early stopping, and saves model snapshots when its validation loss hits a new record low. We configured it to stop training if the validation loss did not improve for 10 epochs.
 

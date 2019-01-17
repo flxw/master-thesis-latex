@@ -7,7 +7,7 @@
 	 	footinclude=true,
 	 	cleardoublepage=empty,
 		dottedtoc, % Make page numbers in the table of contents flushed right with dots leading to them
-		BCOR=5mm,paper=a4,fontsize=11pt, % Binding correction, paper type and font size
+		BCOR=-5mm,paper=a4,fontsize=11pt, % Binding correction, paper type and font size
 		american % Languages, change this to your language(s)
 		]{scrreprt}
 
@@ -98,11 +98,11 @@
 \part*{Appendix}
 \appendix
 \renewcommand{\thefigure}{A.\arabic{figure}}
-%%\input{content/appendix-a}
+\input{content/appendix-a}
 \renewcommand{\thefigure}{B.\arabic{figure}}
-%\input{content/appendix-b}
+\input{content/appendix-b}
 \renewcommand{\thefigure}{C.\arabic{figure}}
-%\input{content/appendix-c}
+\input{content/appendix-c}
 
 %----------------------------------------------------------------------------------------
 %	POST-CONTENT THESIS PAGES
