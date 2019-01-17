@@ -1,5 +1,5 @@
 \chapter{Evaluation}\label{chap:evaluation}
-In this chapter we present our evaluation criteria and the findings which we got from them.
+In this chapter, we present our evaluation criteria and the findings which we got from them.
 We evaluate the four models with a three-pronged strategy, targeting the following characteristics:
 
 \begin{enumerate}
@@ -8,12 +8,12 @@ We evaluate the four models with a three-pronged strategy, targeting the followi
     \item\textbf{Stability} - the change in prediction accuracy with progress
 \end{enumerate}
 
-While the first two criteria target the general usability of each model, the last one permits making a judgment about the stability of the predictions. Stability is inspired by the works of Francescomarino et al.~\cite{francescomarino2015} and Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}, and provides an understanding of how the prediction accuracy of a model changes as the traces gets longer. This can facilitate building trust in the model, as indicated in the introduction of the thesis~\cite{klinkmuller2018reliablemonitoring, boehmer2018probability}.
+While the first two criteria target the general usability of each model, the last one permits making a judgment about the stability of the predictions. The works of Francescomarino et al.~\cite{francescomarino2015} and Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}, inspired this measure. It provides an understanding of how the prediction accuracy of a model changes as the traces gets longer. This can facilitate building trust in the model, as indicated in the introduction of the thesis~\cite{klinkmuller2018reliablemonitoring, boehmer2018probability}.
 
 We discuss the acurracy of the models in \autoref{sec:eval:accuracy}, followed by the discussion of the required training time in \autoref{sec:eval:training-time}. We go on to discuss stability in \autoref{sec:eval:stability}, and conclude the chapter in \autoref{sec:eval:discussion}.
 
 \section{Accuracy}\label{sec:eval:accuracy}
-The validation accuracy is a good indicator of the prediction performance of any prediction model. It is calculated as the share of correct predictions among the number of total predictions. We will go over the model accuracies by batching strategy and explain the results. In \autoref{fig:max-accuracies-bpic2011} to \autoref{fig:max-accuracies-bpic2015-5}, the model performances per dataset are presented, grouped by batching strategy. The plots make apparent that only three models perform well consistently and that the batching strategies can have a profound effect on accuracy.\\
+The validation accuracy is a good indicator of the prediction performance of any prediction model. It is the share of correct predictions among the number of total predictions. We go over the model accuracies by batching strategy and explain the results. In \autoref{fig:max-accuracies-bpic2011} to \autoref{fig:max-accuracies-bpic2015-5}, the model performances per dataset are presented, grouped by batching strategy. The plots make apparent that only three models perform well consistently and that the batching strategies can have a profound effect on accuracy.\\
 
 % individual batching strategy
 The individual batching strategy often results in slightly worse accuracies than the grouped batching strategy. We trace this back to the more frequent adjustment of weights that can lead the loss optimization into local minima~\cite{keskar2016large}. For this strategy, the SCH model always gives the best accuracies.
@@ -23,10 +23,10 @@ The grouped batching strategy generally leads to top performance in lieu with ou
 %We also realized that the grouping strategy not only contributes to the best accuracies but also that it has a harmonizing effect on the accuracies among the SCH, SP2 and PFS models. This effect is illustrated in \autoref{fig:accuracy-harmonization}. The heatmap shows how the standard deviation between the top accuracies of the three models decreases with the grouping strategy on any dataset.
 
 % padded strategy
-The padded strategy leads to consistently good results throughout the datasets and only loses accuracy on the BPIC11 datasets where the training set had to be shrunk because traces exceeded a length threshold.
+The padded strategy leads to consistently good results throughout the datasets and only loses accuracy on the BPIC11 datasets where the training was shrunk because traces exceeded a length threshold.
 
 % windowed strategy
-The batching strategies that provide the whole history in one sample consistently see the SCH, SP2 and PFS models on par with at most $0.1$ difference. The windowed batching strategy leads to very different results, depending on the dataset and model. With a window size of three, suggested by Schönig et al., the model does not have many timesteps to learn from in any given sample. However, this loss of information does not impact the SP2 model. We assume that its SP-2 features encode the history that is cut away and thus help it come close to the general maximum accuracy of the dataset with the exception of BPIC11.
+The batching strategies that provide the whole history in one sample consistently see the SCH, SP2 and PFS models on par with at most $0.1$ difference. The windowed batching strategy leads to very different results, depending on the dataset and model. With a window size of three, suggested by Schönig et al., the model does not have many timesteps to learn from in any given sample. However, this loss of information does not impact the SP2 model. We assume that its SP-2 features encode the history that is cut away and thus help it come close to the general maximum accuracy of any dataset - except on BPIC11.
 
 Looking at the accuracy of the EVM model across all datasets, it is evident that it is consistently outperformed. We trace the low accuracy back to the application of an Embedding layer, which we suspect to require more data than included in most datasets to improve its internal data representation.
 Its accuracy on the BPIC12 dataset represents an exception. The performance jump here corresponds to the small number of activities and a large number of traces in \autoref{tab:dataset-characteristics}, which could help the Embedding learn better. Therefore, we assume that Embeddings need more training data than currently available to become more effective.
@@ -92,13 +92,13 @@ BPIC15-5 &    0.630    &  0.650    &  0.640    &  0.557    \\
 \FloatBarrier
 
 \section{Training time}\label{sec:eval:training-time}
-The training time that a model requires for an epoch is important to gauge the efficiency of its training process. The batch size has a direct effect on the required time since it corresponds to the number of weight adjustments per epoch. \autoref{fig:BPIC11-training-timings} to \autoref{fig:BPIC15-5-training-timings} illustrate the mean time required for training a model for an epoch, grouped by batching strategy. Here, we will go over the training times per batching strategy and explain the results.
+The training time that a model requires for an epoch is important to gauge the efficiency of its training process. The batch size has a direct effect on the required time since it corresponds to the number of weight adjustments per epoch. \autoref{fig:BPIC11-training-timings} to \autoref{fig:BPIC15-5-training-timings} illustrate the mean time required for training a model for an epoch, grouped by batching strategy. Here, we go over the training times per batching strategy and explain the results.
 
 Unsurprisingly, the individual batching strategy leads to the longest times overall. \autoref{tab:dataset-characteristics} reveals that this strategy leads to hundreds of weight adjustments per epoch.
 
-The grouped batching strategy leads to significant reductions in training times, depending on how diverse the trace lengths are. \autoref{tab:dataset-characteristics} explains why the reduction is not as big with BPIC11: It exhibits up to 1814 different lengths, while the other datasets only exhibit $5\%$ to $10\%$ of this number.
+The grouped batching strategy leads to significant reductions in training times, depending on how diverse the trace lengths are. \autoref{tab:dataset-characteristics} explains why the reduction is not as prominent with BPIC11: It exhibits up to 1814 different lengths, while the other datasets only exhibit $5\%$ to $10\%$ of this number.
 
-With the padded strategy, it is possible to overcome the limitations imposed by trace lengths and construct batches out of any number of traces. This makes it easier to optimize the batch size, which can lead to faster training times. That it does not always lead to better accuracies was shown in the previous section, as e.g. this strategy incurs a loss of samples on BPIC11.
+With the padded strategy, it is possible to overcome the limitations imposed by trace lengths and construct batches out of any number of traces. This makes it easier to optimize the batch size, which can lead to faster training times. That it does not always lead to better accuracies was shown in the previous section, as, e.g. this strategy incurs a loss of samples on BPIC11.
 
 Finally, the windowing strategy is the fastest by at least 60 seconds on any dataset. It produces a constant number of timesteps and allows for arbitrary batch sizes.
 
@@ -151,7 +151,7 @@ As we stressed in the introduction, the stability of a prediction model along th
 
 The individual batching strategy not only takes the most time, but it also leads to strong differences between the SCH, SP2, and PFS models. A good example is the difference between \autoref{fig:bpic15-3-individual-stability} and \autoref{fig:bpic15-3-grouped-stability}. In the latter figure, the SCH, SP2 and PFS curves are a lot closer to each other.
 
-The grouping strategy increases the sample count per batch and this seems to have a harmonizing effect on the results as evidenced by the corresponding figures of all datasets. This harmonizing effect can be witnessed in the reduction of the standard deviation of the best accuracies of the SCH, SP2 and PFS models in \autoref{fig:grouping-accuracy-harmonization}.
+The grouping strategy increases the sample count per batch, and this seems to have a harmonizing effect on the results as evidenced by the corresponding figures of all datasets. This harmonizing effect can be witnessed in the reduction of the standard deviation of the best accuracies of the SCH, SP2 and PFS models in \autoref{fig:grouping-accuracy-harmonization}.
 
 \begin{figure}
     \centering
@@ -160,23 +160,23 @@ The grouping strategy increases the sample count per batch and this seems to hav
     \label{fig:grouping-accuracy-harmonization}
 \end{figure}
 
-The padded strategy yields results very similar to the grouped strategy, with the exception of BPIC11. In this case, the training data had to be trimmed because the padded traces had required too much memory.
+The padded strategy yields results that are very similar to the grouped strategy - except for BPIC11. In this case, the training data had to be trimmed because the padded traces had required too much memory.
 
 Klinkmüller et al. state that the windowing strategy leads to unstable results~\cite{klinkmuller2018reliablemonitoring}. While this statement seems to be especially true for the longer processes in BPIC11 and BPIC15, the windowing strategy seems to have less of an impact with shorter processes as evidenced with BPIC12. There, all models show a dip towards the end of the trace.\\
 
-Generally, models were expected to become more accurate as the trace neared its end. However, this did not turn out to be the case. Instead, the accuracy was high when variability in the respective stage of the process was low. For example, processes in BPIC11 always begin similarly, as patients need to be onboarded~\cite{bose2011analysis}. This could be a cause for the high accuracies in the beginning. The processes in BPIC12 always end either on an approval or a dismissal of the application, making the models very accurate~\cite{adriansyah2012mining} in this stage.
+Generally, models were expected to become more accurate as the trace nears its end. However, this did not turn out to be the case. Instead, the accuracy was high when variability in the respective stage of the process was low. For example, processes in BPIC11 always begin similarly, as patients need to be onboarded~\cite{bose2011analysis}. The connection of accuracy and variability could be a cause for the high accuracies at the beginning of the BPIC11 stability curves. The processes in BPIC12 always end either on approval or a dismissal of the application, making the models very accurate~\cite{adriansyah2012mining} in this stage.
 
 \section{Discussion}\label{sec:eval:discussion}
 After presenting and explaining our findings, we summarize our learnings in this section and compare our findings to the papers mentioned in \autoref{sec:eval:dataset-choice}.\\
 
 First, we were able to confirm Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} and their suspicion that windowed batching does not work well for sequence prediction. While it may be a performant strategy to use for time-series prediction, it does not work very well for predicting the future of a single case.
 
-Secondly, we find that the grouping strategy frequently delivers the best results in terms of speed and accuracy. We realized that it should be iterated upon to include a threshold which limits batches to a maximum size and splits the larger batches accordingly. As evidenced by the charts, the grouping strategy seems to perform better with a medium to highly complex processes from BPIC11 and BPIC15, while padding works better with the simpler process from BPIC12. In combination with the SP2 model, the strategy contributed to most of the highest accuracies.
+Secondly, we find that the grouping strategy frequently delivers the best results in terms of speed and accuracy. We realized that it should be iterated upon to include a threshold which limits batches to a maximum size and splits the larger batches accordingly. As evidenced by the charts, the grouping strategy seems to perform better with a medium to highly complex processes from BPIC11 and BPIC15, while padding works better with the more straightforward process from BPIC12. In combination with the SP2 model, the strategy contributed to most of the highest accuracies.
 
-Third and lastly, we realize that Embeddings might not be useful on the currently available datasets as these might simply be too small. The lacking performance of the EVM model and its barely converging loss indicate that this might be the case. All accuracy/loss curves from training are enclosed in \autoref{appendix:loss-curves}, and show that especially for the EVM model, the loss optimization does not work properly.\\
+Third and lastly, we realize that Embeddings might not be useful on the currently available datasets as these might have not enough samples. The lacking performance of the EVM model and its barely converging loss indicate that this might be the case. All accuracy/loss curves from training are enclosed in \autoref{appendix:loss-curves}, and show that especially for the EVM model, the loss optimization does not work correctly.\\
 
-We end the evaluation with a comparison of our best results with the initially mentioned publications based on BPIC12. While Tax et al.~\cite{tax2017} and Evermann et al.~\cite{evermann2016} were able to obtain an accuracy of $0.76$ and $0.768$ respectively, they did not focus on specific cases. Furthermore, Evermann et al. did not use Keras on top of Tensorflow but Tensorflow directly, which enabled him to directly make use of low-level functions. To the best of our knowledge, our implementation sufficiently approximates theirs, but this can be a reason for the bad results. Another very probable reason is their feature engineering~\cite{evermann2016}.
+We end the evaluation with a comparison of our best results with the initially mentioned publications based on BPIC12. While Tax et al.~\cite{tax2017} and Evermann et al.~\cite{evermann2016} were able to obtain an accuracy of $0.76$ and $0.768$ respectively, they did not focus on specific cases. Furthermore, Evermann et al. did not use Keras on top of Tensorflow but Tensorflow directly, which enabled him to make use of low-level functions directly. To the best of our knowledge, our implementation sufficiently approximates theirs, but this can be a reason for the low accuracy. Another very probable reason is their feature engineering~\cite{evermann2016}.
 
-Böhmer et al.~\cite{boehmer2018probability} are able to attain an accuracy of $0.77$ with their statistical approach. While they argue that machine learning methods may perform better, they place great value on comprehensible reasoning information from the model.
+Böhmer et al.~\cite{boehmer2018probability} attain an accuracy of $0.77$ with their statistical approach. While they argue that machine learning methods may perform better, they place great value on comprehensible reasoning information from the model.
 
-Using the padding strategy, all SCH, SP2, and PFS score above $0.80$, with the SP2 model edging to the best accuracy of $0.82$. This supports the thesis by Böhmer et al. of lower comprehensibility at higher accuracy.
+Using the padding strategy, all SCH, SP2, and PFS score above $0.80$, with the SP2 model edging to the best accuracy of $0.82$. The fact that our accuracy surpasses that of Böhmer et al. supports their of lower comprehensibility at higher accuracy.
