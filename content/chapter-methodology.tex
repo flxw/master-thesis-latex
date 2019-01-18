@@ -11,7 +11,7 @@ The reimplementations of Evermann's and Schönig's approaches are referred to as
 
 \section{Data selection}\label{sec:method:dataset-choice}
 The first step of the KDD process is about picking the right data for the right problem.
-In \autoref{sec:intro:contribution}, we criticized the great variety of datasets used to evaluate approaches in Predictive Process Monitoring. While we can not establish a standard, we ensure comparability of our results to a variety of works by evaluating the four models on eight datasets:
+In \autoref{sec:intro:contribution}, we discusses the challenge posed by the great variety of datasets in Predictive Process Monitoring. While we can not establish a standard, we ensure comparability of our results to a variety of works by evaluating the four models on eight datasets:
 
 \begin{itemize}
     \item BPIC11, an event log from cases in a Gynaecology department of a Dutch Academic Hospital~\cite{BPIC2011}
@@ -20,7 +20,9 @@ In \autoref{sec:intro:contribution}, we criticized the great variety of datasets
     \item HelpDesk, a log from a ticketing management process of the help desk of an Italian software company~\cite{Helpdesk}
 \end{itemize}
 
-We picked the four logs as we believe that they cover a spectrum of process complexity. We take the increasing number of distinct activities and variance in trace length to be indicators of complexity. \autoref{tab:dataset-characteristics} sums up these properties.
+The four logs cover a spectrum of process complexity.
+We take the increasing number of distinct activities and variance in trace length to be indicators of complexity.
+\autoref{tab:dataset-characteristics} sums up these properties.
 
 The least complex traces are found in HelpDesk and BPIC12, with a small variance in trace length and a tiny number of different activities. While the HelpDesk log contains events from a rigid, predefined process, process models were also easily mined from BPIC12 in competition submissions~\cite{adriansyah2012mining}.
 We include the HelpDesk log for comparability, but we believe that it is not well suited for the prediction use case, since it only consists out of dictionary-encoded activity names and timestamps. Furthermore, its cases seem to follow a very well defined ITIL-style process of very little variability.
@@ -123,7 +125,7 @@ Categorical features were encoded using one-hot encoding, since no ordinal relat
 
 \subsection*{Engineering the SP-2 features}
 SP-2 features were proposed in the SPiCe submission by Shibata et al.~\cite{shibata2016bipartite}. In a binary bag-of-words feature vector, they mark whether an element has occurred in the past. As such, these features are engineered iteratively. \autoref{lst:sp2-generation} shows the construction of the feature vector in Python.
-\autoref{tab:sp2-encoding} in \autoref{sec:related-work-sequence-prediction} illustrates how such a vector could look like.
+\autoref{tab:sp2-activity-trace} in \autoref{sec:contrib:sp2-inspiration} illustrates how such a vector could look like.
 
 For every trace \verb=t=, a new feature vector \verb=sp2_df= is created and the occurrence of the first activity, contained in the column \verb=target_col=, is marked inside it (line 7). A loop begins over the remaining steps, where each previous row inside \texttt{sp2\_df} is copied into the currently indexed row (line 17). After copying, the presence of the current activity gets marked (line 18). This repeats itself until the trace is processed completely, leaving behind a complete SP-2 feature vector for a trace.
 
@@ -205,7 +207,7 @@ for i in range(0, tlen):
 
     # if subseq took place, subsequence_found is still true
     if subsequence_found:
-      subseq_df.values[j+i:,subseq_idx] = True
+      subseq_df.values[j+i-1:,subseq_idx] = True
 \end{minted}
 \caption{Enriching a trace \texttt{t} with subsequence features by detecting those that are contained inside it.}
 \label{lst:subsequence-feature-creation}

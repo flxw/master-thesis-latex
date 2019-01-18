@@ -279,13 +279,13 @@ Understanding a neuron as the placeholder of a single class, its output can be u
 The neuron with the highest probability reveals the prediction of the network.
 
 \subsubsection*{Rectified Linear Unit activation}
-The rectified linear unit (ReLU) function has become a popular choice for activating hidden layers:
+The rectified linear unit (ReLU) function has become a popular choice for activating hidden layers~\cite{glorot2011deep}. It is defined as follows:
 
 $$ReLU(y_i) = y_i^+ = max(0, y_i)$$
 
 They are biologically plausible, giving a one-sided output.
 Also they activate in a sparse fashion. In a randomly initialized network, only about half of all hidden units are activated.
-Combined with the simple calculation of the function, the activation function makes for efficient computation~\cite{glorot2011deep}.
+Combined with the simple calculation of the function, the activation function makes for efficient computation~\cite{krizhevsky2012imagenet}.
 
 \section{Data preparation and feature engineering}
 \label{sec:background:feature-engineering}

@@ -19,36 +19,72 @@ The batch size strongly affects convergence properties of any neural network, ma
 No guidelines how to sort traces into batches were found.
 We believe that the understanding of the merits of each batch construction strategy can be of general value to any application of sequence prediction.\\
 
-Keras' implementation of LSTM is stateful \textit{during} a batch, and resets the cell state $C$ before the next batch~\cite{web:keras}. The state reset is configurable, but for the sake of simplicity, it is advisable to keep related timesteps inside a single batch. Translated to traces, this means keeping a trace completely inside a batch. A Keras LSTM layer requires input data to be formatted in a three-dimensional array of fixed size for every batch. Each dimension has a defined meaning as indicated by the suffix:
+Keras' implementation of LSTM is stateful \textit{during} a batch, and resets the cell state $C$ before the next batch~\cite{web:keras}.
+The state reset is configurable, but for the sake of simplicity, it is advisable to keep related timesteps inside a single batch.
+Translated to traces, this means keeping a trace completely inside a batch.
+A Keras LSTM layer requires input data to be formatted in a three-dimensional array of fixed size for every batch.
+Each dimension has a defined meaning as indicated by the suffix:
 
 $$(n_{samples}, n_{timesteps}, n_{features})$$
 
-Every sample contains a $n_{timesteps}$ feature vectors.
+A batch contains $n_{samples}$ samples, which correspond to traces in our case.
+Every sample contains $n_{timesteps}$ feature vectors.
 Each of these vectors has $n_{features}$ dimensions.
-The feature vector size is constant because the input layer size is fixed.
+These dimensions correspond to the size of the feature vector that is fed into the input layer.
 For each sample, the Keras LSTM layer cells maintain a separate state.
 This means that several traces can be trained on simultaneously~\cite{web:keras-lstm-state}.
 As the batches themselves do not need to have the same dimensions, this definition opens up a range of possibilities to construct batches from traces of variable length.
 We highlight four of them in the following paragraphs.
 To the best of our knowledge, these have not been compared in this context yet.\\
 
-First and easiest, one trace can be trained per batch. This fulfills the requirement of constant dimensions since only a single sample is used.
+\paragraph{Individual}
+First and easiest, batches can be constructed from a single sample.
+This fulfills the requirement of constant dimensions since only a single sample is used.
+\autoref{fig:individual-batching-example} illustrates this batching strategy.
 
-Second, \textit{some} traces can be trained inside a single batch. This is possible if all traces inside the batch have the same number of timesteps, i.e., have the same length. Thus, the number of samples and timesteps may vary between batches. A look at \autoref{fig:bpic2011-length-distribution} reveals a power-law distribution of trace lengths in BPIC11.
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=\textwidth]{gfx/individual-batching.png}
+    \caption[Individual batch construction strategy]{Batch construction from a single sample. A batch is boxed in a blue rectangle, and its dimensions are written beside it.}
+    \label{fig:individual-batching-example}
+\end{figure}
+
+\paragraph{Grouped}
+Second, \textit{some} traces can be trained inside a single batch.
+This is possible if all traces inside a batch have the same number of timesteps, i.e., have the same length.
+\autoref{fig:grouping-batching-example} illustrates how a grouping could look like.
+The figure also illustrates that the number of samples and timesteps may vary between batches.
+A look at \autoref{fig:bpic2011-length-distribution} reveals a power-law distribution of trace lengths in BPIC11.
 The grouped batching could bias the model toward the long tail of the distribution, as longer and fewer traces are put into batches of their own.
 
-\begin{figure}[ht!]
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=\textwidth]{gfx/grouped-batching.png}
+    \caption[Grouped batch construction strategy]{Batch construction by grouping samples. A batch is boxed in a blue rectangle, and its dimensions are written beside it.}
+    \label{fig:grouped-batching-example}
+\end{figure}
+
+\begin{figure}[!htb]
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic11-length-frequency.pdf}
     \caption{Distribution of trace lengths in BPIC11}
     \label{fig:bpic2011-length-distribution}
 \end{figure}
 
-Third, there is the possibility of padding the number of timesteps in a sequence to the same length.
+\paragraph{Padded}
+ there is the possibility of padding the number of timesteps in a sequence to the same length.
 The padded values are then filtered out using a Masking layer during training~\cite{web:keras}.
 The padding length is determined by the maximum trace length and may incur a significant memory overhead.
 This is especially the case for large outlier values like in BPIC11.
 
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=\textwidth]{gfx/padded-batching.png}
+    \caption[Padded batch construction strategy]{Batch construction from padded samples. Padding values are depicted by gray boxes.}
+    \label{fig:padded-batching-example}
+\end{figure}
+
+\paragraph{Windowed}
 Fourth and finally, there is also the possibility to split the trace into samples by sliding a window along it.
 This results in $l-w+1$ samples for a trace of length $l$ and a window width $w$.
 Taking \autoref{tab:sliding-window} in \autoref{sec:background:feature-engineering} as an example, the window would be two timesteps wide.
@@ -56,15 +92,7 @@ This approach solves the problem of unequal sample lengths and facilitates batch
 Unfortunately, it only allows the model to use a maximum of $w$ timesteps per sample for training.
 This might cause the model to miss potential long-term dependencies.
 As both Evermann et al.~\cite{evermann2016} and Schönig et al.~\cite{schoenig2018} use this format, and it directly opposes the findings of Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}, we investigate it.
-Furthermore, we are convinced that use of a windowed training data format misses out on LSTM potential.\\
-
-The four batching strategies are labeled in the order of the preceding explanation for easier reference in the following chapters:
-\begin{itemize}
-\item\textbf{Individual}: One trace per batch
-\item\textbf{Grouped}: Same-length traces in one batch
-\item\textbf{Padded}: Padded-to-length traces
-\item\textbf{Windowed}: Windowed samples, as used by Evermann and Schönig
-\end{itemize}
+Furthermore, we are convinced that use of a windowed training data format misses out on LSTM potential.
 
 \section{A training framework for sequential data}
 \label{sec:contrib:training-framework}
