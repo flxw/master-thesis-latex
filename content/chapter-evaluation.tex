@@ -9,14 +9,15 @@ We evaluate the four models with a three-pronged strategy, targeting the followi
 \end{enumerate}
 
 While the first two criteria target the general usability of each model, the last one permits making a judgment about the stability of the predictions. The works of Francescomarino et al.~\cite{francescomarino2015} and Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}, inspired this measure. It provides an understanding of how the prediction accuracy of a model changes as the traces gets longer. This can facilitate building trust in the model, as indicated in the introduction of the thesis~\cite{klinkmuller2018reliablemonitoring, boehmer2018probability}.
+During the evaluation, results for BPIC logs and the HelpDesk dataset should not be compared too closely, as the BPIC logs are a lot more resouceful in terms of data attributes.
 
 We discuss the acurracy of the models in \autoref{sec:eval:accuracy}, followed by the discussion of the required training time in \autoref{sec:eval:training-time}. We go on to discuss stability in \autoref{sec:eval:stability}, and conclude the chapter in \autoref{sec:eval:discussion}.
 
 \section{Accuracy}\label{sec:eval:accuracy}
-The validation accuracy is a good indicator of the prediction performance of any prediction model. It is the share of correct predictions among the number of total predictions. We go over the model accuracies by batching strategy and explain the results. In \autoref{fig:max-accuracies-bpic2011} to \autoref{fig:max-accuracies-bpic2015-5}, the model performances per dataset are presented, grouped by batching strategy. The plots make apparent that only three models perform well consistently and that the batching strategies can have a profound effect on accuracy.\\
+The validation accuracy is a good indicator of the prediction performance of any prediction model. It is the share of correct predictions among the number of total predictions. We go over the model accuracies by batching strategy and explain the results. In \autoref{fig:max-accuracies-helpdesk} to \autoref{fig:max-accuracies-bpic2015-5}, the model performances per dataset are presented, grouped by batching strategy. The plots make apparent that only three models perform well consistently and that the batching strategies can have a profound effect on accuracy.\\
 
 % individual batching strategy
-The individual batching strategy often results in slightly worse accuracies than the grouped batching strategy. We trace this back to the more frequent adjustment of weights that can lead the loss optimization into local minima~\cite{keskar2016large}. For this strategy, the SCH model always gives the best accuracies. On BPIC12, this strategy delivers the best results.
+The individual batching strategy often results in slightly worse accuracies than the grouped batching strategy. We trace this back to the more frequent adjustment of weights that can lead the loss optimization into local minima~\cite{keskar2016large}. For this strategy, the SCH model always gives the best accuracies. On HelpDesk, this strategy delivers among the best results, and on BPIC11 the worst. It seems that the strategy helps achieving better and better results with decreasing process complexity.
 
 % grouped batching strategy
 The grouped batching strategy generally leads to top performance in lieu with our SP2 model on any dataset except for BPIC11 and BPIC12. On BPIC11, the strategy brings the best accuracy with the PFS model. On BPIC12, it causes the worst accuracies on the dataset. The explanation for this can be found in \autoref{tab:dataset-characteristics} and \autoref{tab:batch-sizes}. The dataset has the highest number of traces, and a relatively even distribution of lengths, resulting in a small standard deviation. This results in too many traces being put in a single batch, causing lost optimization opportunities. With this in mind, the grouping strategy should be enhanced to split batches if they exceed a certain size threshold. Nonetheless, we realized that the mean of the top accuracies of the SCH, SP2 and PFS models is the highest with the grouping strategy. \autoref{tab:strategy-top-accuracies} illustrates these mean accuracies.
@@ -31,6 +32,12 @@ The batching strategies that provide the whole history in one sample consistentl
 Looking at the accuracy of the EVM model across all datasets, it is evident that it is consistently outperformed. We trace the low accuracy back to the application of an Embedding layer, which we suspect to require more data than included in most datasets to improve its internal data representation.
 Its accuracy on the BPIC12 dataset represents an exception. The performance jump here corresponds to the small number of activities and a large number of traces in \autoref{tab:dataset-characteristics}, which could help the Embedding learn better. Therefore, we assume that Embeddings need more training data than currently available to become more effective.
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/helpdesk/accuracies.pdf}
+    \caption{Best accuracies on the validation set of HelpDesk}
+    \label{fig:max-accuracies-helpdesk}
+\end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2011/accuracies.pdf}
@@ -58,19 +65,19 @@ Its accuracy on the BPIC12 dataset represents an exception. The performance jump
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_3/accuracies.pdf}
-    \caption{Best accuracies on the validation set of BPI15-3}
+    \caption{Best accuracies on the validation set of BPIC15-3}
     \label{fig:max-accuracies-bpic2015-3}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_4/accuracies.pdf}
-    \caption{Best accuracies on the validation set of BPI15-4}
+    \caption{Best accuracies on the validation set of BPIC15-4}
     \label{fig:max-accuracies-bpic2015-4}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_5/accuracies.pdf}
-    \caption{Best accuracies on the validation set of BPI15-5}
+    \caption{Best accuracies on the validation set of BPIC15-5}
     \label{fig:max-accuracies-bpic2015-5}
 \end{figure}
 \begin{table}
@@ -78,6 +85,7 @@ Its accuracy on the BPIC12 dataset represents an exception. The performance jump
 \begin{tabular}{l|rrrr}
 Dataset  &  Individual &   Grouped &    Padded &  Windowed \\
 \midrule
+HelpDesk &    0.85     &  0.84     &  0.83     &  0.68     \\
 BPIC11   &    0.576    &  0.676    &  0.632    &  0.479    \\
 BPIC12   &    0.850    &  0.761    &  0.833    &  0.728    \\
 BPIC15-1 &    0.614    &  0.670    &  0.635    &  0.559    \\
@@ -92,7 +100,7 @@ BPIC15-5 &    0.630    &  0.650    &  0.640    &  0.557    \\
 \FloatBarrier
 
 \section{Training time}\label{sec:eval:training-time}
-The training time that a model requires for an epoch is important to gauge the efficiency of its training process. The batch size has a direct effect on the required time since it corresponds to the number of weight adjustments that need to be calculated. \autoref{fig:BPIC11-training-timings} to \autoref{fig:BPIC15-5-training-timings} illustrate the mean time required for training a model for an epoch, grouped by batching strategy. We go over the training times per batching strategy and explain the results.
+The training time that a model requires for an epoch is important to gauge the efficiency of its training process. The batch size has a direct effect on the required time since it corresponds to the number of weight adjustments that need to be calculated. \autoref{fig:helpdesk-training-timings} to \autoref{fig:BPIC15-5-training-timings} illustrate the mean time required for training a model for an epoch, grouped by batching strategy. We go over the training times per batching strategy and explain the results.
 
 Unsurprisingly, the individual batching strategy leads to the longest times overall. \autoref{tab:dataset-characteristics} reveals that this strategy leads to hundreds of weight adjustments per epoch.
 
@@ -105,6 +113,12 @@ Finally, the windowing strategy is the fastest.
 It produces a constant number of timesteps and allows for arbitrary batch sizes.
 The low number of timesteps additionally reduces the amount of calculation that needs to be done.
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{gfx/helpdesk/train_timings.pdf}
+    \caption{Training times measured on HelpDesk}
+    \label{fig:helpdesk-training-timings}
+\end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2011/train_timings.pdf}
@@ -150,7 +164,7 @@ The low number of timesteps additionally reduces the amount of calculation that 
 \FloatBarrier
 
 \section{Stability}\label{sec:eval:stability}
-As we stressed in the introduction, the stability of a prediction model along the progress of a case greatly impacts the level of trust that users put into the model~\cite{metzger2015}. \autoref{appendix:evaluation-measurements} contains the figures that illustrate the stability of each model per batching strategy, grouped by dataset. Each figure for a batching strategy and a dataset contains four curves, one for each model. The curves show the model accuracy along the progression of all traces inside the validation set in steps of $5\%$. This subsection explains the results, again per batching strategy.\\
+As we stressed in the introduction, the stability of a prediction model along the progress of a case greatly impacts the level of trust that users put into the model~\cite{metzger2015}. \autoref{appendix:evaluation-measurements} contains the figures that illustrate the stability of each model per batching strategy, grouped by dataset. Each figure for a batching strategy and a dataset contains four curves, one for each model. The curves show the model accuracy along the progression of all traces inside the validation set in steps of $5\%$. The stability on the HelpDesk log was calculated in steps of $10\%$, as most cases in it are only 13 steps long. This subsection explains the results, again per batching strategy.\\
 
 The individual batching strategy not only takes the most time, but it also leads to strong differences between the SCH, SP2, and PFS models. A good example is the difference between \autoref{fig:bpic15-3-individual-stability} and \autoref{fig:bpic15-3-grouped-stability}. In the latter figure, the SCH, SP2 and PFS curves are a lot closer to each other.
 
@@ -163,14 +177,14 @@ The grouping strategy increases the sample count per batch, and this seems to ha
     \label{fig:grouping-accuracy-harmonization}
 \end{figure}
 
-The padded strategy yields results that are very similar to the grouped strategy - except for BPIC11. In this case, the training data had to be trimmed because the padded traces had required too much memory.
+The padded strategy yields results that are very similar to the grouped strategy - except on BPIC11 and HelpDesk. In the former case, the training data had to be trimmed because the padded traces had required too much memory. In the latter case, the batch size seems to have had a profound effect on accuracy.
 
 Klinkmüller et al. state that the windowing strategy leads to unstable results~\cite{klinkmuller2018reliablemonitoring}. While this statement seems to be especially true for the longer processes in BPIC11 and BPIC15, the windowing strategy seems to have less of an impact with shorter processes as evidenced with BPIC12. There, all models show a dip towards the end of the trace.\\
 
 Generally, models were expected to become more accurate as the trace neared its end. However, this did not turn out to be the case. Instead, the accuracy was high when variability in the respective stage of the process was low. For example, processes in BPIC11 always begin similarly, as patients need to be onboarded~\cite{bose2011analysis}. The connection of accuracy and variability could be a cause for the high accuracies at the beginning of the BPIC11 stability curves. The processes in BPIC12 always end either on approval or dismissal of the application, making the models very accurate in this stage~\cite{adriansyah2012mining}.
 
 \section{Discussion}\label{sec:eval:discussion}
-After presenting and explaining our findings, we summarize our learnings in this section and compare our findings to the papers mentioned in \autoref{sec:eval:dataset-choice}.\\
+After presenting and explaining our findings, we summarize our learnings in this section and compare our findings to the papers mentioned in \autoref{sec:method:dataset-choice}.\\
 
 First, we can to confirm Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} and their suspicion that windowed batching does not work well for sequence prediction. While it may be a performant strategy to use for time-series prediction, it does not work very well for predicting the future of a single case.
 
@@ -180,12 +194,14 @@ Third, we realize that Embeddings might not be useful on the currently available
 
 We end the evaluation with a comparison of our best results with the initially mentioned publications based on BPIC12. While Evermann et al.~\cite{evermann2016} were able to obtain an accuracy of $0.768$, they did not focus on specific cases. Furthermore, Evermann et al. did not use Keras on top of Tensorflow but Tensorflow directly, which enabled him to make use of low-level functions directly. To the best of our knowledge, our implementation sufficiently approximates theirs, but this can be a reason for the low accuracy. Another very probable reason is their feature engineering~\cite{evermann2016}.
 
-Also on BPIC12, Böhmer et al.~\cite{boehmer2018probability} attain an accuracy of $0.77$ with their statistical approach. While they argue that machine learning methods may perform better, they place great value on comprehensible reasoning information from the model.
+On BPIC12 and the HelpDesk log, Böhmer et al.~\cite{boehmer2018probability} attain an accuracy of $0.77$ with their statistical approach. While they argue that machine learning methods may perform better, they place great value on comprehensible reasoning information from the model.
 
-Tax et al.~\cite{tax2017} reach a maximum accuracy of $0.76$ in their paper on BPIC12.
+Tax et al.~\cite{tax2017} reach a maximum accuracy of $0.76$ in their paper on BPIC12 and $0.71$ on the HelpDesk log.
 
-Using the individual batching strategy, all SCH, SP2, and PFS score above $0.80$.
-The SCH model edges to the best accuracy of $0.853$, with the SP2 model close at $0.851$.
+Using the individual batching strategy, all SCH, SP2, and PFS score above $0.80$ on both datasets.
+This surpasses all three aformentioned results.
+The SCH model edges to the best accuracy of $0.853$, with the SP2 model close at $0.851$ on BPIC12.
+On the HelpDesk dataset, the PFS and SCH models reach $0.862$ and $0.854$.
 The fact that our accuracy surpasses that of Böhmer et al. supports their thesis of lower comprehensibility at higher accuracy.\\
 
 In this evaluation we discussed the performances of the models on the individual datasets.

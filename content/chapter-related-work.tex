@@ -86,23 +86,26 @@ Kokkinos et al. leveraged a tree-structured neural network to classify sentiment
 In 2016, the International Conference in Grammatical Inference 2016 (ICGI) held a competition called SPiCE\ "about guessing the next element in a sequence"~\cite{web:spice}. It entailed making next-element predictions on twelve different datasets on which to make predictions for the next word. Most entries submitted to this competition made use of RNNs with LSTM cells to do so.\\
 
 The winning submission by Shibata et al. uses a bipartite network architecture, training separate layers on different features of the same sentence. The results of these separate layers are then merged in the middle hidden layers to produce a single output~\cite{shibata2016bipartite}, as \autoref{fig:spice-winner-architecture} shows. Architectural similarities with Schönig et al. and Evermann et al. are especially prominent in the left part of Shibata's model.
-While one-half of the layers is trained on the most recent word of the sentence, the other half is trained on the encoded prefix of that word. As this prefix can be of any length, Shibata et al. propose a binary bag-of-words encoding, representing the states of an SP-2 automaton.
+The most recent word is fed into an Embedding layer and passes through two LSTM layers on the left.
+On the right side, a vector of SP-2 features is fed into an Embedding layer with a ReLU activation function.
+Then, both intermediate representations are concatenated, and passed through a ReLU-activated layer.
+The result is passed through a $50\%$ Dropout layer, to finally produce the prediction of the next word from a Softmax-activated output layer.
 
+While one-half of the layers is trained on the most recent word of the sentence, the other half is trained on SP-2 features, which encode the prefix of that word.
+As this prefix can be of any length, Shibata et al. propose a binary bag-of-words encoding, representing the states of an SP-2 automaton.
 SP-$k$ languages are used to describe certain long-term dependencies through forbidden subsequences. For example, if $\langle a,b \rangle$ is forbidden, then no $b$ may ever occur after $a$. According to Heinz, who assisted Shibata, deterministic finite automatons (DFA) can also be used to characterize SP-$k$ languages, if the DFA states encode those subsequences of size $k-1$ present in the previous prefixes~\cite{heinz2010estimatingSP}. To make this concept more tangible, \autoref{tab:sp2-encoding} illustrates a small example. The authors argue that LSTMs are not completely understood yet and it has not been proven that they are fully capable of recognizing sequences, which is why these features should assist the network. To prove their point, they compare the SP-$k$ bipartite architecture with a basic one that is nearly identical to the one by Evermann et al. in \autoref{fig:evermann-architecture}. The performance differences between the two models are acknowledged as generally "slight", while the basic architecture performs "significantly worse on three problems".
 
 \begin{table}[!htb]
     \centering
     \begin{tabular}{cclccccc}
-        \hline
           &      &              & \multicolumn{5}{c}{SP-2 vector}\\
-        t & $seq_{t-1, t}$ & $seq_{0,t}$ & [a & b & c & d & e]\\
-        \hline
-        1 & a    & a            & [1 & 0 & 0 & 0 & 0]\\
-        2 & d    & ad           & [1 & 0 & 0 & 1 & 0]\\
-        3 & a    & ada          & [1 & 0 & 0 & 1 & 0]\\
-        4 & c    & adac         & [1 & 0 & 1 & 1 & 0]\\
-        5 & d    & adacd        & [1 & 0 & 1 & 1 & 0]\\
-        \hline
+        t & $seq_{t, t}$ & $seq_{0,t}$ & [a & b & c & d & e]\\
+        \midrule
+        0 & a    & a            & [1 & 0 & 0 & 0 & 0]\\
+        1 & d    & ad           & [1 & 0 & 0 & 1 & 0]\\
+        2 & a    & ada          & [1 & 0 & 0 & 1 & 0]\\
+        3 & c    & adac         & [1 & 0 & 1 & 1 & 0]\\
+        4 & d    & adacd        & [1 & 0 & 1 & 1 & 0]\\
     \end{tabular}
     \caption[SP-2 feature vector example]{Traces encoded with SP-2. As $t$ progresses, more and more single-item subsequences ($k-1=1$) are marked as occurred. The alphabet is $I=\{a,b,c,d,e\}$. This example is taken from Shibata et al. ~\cite{shibata2016bipartite}.}
     \label{tab:sp2-encoding}

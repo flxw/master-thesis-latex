@@ -176,10 +176,11 @@ seq_{in}  &= \langle(I),(am) (writing),(my)\rangle\\
 In this thesis, we focus on many-to-one predictions, because we aim to predict the next activity in a running case based on its trace. How neural networks are especially suited for sequence prediction is explained in the next section.
 
 \section{Artificial Neural Networks}\label{sec:artificial-neural-networks}
-An artificial neural network (ANN) mimics the inner workings of a human brain in that it is made up of connected nodes referred to as neurons. These neurons are interconnected and produce an output signal upon receiving an input signal. This section first gives background on the general structure of a basic neural network in \autoref{sec:feedforward-networks} and then highlights two enhancements for sequence prediction in \autoref{sec:recurrent-networks} and \autoref{sec:lstm}.
+An artificial neural network (ANN) mimics the inner workings of a human brain in that it is made up of connected nodes referred to as neurons. These neurons are interconnected and produce an output signal upon receiving an input signal. This section first gives background on the general structure of a basic neural network in \autoref{sec:feedforward-networks} and then highlights two enhancements for sequence prediction in \autoref{sec:recurrent-networks}.
+We end this section in \autoref{sec:bacground:cues} with insights into the architectural cues that we use during this thesis.
 
-\subsection{Feedforward neural networks}\label{sec:feedforward-networks}
-The first and most trivial type of ANN is the feedforward neural network~\cite{schmidhuber2015deep}. It is not optimally suited for sequence prediction but serves as a sufficiently complex example to explain the inner workings of an ANN, and for pointing out why long short-term memory networks are more suited to the task at hand.
+\subsection{Structural Basics}\label{sec:feedforward-networks}
+The first and most trivial type of ANN is the feedforward neural network~\cite{schmidhuber2015deep}. It is not optimally suited for sequence prediction but serves as a sufficiently complex example to explain the inner workings of an ANN, and for pointing out why long short-term memory networks are more suited for sequence prediction.
 
 \begin{figure}[!htb]
     \centering
@@ -190,19 +191,20 @@ The first and most trivial type of ANN is the feedforward neural network~\cite{s
 
 The nodes in any ANN are organized in layers, with each neuron connecting to every neuron in the adjacent layers, resulting in fully connected layers. The samples are fed into the input layer in the form of a vector of features. The prediction ultimately comes out of the output layer. The layers between the input and output layers are referred to as \textit{hidden layers} and can be greater in number.
 
-\autoref{fig:feedforward-ann} shows an exemplary ANN with a single hidden layer. The features $x_1$ to $x_m$ are fed into the network as one vector, and their numeric values are passed along the edges to every neuron in the next layer. For each neuron, the incoming values are multiplied with the respective edge weight $\beta$ and summed up, as depicted by the $\sum$ symbol in each circle. The sum is passed to a function called \textit{activation function} - illustrated by the sigmoid curve - which controls whether the neuron emits a signal or not. The signals are passed along the output edges of the respective neurons, and the process is repeated for the next layer until the signals have reached the output layer. This process of continually feeding the outputs forward to the next layer also gives this type of ANN its name.
+\autoref{fig:feedforward-ann} shows an exemplary ANN with a single hidden layer. The features $x_1$ to $x_m$ are fed into the network as one vector, and their numeric values are passed along the edges to every neuron in the next layer. For each neuron, the incoming values are multiplied with the respective edge weight $\beta$ and summed up, as depicted by the $\sum$ symbol in each circle. The sum is passed to a function called \textit{activation function} - illustrated by the sigmoid curve - which controls whether the neuron emits a signal or not. The signals are passed along the output edges of the respective neurons, and the process is repeated for the next layer until the signals have reached the output layer.
+This process of continually feeding the outputs forward to the next layer also gives this type of hidden layer its name: feedforward layer.
 
 The weights $\beta$ are adjusted during training to increase prediction accuracy. For this purpose, the training samples are grouped into \textit{batches}. The samples in a batch are passed into the network, and the predictions for this batch are compared to the target labels. At this point, the \textit{loss function} calculates how far the network's predictions missed the labels. The weights are then adjusted to reduce the loss in the next batch. When all batches have passed through the network once, an \textit{epoch} has elapsed. Because the goal of the training algorithm is to minimize the network's loss, the weights can be adapted too well to the training set. This can happen when the network is trained for too long, making it overfit.
 
 Overfitting an ANN during training can be avoided by calculating the network's loss both on the training set as well as on the test set. The weight adjustments are made based on the loss on the training set, but the training is stopped once the loss on the test set has ceased to improve for a certain number of epochs. This technique is referred to as early stopping.\\
 
-Because feed-forward ANNs are passing the layer outputs toward the output layer, and the neurons have no memory, this type of network does not have any capacity for persisting what it has previously processed. However, this is a desirable capability for sequence predictions, as several samples can belong to a single sequence.
+Because feedforward layers are passing their outputs toward the output layer, and the neurons have no memory, this type of layer does not have any capacity for persisting what it has previously processed. However, this is a desirable capability for sequence predictions, as several samples can belong to a single sequence.
 
-The next subsection shows how recurrent neural networks (RNN) have been created with this capacity in mind, making them suited for working with sequential data. Long short-term memory builds on RNNs and enhances the capacity to remember even further.
+The next subsection shows how recurrent neural networks (RNNs) have been created with this capacity in mind, making them suited for working with sequential data. Long short-term memory builds on RNNs and enhances the capacity to remember even further.
 
 \FloatBarrier
-\subsection{Recurrent neural networks}\label{sec:recurrent-networks}
-As the name suggests, recurrent neural networks (RNN) implement a feedback loop. This loop makes information from the output of a neuron available to itself for the next step. Introducing a time dimension, RNNs are often displayed in an unrolled fashion as in \autoref{fig:rnn-unrolled}. This form of illustration also reveals that recurrent neural networks are intimately related to sequences and lists.
+\subsection{Enhancements for sequence prediction}\label{sec:recurrent-networks}
+The layers in a recurrent neural network (RNN) implement a feedback loop. This loop makes information from the output of a neuron available to itself for the next step. Introducing a time dimension, RNNs are often displayed in an unrolled fashion as in \autoref{fig:rnn-unrolled}. This form of illustration also reveals that recurrent neural networks are intimately related to sequences and lists.
 
 \begin{figure}[!htb]
     \centering
@@ -215,9 +217,9 @@ A neuron receives an input $x_t$ and outputs a value $h_t$. The letter $t$ indic
 
 The introduction of the time dimension causes the perception of input data to change: It is now required to be three-dimensional. With feedforward ANNs, training data was two-dimensional and consisted of a list of unrelated samples. Samples were the same as a feature vector, but for RNNs, samples need to be understood as lists of feature vectors. This makes a sample suitable to represent a sequence because its feature vectors can represent the individual timesteps.
 
-While the loop in an RNN indeed allows recognizing short-term dependencies, the network as a whole will still underperform with long-term dependencies when the gaps between related inputs become too big. The root cause is that RNNs only loop back inputs, and lack memory to bridge those gaps. This problem has been thoroughly explored by Hochreiter et al.~\cite{hochreiter1991untersuchungen} who also proposed the long short-term memory fix presented in the following subsection.
+While the loop in an RNN indeed allows recognizing short-term dependencies, the network as a whole will still underperform with long-term dependencies when the gaps between related inputs become too big. The root cause is that RNNs only loop back inputs, and lack memory to bridge those gaps. This problem has been thoroughly explored by Hochreiter et al.~\cite{hochreiter1991untersuchungen} who also proposed the long short-term memory fix presented in the following.
 
-\subsection{Long short-term memory}\label{sec:lstm}
+\subsubsection*{Long short-term memory}\label{sec:lstm}
 In recent years, RNNs were applied with great success to a variety of problems: speech recognition, language modeling or translation. This success can be attributed in part to the enhancement of RNNs with long short-term memory (LSTM) cells~\cite{jozefowicz2015empirical,kuhn2013applied,schmidhuber2015deep}.
 
 Hochreiter \& Schmidhuber published this enhancement in 1997~\cite{hochreiter1997} which now sees broad application. Essentially, the repeating neurons of an RNN are turned into cells by equipping them with a cell state $C$, that provides them with the capacity to remember.
@@ -231,7 +233,59 @@ Hochreiter \& Schmidhuber published this enhancement in 1997~\cite{hochreiter199
 
 \autoref{fig:lstm} showcases the architecture of an unrolled LSTM cell. In the diagram, each line carries an entire vector. The pink circles represent pointwise operations, like vector addition. The yellow boxes symbolize operations. Merging lines denote concatenation, while a forking line denotes its content being copied in both directions. The cell state $C$ is symbolized by the horizontal upper line running from left to right. The lower line on the left represents $h_{t-1}$, the output of the cell in the previous step.
 
-The $\sigma$ boxes represent gates. Which parts of $C_{t-1}$ to keep and what to forget is decided at the first gate from the left, by taking $h_{t-1}$ and $x_t$ into account. The following $\sigma$ gate and $tanh$ operator together create the update to $C_{t-1}$. Finally, on the right, the updated cell state $C_t$ is used together with the activation function $tanh$ to produce the output $h_t$. Variants of this original LSTM cell architecture exist, with most modifications made around the construction of the state $C$ - all exhibiting similar performance~\cite{greff2017lstm}.
+The $\sigma$ boxes represent gates. Which parts of $C_{t-1}$ to keep and what to forget is decided at the first gate from the left, by taking $h_{t-1}$ and $x_t$ into account. The following $\sigma$ gate and $tanh$ operator together create the update to $C_{t-1}$. Finally, on the right, the updated cell state $C_t$ is used together with the activation function $tanh$ to produce the output $h_t$. Variants of this original LSTM cell architecture exist, with most modifications made around the construction of the state $C$ - all exhibiting similar performance~\cite{greff2017lstm}.\\
+
+The types of networks layers presented until here can be freely combined inside a network architecture.
+For instance, a feedforward layers can be attached to a LSTM layer.
+In our work, we apply several architectural cues besides the combination of different network types.
+These are explained in the following subsections.
+
+\subsection{Architectural cues}\label{sec:bacground:cues}
+A neural network architecture is seldomly comprised only out of feedforward or recurrent layers.
+Typically, the layers are augmented with activation functions and other types of layers to improve accuracy.
+In our work, we make use of Dropout layers and Embedding layers, which we present in the following.
+Furthermore, we employ activation functions to speed up learning and implement the classification output.
+
+\subsubsection*{Dropout Layers}
+As we outlined in the beginning of this section, ANNs implement an optimization function.
+This optimization naturally makes the network prone to overfit.
+The use of dropout layers presents a simple, yet effective technique to avoid overfitting.
+By breaking the connection between adjacent neurons with a given probability of $p$, the network learns more robust features.
+Dropout also approximately doubles the number of iterations required to converge, but decreases training for an epoch~\cite{srivastava2014dropout}.
+\autoref{fig:dropout-application} illustrates the effects of dropout application between two layers.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{gfx/dropout-application.png}
+  \caption[Effects of applying dropout]{The effects of applying dropout. Illustration taken from~\cite{srivastava2014dropout}}
+  \label{fig:dropout-application}
+\end{figure}
+
+\subsubsection*{Embedding Layers}
+Embedding layers make it possible to use word embeddings.
+Embeddings map inputs to a continous vector space.
+The layer weights are often imported from pretrained embeddings, as is explained in depth in \autoref{sec:background:word-embedding}.
+
+\subsubsection*{Softmax activation}
+The softmax activation is useful for converting the output of a network into a classification.
+As outlined in the beginning of this section, an activation function determines the output of a neuron.
+
+The softmax function normalizes the output $y_i$ of a neuron $i$ to a value between 0 and 1:
+
+$$S(y_i) = \frac{e^{y_i}}{\sum_j e_{y_j}}$$
+
+The sum of all output values of all neurons in a softmax-activated layer will always be 1.
+Understanding a neuron as the placeholder of a single class, its output can be understood as the proability of this class.
+The neuron with the highest probability reveals the prediction of the network.
+
+\subsubsection*{Rectified Linear Unit activation}
+The rectified linear unit (ReLU) function has become a popular choice for activating hidden layers:
+
+$$ReLU(y_i) = y_i^+ = max(0, y_i)$$
+
+They are biologically plausible, giving a one-sided output.
+Also they activate in a sparse fashion. In a randomly initialized network, only about half of all hidden units are activated.
+Combined with the simple calculation of the function, the activation function makes for efficient computation~\cite{glorot2011deep}.
 
 \section{Data preparation and feature engineering}
 \label{sec:background:feature-engineering}
@@ -265,7 +319,7 @@ One-hot encoding is often used for features which have a small to medium-sized n
     \centering
     \begin{tabular}{c|c|c|c|c|c|c|c|c}
         Maria & Arthur & is & wants & to & king & be & the & queen\\
-        \hline
+        \midrule
         0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
     \end{tabular}
     \caption{One-hot encoding of "Arthur" from alphabet of $seq1$ and $seq2$}
@@ -287,14 +341,14 @@ In contrast to one-hot encoding, this dictionary encoding does not result in wid
     \centering
     \begin{tabular}{c|ccccccccc}
         Word & Maria & Arthur & is & wants & to & king & be & the & queen\\
-        \hline
+        \midrule
         Code & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8
     \end{tabular}
     \caption{The dictionary built from the $seq1$ and $seq2$}
     \label{tab:dictionary-encoding}
 \end{figure}
 
-\subsubsection*{Word embedding}
+\subsubsection*{Word embedding}\label{sec:background:word-embedding}
 Because dictionary encodings impose order and one-hot encodings lead to sparse data, word embeddings are perceived as a viable alternative for encoding categorical variables. Word embeddings are rooted in NLP, where applications deal with very large alphabets.
 
 A word embedding is the output of a neural network with a single hidden layer that has been trained on a large, dictionary-encoded text corpus. It detects how words relate to each other and puts out highly dimensional vectors for each word~\cite{web:word-embedding}. These represent any word property that the model has picked up. In the following example from~\cite{mikolov2013distributed}, the network was able to detect gender properties and social semantics of words:
@@ -315,7 +369,7 @@ The sliding window format is widespread in the areas of NLP and Time Series Fore
     \centering
     \begin{tabular}{cc}
         Word 1 & Word 2\\
-        \hline
+        \midrule
         Arthur & is\\
         is & the\\
         the & king\\
@@ -336,7 +390,7 @@ The bag-of-words (BOW) encoding produces $l$ input tuples, where $l$ is the leng
     \centering
     \begin{tabular}{c|ccccccccc}
         Sequence & Maria & Arthur & is & wants & to & king & be & the & queen\\
-        \hline
+        \midrule
         $seq1_{1,1}$ & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
         $seq1_{1,2}$ & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0\\
         $seq1_{1,3}$ & 0 & 1 & 1 & 0 & 0 & 0 & 0 & 1 & 0\\

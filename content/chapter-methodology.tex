@@ -11,17 +11,19 @@ The reimplementations of Evermann's and Schönig's approaches are referred to as
 
 \section{Data selection}\label{sec:method:dataset-choice}
 The first step of the KDD process is about picking the right data for the right problem.
-In \autoref{sec:intro:contribution}, we criticized the great variety of datasets used to evaluate approaches in Predictive Process Monitoring. While we can not establish a standard, we ensure comparability of our results to a variety of works by evaluating the four models on seven datasets:
+In \autoref{sec:intro:contribution}, we criticized the great variety of datasets used to evaluate approaches in Predictive Process Monitoring. While we can not establish a standard, we ensure comparability of our results to a variety of works by evaluating the four models on eight datasets:
 
 \begin{itemize}
     \item BPIC11, an event log from cases in a Gynaecology department of a Dutch Academic Hospital~\cite{BPIC2011}
     \item BPIC12, an event log for loan and overdraft applications from a Dutch Financial Institute~\cite{BPIC2012}
     \item BPIC15, five event logs that contain building permit application cases of approximately four years from Dutch municipalities. One log contains data from one municipality. The process is the same, but local deviations are present. The logs are referred to as BPIC15-1 to BPIC15-5 in the following~\cite{BPIC2015}
+    \item HelpDesk, a log from a ticketing management process of the help desk of an Italian software company~\cite{Helpdesk}
 \end{itemize}
 
-We picked the three BPIC datasets as we believe that they cover a spectrum of process complexity. We take the increasing number of distinct activities and variance in trace length to be indicators of complexity. \autoref{tab:dataset-characteristics} sums up these properties.
+We picked the four logs as we believe that they cover a spectrum of process complexity. We take the increasing number of distinct activities and variance in trace length to be indicators of complexity. \autoref{tab:dataset-characteristics} sums up these properties.
 
-The least complex traces are found in BPIC12, with a small variance in trace length and a tiny number of different activities. From BPIC12, process models were also easily mined in competition submissions~\cite{adriansyah2012mining}.
+The least complex traces are found in HelpDesk and BPIC12, with a small variance in trace length and a tiny number of different activities. While the HelpDesk log contains events from a rigid, predefined process, process models were also easily mined from BPIC12 in competition submissions~\cite{adriansyah2012mining}.
+We include the HelpDesk log for comparability, but we believe that it is not well suited for the prediction use case, since it only consists out of dictionary-encoded activity names and timestamps. Furthermore, its cases seem to follow a very well defined ITIL-style process of very little variability.
 
 The process in BPIC11 seems to be the most complex, with long traces and a high number of distinct activities. Process models were barely obtained from it during the competition~\cite{bose2011analysis}.
 
@@ -36,8 +38,8 @@ BPIC15 resides relatively in the middle of the two others in terms of complexity
     \end{itemize}
     \item Predicting the next element for a specific case
     \begin{itemize}
-        \item BPIC12: Böhmer et al.~\cite{boehmer2018probability}
-        \item BPIC12: Tax et al.~\cite{tax2017}
+        \item BPIC12 \& HelpDesk: Böhmer et al.~\cite{boehmer2018probability}
+        \item BPIC12 \& HelpDesk: Tax et al.~\cite{tax2017}
     \end{itemize}
 \end{itemize}
 
@@ -46,7 +48,8 @@ BPIC15 resides relatively in the middle of the two others in terms of complexity
   \begin{adjustbox}{center}
   \begin{tabular}{lrrrrrrrr}
   \textbf{Dataset} & \textbf{min $TL$} & \textbf{max $TL$} & \textbf{$\overline{TL}$} & \textbf{$\sigma_{TL}$} & \textbf{Traces} & \textbf{Events} & \textbf{Activities} \\
-  \hline
+  \midrule
+  \textbf{HelpDesk} & 1 & 14  & 3.60  & 1.19  & 3804   &  13 710 & 9\\
   \textbf{BPIC12}   & 3 & 96  & 12.56 & 11.33 & 13 087 & 164 506 & 23\\
   \textbf{BPIC15-4} & 1 & 116 & 44.91 & 14.63 & 1053 & 47 293 & 356\\
   \textbf{BPIC15-3} & 3 & 124 & 42.35 & 16.05 & 1409 & 59 681 & 383\\
@@ -86,10 +89,11 @@ We removed a feature if its correlation with another feature was large in relati
 \begin{adjustbox}{center}
 \begin{tabular}{lp{6cm}p{6cm}}
 \textbf{Dataset} & \textbf{Omitted features} & \textbf{Remaining features}\\
-\hline
+\midrule
 \textbf{BPIC11} & \verb=lifecycle:transition=, \verb=Producer code=,  \verb=Activity code=,  \verb=Specialism code= & \verb=time:timestamp=, \verb=concept:name=, \verb=org:group=, \verb=Number of executions=, \verb=Activity code=, \verb=Producer code=, \verb=Specialism code=, \verb=Section=\\
 \textbf{BPIC12} & \verb=lifecycle:transition= & \verb=org:resource=, \verb=concept:name=, \verb=time:timestamp=\\
-\textbf{BPIC15} & \verb=lifecycle:transition=, \verb=activityNameNL=, \verb=activityNameEN=, \verb=action_code=, \verb=dueDate= & \verb=time:timestamp=, \verb=dateFinished=, \verb=planned=, \verb=concept:name=, \verb=monitoringResource=, \verb=org:resource=,     \verb=question=
+\textbf{BPIC15} & \verb=lifecycle:transition=, \verb=activityNameNL=, \verb=activityNameEN=, \verb=action_code=, \verb=dueDate= & \verb=time:timestamp=, \verb=dateFinished=, \verb=planned=, \verb=concept:name=, \verb=monitoringResource=, \verb=org:resource=,     \verb=question=\\
+\textbf{HelpDesk} &  & \verb=concept:name=, \verb=time:timestamp=
 \end{tabular}
 \end{adjustbox}
 \caption{Omitted features during pre-processing}
@@ -232,7 +236,7 @@ The implementation of the padding strategy required a small cue: The padding val
 \centering
 \begin{tabular}{lcccc}
 \textbf{Network}&\textbf{EVM}&\textbf{SCH}&\textbf{SP2}&\textbf{PFS}\\
-\hline
+\midrule
 \textbf{Optimizer} & SGD & \multicolumn{3}{c}{RMSprop} \\
 \textbf{Loss}      &\multicolumn{4}{c}{Categorical crossentropy}\\
 \textbf{Weight initializer} & Zeros & None & \multicolumn{2}{c}{Glorot normal}\\
@@ -260,14 +264,15 @@ The results of the experiments are presented and discussed in the next chapter.
 \centering
 \begin{tabular}{c|rrrr}
 Dataset & Individual & Grouped & Padded & Windowed \\
-\hline
-BPIC11    & 1 & $2.80 , \sigma 4.99$ & 7 & 1054\\
-BPIC 12   & 1 & $129.14 , \sigma 333.58$ & 89 & 939\\
-BPIC 15-1 & 1 & $10.33 , \sigma 11.45$ & 9 & 365\\
-BPIC 15-2 & 1 & $6.17 , \sigma 7.57$ & 5 & 316\\
-BPIC 15-3 & 1 & $12.27 , \sigma 19.28$ & 10 & 414\\
-BPIC 15-4 & 1 & $9.17 , \sigma 14.59$ & 8 & 334\\
-BPIC 15-5 & 1 & $9.52 , \sigma 14.36$ & 7 & 420\\
+\midrule
+HelpDesk  & 1 & $3.60, \sigma 1.20$ & 99 & 19\\
+BPIC11    & 1 & $2.80, \sigma 4.99$ & 7 & 1054\\
+BPIC 12   & 1 & $129.14, \sigma 333.58$ & 89 & 939\\
+BPIC 15-1 & 1 & $10.33, \sigma 11.45$ & 9 & 365\\
+BPIC 15-2 & 1 & $6.17, \sigma 7.57$ & 5 & 316\\
+BPIC 15-3 & 1 & $12.27, \sigma 19.28$ & 10 & 414\\
+BPIC 15-4 & 1 & $9.17, \sigma 14.59$ & 8 & 334\\
+BPIC 15-5 & 1 & $9.52, \sigma 14.36$ & 7 & 420\\
 \end{tabular}
 \caption[Batch sizes for each dataset and strategy]{Traces per batch for the different datasets and batching strategies. Since the grouped batches vary in size, their size is stated as \textit{average} $,~\sigma$ \textit{standard deviation}}
 \label{tab:batch-sizes}
