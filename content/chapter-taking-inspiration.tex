@@ -71,13 +71,8 @@ This models the problem as a multi-classification problem.
 
 In contrast to the original model, we completely removed the embedding layers.
 Above the SP-2 feature input layer, the embedding layer was replaced with a feedforward layer.
-The reason for the removal is as follows: Shibata et al. predict the next word in a sentence based on the preceding words.
-As each word is an item, the itemsets in the case of Shibata only consist of a single item~\cite{shibata2016bipartite}.
-Our aim is to predict the next activity based on the preceding events.
-As shown in the previous section, the event-itemsets consist of multiple items which represent different attributes.
-Embedding layers require dictionary-encoded input, and dictionary-encoding the itemset from an event would require a different dictionary for each type of item.
-However, embedding layers do not distinguish between different values, and feeding in all attributes of an event into one embedding layer would subsequently incur wrong behaviour~\cite{goldberg2014word2vec}.
-A second reason against using embedding layers in this context is the dimensionality of the inputs. The count of activities in a process is small compared to the number of words that are processed with embedding layers in NLP scenarios.
+We argue that embedding layers are not neccessary in this context, because the number of activity names in a process is small compared to the number of words usually processed with embedding layers in NLP scenarios.
+
 
 Another difference is the dimensionality $n+m$ of the hidden layers.
 In contrast to Evermann et al. and Shibata et al., we do not fix it or make it smaller than the output unit count $m$.

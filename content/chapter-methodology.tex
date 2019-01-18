@@ -92,10 +92,10 @@ We removed a feature if its correlation with another feature was large in relati
 \begin{tabular}{lp{6cm}p{6cm}}
 \textbf{Dataset} & \textbf{Omitted features} & \textbf{Remaining features}\\
 \midrule
+\textbf{HelpDesk} &  & \verb=concept:name=, \verb=time:timestamp=
 \textbf{BPIC11} & \verb=lifecycle:transition=, \verb=Producer code=,  \verb=Activity code=,  \verb=Specialism code= & \verb=time:timestamp=, \verb=concept:name=, \verb=org:group=, \verb=Number of executions=, \verb=Activity code=, \verb=Producer code=, \verb=Specialism code=, \verb=Section=\\
 \textbf{BPIC12} & \verb=lifecycle:transition= & \verb=org:resource=, \verb=concept:name=, \verb=time:timestamp=\\
 \textbf{BPIC15} & \verb=lifecycle:transition=, \verb=activityNameNL=, \verb=activityNameEN=, \verb=action_code=, \verb=dueDate= & \verb=time:timestamp=, \verb=dateFinished=, \verb=planned=, \verb=concept:name=, \verb=monitoringResource=, \verb=org:resource=,     \verb=question=\\
-\textbf{HelpDesk} &  & \verb=concept:name=, \verb=time:timestamp=
 \end{tabular}
 \end{adjustbox}
 \caption{Omitted features during pre-processing}
@@ -265,17 +265,17 @@ The results of the experiments are presented and discussed in the next chapter.
 \begin{table}[!htb]
 \centering
 \begin{tabular}{c|rrrr}
-Dataset & Individual & Grouped & Padded & Windowed \\
+Dataset & Individual & Grouping & Padding & Windowing \\
 \midrule
-HelpDesk  & 1 & $3.60, \sigma 1.20$ & 99 & 19\\
-BPIC11    & 1 & $2.80, \sigma 4.99$ & 7 & 1054\\
-BPIC 12   & 1 & $129.14, \sigma 333.58$ & 89 & 939\\
-BPIC 15-1 & 1 & $10.33, \sigma 11.45$ & 9 & 365\\
-BPIC 15-2 & 1 & $6.17, \sigma 7.57$ & 5 & 316\\
-BPIC 15-3 & 1 & $12.27, \sigma 19.28$ & 10 & 414\\
-BPIC 15-4 & 1 & $9.17, \sigma 14.59$ & 8 & 334\\
-BPIC 15-5 & 1 & $9.52, \sigma 14.36$ & 7 & 420\\
+HelpDesk  & 1 & 3.60 (1.20) & 99 & 19\\
+BPIC11    & 1 & 2.80 (4.99) & 7 & 1054\\
+BPIC 12   & 1 & 129.14 (333.58) & 89 & 939\\
+BPIC 15-1 & 1 & 10.33 (11.45) & 9 & 365\\
+BPIC 15-2 & 1 & 6.17 (7.57) & 5 & 316\\
+BPIC 15-3 & 1 & 12.27 (19.28) & 10 & 414\\
+BPIC 15-4 & 1 & 9.17 (14.59) & 8 & 334\\
+BPIC 15-5 & 1 & 9.52 (14.36) & 7 & 420\\
 \end{tabular}
-\caption[Batch sizes for each dataset and strategy]{Traces per batch for the different datasets and batching strategies. Since the grouped batches vary in size, their size is stated as \textit{average} $,~\sigma$ \textit{standard deviation}}
+\caption[Batch sizes for each dataset and strategy]{Traces per batch for the different datasets and batching strategies. Since the grouped batches vary in size, their size is stated as \textit{average (standard deviation)}}
 \label{tab:batch-sizes}
 \end{table}

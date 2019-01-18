@@ -272,7 +272,7 @@ As outlined in the beginning of this section, an activation function determines 
 
 The softmax function normalizes the output $y_i$ of a neuron $i$ to a value between 0 and 1:
 
-$$S(y_i) = \frac{e^{y_i}}{\sum_j e_{y_j}}$$
+$$S(y_i) = \frac{e^{y_i}}{\sum_j e^{y_j}}$$
 
 The sum of all output values of all neurons in a softmax-activated layer will always be 1.
 Understanding a neuron as the placeholder of a single class, its output can be understood as the proability of this class.

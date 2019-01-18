@@ -8,7 +8,7 @@ In doing so, we hope to contribute to Improvement Area 2 and 3 in \autoref{sec:i
 
 We show a selection of possible batch construction strategies in \autoref{sec:contrib:input-formatting} and the underlying technical reasons. Finally, we present the training framework in \autoref{sec:contrib:training-framework}.
 
-\section{Contrasts among current strategies}\label{sec:contrib:input-formatting}
+\section{Contrasting different strategies}\label{sec:contrib:input-formatting}
 We implemented the SP2 and PFS models as well as the comparison models using Python and the Keras neural networks API.
 While doing so, a wide range of recommended possibilities to train the models on sequential data were noted in relevant publications and on online platforms.\\
 
@@ -33,34 +33,34 @@ Each of these vectors has $n_{features}$ dimensions.
 These dimensions correspond to the size of the feature vector that is fed into the input layer.
 For each sample, the Keras LSTM layer cells maintain a separate state.
 This means that several traces can be trained on simultaneously~\cite{web:keras-lstm-state}.
-As the batches themselves do not need to have the same dimensions, this definition opens up a range of possibilities to construct batches from traces of variable length.
+As the batches themselves do not need to have the same dimensions, this definition opens up a range of strategies to construct batches from traces of variable length.
 We highlight four of them in the following paragraphs.
 To the best of our knowledge, these have not been compared in this context yet.\\
 
-\paragraph{Individual}
+\paragraph{The individual strategy}
 First and easiest, batches can be constructed from a single sample.
 This fulfills the requirement of constant dimensions since only a single sample is used.
 \autoref{fig:individual-batching-example} illustrates this batching strategy.
 
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=\textwidth]{gfx/individual-batching.png}
-    \caption[Individual batch construction strategy]{Batch construction from a single sample. A batch is boxed in a blue rectangle, and its dimensions are written beside it.}
+    \includegraphics[width=\textwidth]{gfx/individual-batching.pdf}
+    \caption[Individual strategy for batches]{Batch construction from a single sample. A batch is boxed in a blue rectangle, and its dimensions are written beside it.}
     \label{fig:individual-batching-example}
 \end{figure}
 
-\paragraph{Grouped}
+\paragraph{The grouping strategy}
 Second, \textit{some} traces can be trained inside a single batch.
 This is possible if all traces inside a batch have the same number of timesteps, i.e., have the same length.
-\autoref{fig:grouping-batching-example} illustrates how a grouping could look like.
+\autoref{fig:grouped-batching-example} illustrates how a grouping could look like.
 The figure also illustrates that the number of samples and timesteps may vary between batches.
 A look at \autoref{fig:bpic2011-length-distribution} reveals a power-law distribution of trace lengths in BPIC11.
-The grouped batching could bias the model toward the long tail of the distribution, as longer and fewer traces are put into batches of their own.
+The grouping strategy could bias the model toward the long tail of the distribution, as longer and fewer traces are put into batches of their own.
 
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=\textwidth]{gfx/grouped-batching.png}
-    \caption[Grouped batch construction strategy]{Batch construction by grouping samples. A batch is boxed in a blue rectangle, and its dimensions are written beside it.}
+    \includegraphics[width=\textwidth]{gfx/grouped-batching.pdf}
+    \caption[Grouping strategy for batches]{Batch construction by grouping samples. A batch is boxed in a blue rectangle, and its dimensions are written beside it.}
     \label{fig:grouped-batching-example}
 \end{figure}
 
@@ -71,7 +71,7 @@ The grouped batching could bias the model toward the long tail of the distributi
     \label{fig:bpic2011-length-distribution}
 \end{figure}
 
-\paragraph{Padded}
+\paragraph{The padding strategy}
  there is the possibility of padding the number of timesteps in a sequence to the same length.
 The padded values are then filtered out using a Masking layer during training~\cite{web:keras}.
 The padding length is determined by the maximum trace length and may incur a significant memory overhead.
@@ -79,20 +79,27 @@ This is especially the case for large outlier values like in BPIC11.
 
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=\textwidth]{gfx/padded-batching.png}
-    \caption[Padded batch construction strategy]{Batch construction from padded samples. Padding values are depicted by gray boxes.}
+    \includegraphics[width=.9\textwidth]{gfx/padded-batching.pdf}
+    \caption[Padding strategy for batches]{Batch construction from padded samples. Padding values are depicted by gray boxes.}
     \label{fig:padded-batching-example}
 \end{figure}
 
-\paragraph{Windowed}
+\paragraph{The windowing strategy}
 Fourth and finally, there is also the possibility to split the trace into samples by sliding a window along it.
 This results in $l-w+1$ samples for a trace of length $l$ and a window width $w$.
-Taking \autoref{tab:sliding-window} in \autoref{sec:background:feature-engineering} as an example, the window would be two timesteps wide.
+Taking \autoref{fig:windowing-strategy-example} as an example, the window would be $w=2$ timesteps wide.
 This approach solves the problem of unequal sample lengths and facilitates batch construction.
 Unfortunately, it only allows the model to use a maximum of $w$ timesteps per sample for training.
 This might cause the model to miss potential long-term dependencies.
 As both Evermann et al.~\cite{evermann2016} and Schönig et al.~\cite{schoenig2018} use this format, and it directly opposes the findings of Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring}, we investigate it.
 Furthermore, we are convinced that use of a windowed training data format misses out on LSTM potential.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=.55\textwidth,angle=-90,origin=c]{gfx/windowing-strategy.pdf}
+    \caption[Windowing strategy for batches]{Batch construction by sliding a window along a sequence $\langle A,C,C,B\rangle$. A batch is boxed in a blue rectangle, and its dimensions are written beside it.}
+    \label{fig:windowing-strategy-example}
+\end{figure}
 
 \section{A training framework for sequential data}
 \label{sec:contrib:training-framework}
@@ -104,7 +111,9 @@ We want to make this framework accessible to future researchers to facilitate mo
 
 \begin{figure}
     \centering
-    \includegraphics[width=\textwidth]{gfx/training-framework-classes.pdf}
+    \begin{adjustbox}{center}
+    \includegraphics[width=1.25\textwidth]{gfx/training-framework-classes.pdf}
+    \end{adjustbox}
     \caption[UML diagram of the framework classes]{Unified Modeling Language (UML) diagram of the abstract base class inheritance structure of Builders and Batchers}
     \label{fig:trainig-framework-classes}
 \end{figure}
@@ -133,7 +142,7 @@ and how each model was configured.
 usage: model_runner.py [-h] [--gpu GPU]
                        [--output OUTPUT]
                        {evermann,schoenig,sp2,pfs}
-                       {padded,grouped,individual,windowed}
+                       {padding,grouping,individual,windowing}
                        datapath
 
 The network training framework script for Felix Wolff's master's thesis!
@@ -141,8 +150,8 @@ The network training framework script for Felix Wolff's master's thesis!
 positional arguments:
   {evermann,schoenig,sp2,pfs}
                         Which type of model to train.
-  {padded,grouped,individual,windowed}
-                        Which mode to use for feeding
+  {padding,grouping,individual,windowing}
+                        Which strategy to use for feeding
                         the data into the model.
   datapath              Path of dataset to use for training.
 
