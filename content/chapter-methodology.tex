@@ -83,8 +83,11 @@ In step 2, the \verb=lifecycle:transition= feature was removed in every dataset 
 In step 3, the correlation between features was calculated in a pair-wise fashion.
 Correlating features often harm prediction accuracy~\cite{kuhn2013applied}.
 We calculated the correlation with the bias-corrected version of Cramér's~V to incorporate categorical features~\cite{bergsma2013bias}.
-The resulting heatmaps are shown in \autoref{appendix:correlation-heatmaps}.
-We removed a feature if its correlation with another feature was large in relation to the other correlations. As evidenced in the respective heatmap, the BPIC12 dataset with its small number of features did not require any removals. \autoref{tab:dataset-preprocessing} summarizes which features were removed and which ones were kept after the three steps.
+The heatmaps that highlight strong correlations between different features are presented in \autoref{appendix:correlation-heatmaps}.
+We removed a feature if its correlation with another feature was large in relation to the other correlations.
+As evidenced in \autoref{fig:BPIC12-correlation-heatmap}, the BPIC12 dataset with its small number of features did not require any removals.
+A heatmap for the HelpDesk log was not created, as it only contained two features.
+\autoref{tab:dataset-preprocessing} summarizes which features were removed and which ones were kept after the three steps.
 
 \begin{table}[!htb]
 \centering
@@ -92,10 +95,14 @@ We removed a feature if its correlation with another feature was large in relati
 \begin{tabular}{lp{6cm}p{6cm}}
 \textbf{Dataset} & \textbf{Omitted features} & \textbf{Remaining features}\\
 \midrule
-\textbf{HelpDesk} &  & \verb=concept:name=, \verb=time:timestamp=
+\midrule
+\textbf{HelpDesk} &  & \verb=concept:name=, \verb=time:timestamp=\\
+\hline
 \textbf{BPIC11} & \verb=lifecycle:transition=, \verb=Producer code=,  \verb=Activity code=,  \verb=Specialism code= & \verb=time:timestamp=, \verb=concept:name=, \verb=org:group=, \verb=Number of executions=, \verb=Activity code=, \verb=Producer code=, \verb=Specialism code=, \verb=Section=\\
+\hline
 \textbf{BPIC12} & \verb=lifecycle:transition= & \verb=org:resource=, \verb=concept:name=, \verb=time:timestamp=\\
-\textbf{BPIC15} & \verb=lifecycle:transition=, \verb=activityNameNL=, \verb=activityNameEN=, \verb=action_code=, \verb=dueDate= & \verb=time:timestamp=, \verb=dateFinished=, \verb=planned=, \verb=concept:name=, \verb=monitoringResource=, \verb=org:resource=,     \verb=question=\\
+\hline
+\textbf{BPIC15} & \verb=lifecycle:transition=, \verb=activityNameNL=, \verb=activityNameEN=, \verb=action_code=, \verb=dueDate= & \verb=time:timestamp=, \verb=dateFinished=, \verb=planned=, \verb=concept:name=, \verb=monitoringResource=, \verb=org:resource=,     \verb=question=
 \end{tabular}
 \end{adjustbox}
 \caption{Omitted features during pre-processing}
