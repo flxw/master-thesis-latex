@@ -17,6 +17,7 @@ This capability includes the ability to foresee the next activity in a process.
 Predicting the next activity in a running process is a young discipline which we aimed to contribute to.
 
 We do so by connecting process prediction to sequence prediction, and adapting a successfully tested word prediction model.
+Additionally, we augmented it with a different feature set in a second model.
 We implement two published models as baselines to avoid comparability issues due to data preprocessing.
 To make model training easier and increase comparability, we also propose a model training framework.
 Using the framework, we evaluate four models with four preprocessing methods on eight datasets.
@@ -24,10 +25,22 @@ Using the framework, we evaluate four models with four preprocessing methods on 
 Finally, we compare the results to two recent next-activity prediction approaches on a log from BPIC 2012 and on the HelpDesk log.
 On the former, we are able to obtain an accuracy of $0.853$, outperforming the compared approaches by approximately $0.07$.
 On the latter log, we reach an accuracy of $0.862$.
-\vfill
 
 \pdfbookmark[1]{German Abstract}{German Abstract}
 \chapter*{German Abstract}
+Wissensarbeit läuft größtenteils manuell ab.
+Assistenzsysteme mit unterstützender Funktion für Wissensarbeiter wurden bereits häufig gefordert.
+Diese Systeme müssen die Entwicklung eines Prozesses vorhersehen können, um effektiv zu sein.
+Dazu zählt auch, die unmittelbar nächste Prozessaktivität zu antizipieren.
+Just diese Fähigkeit steht im Mittelpunkt unserer Arbeit.
+Wir verknüpfen die Vorhersage von Prozessaktivitäten mit der Vorhersage von Sequenzen, und können so ein auf Sätzen erprobtes neuronales Netzwerk anpassen.
+Zusätzlich erstellen wir eine Version die eine angepasste Form von Daten verarbeitet.
+Weiterhin bauen wir zwei veröffentlichte Netzwerke nach, um eine Vergleichsbasis zu schaffen.
+Um das Trainieren solcher Netzwerke zu vereinfachen, präsentieren wir zudem ein Trainings-Framework.
+%Mittels dieses Frameworks können wir rasch vier verschiedene Netzwerke auf Basis vier verschiedener Vorverarbeitungsmechanismen auf acht verschiedenen Datensätzen trainieren.
+
+Wir vergleichen unsere Ergebnisse mit drei Arbeiten auf Basis des BPIC 2012 Logs und des HelpDesk Logs.
+Auf dem BPIC 2012 Log erreichen unsere Modelle eine Genauigkeit von $0.853$, und auf dem HelpDesk Log eine Genauigkeit von $0.862$.
 
 \endgroup
 
