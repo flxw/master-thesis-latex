@@ -12,7 +12,7 @@ The first two criteria target the general usability of each model.
 We measure accuracy because it is a good indicator of how often the model predicts the right class, and permits comparisons to other works.
 Different from typical machine learning evaluations, we do not measure recall, because it is not typically measured by works in Predictive Process Monitoring.
 Training time is of interest because a real-world application should use as little computing resources as possible.
-The stability criterion permits making a judgment about the stability of the predictions. The works of Francescomarino et al.~\cite{francescomarino2015} and Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} inspired this measure. It provides an understanding of how the prediction accuracy of a model changes as the trace grows longer. This can facilitate building trust in the model, as indicated in the introduction of the thesis~\cite{klinkmuller2018reliablemonitoring, boehmer2018probability}.
+The stability criterion permits making a judgment about the behavior of accuracy over time. The works of Francescomarino et al.~\cite{francescomarino2015} and Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} inspired this measure. It provides an understanding of how the prediction accuracy of a model changes as the trace grows longer. This can facilitate building trust in the model, as indicated in the introduction of the thesis~\cite{klinkmuller2018reliablemonitoring, boehmer2018probability}.
 During the evaluation, results for BPIC logs and the HelpDesk dataset should not be compared too closely, as the BPIC logs are a lot more resourceful in terms of data attributes.
 
 We discuss the acurracy of the models in \autoref{sec:eval:accuracy}, followed by the discussion of the required training time in \autoref{sec:eval:training-time}. We go on to discuss stability in \autoref{sec:eval:stability}, and conclude the chapter in \autoref{sec:eval:discussion}.
@@ -50,7 +50,6 @@ BPIC12 is a small step up in process complexity, and the accuracy measurements a
 Again, the EVM, SCH, and SP2 models exhibit very similar accuracies for the three batching strategies that supply the complete process history.
 With the individual and padding strategies, all three of them reach over $0.840$.
 In the case of the grouping strategy, the three accuracies are between $0.750$ and $0.765$.
-We attribute the small drop in accuracy with the grouping strategy to the large batch sizes that the strategy produces (cf. \autoref{tab:dataset-characteristics}).
 The windowing strategy leads to more significant differences between the SCH, SP2 and PFS models.
 Here, the SP2 models outperform all other models.
 The worst performance is again shown by the EVM model on all four strategies, while its accuracies with the individual and grouping strategies are very similar.
@@ -64,7 +63,7 @@ The worst performance is again shown by the EVM model on all four strategies, wh
 
 \paragraph{Accuracy on BPIC15}
 The accuracies obtained on the validation sets of the BPIC15 logs are visualized in \autoref{fig:max-accuracies-bpic2015-1} to \autoref{fig:max-accuracies-bpic2015-5}.
-Four common themes emerge in the plots:
+The results are very similar, so we summarize four common themes that emerge in the plots:
 
 First, the accuracies of the SCH, SP2 and PFS models are very similar across the individual, grouping and padding strategies.
 
@@ -76,37 +75,37 @@ Also, its accuracies on the windowing strategy are the highest by far.
 
 Fourth, the EVM model accuracies are unusable. While still above $0.1$ on the individual and grouping strategies, the model completely breaks down on the others.
 
-\begin{figure}[!htb]
+\begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_1/accuracies.pdf}
     \caption{Best accuracies on the validation set of BPIC15-1}
     \label{fig:max-accuracies-bpic2015-1}
 \end{figure}
-\begin{figure}[!htb]
+\begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_2/accuracies.pdf}
     \caption{Best accuracies on the validation set of BPIC15-2}
     \label{fig:max-accuracies-bpic2015-2}
 \end{figure}
-\begin{figure}[!htb]
+\begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_3/accuracies.pdf}
     \caption{Best accuracies on the validation set of BPIC15-3}
     \label{fig:max-accuracies-bpic2015-3}
 \end{figure}
-\begin{figure}[!htb]
+\begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_4/accuracies.pdf}
     \caption{Best accuracies on the validation set of BPIC15-4}
     \label{fig:max-accuracies-bpic2015-4}
 \end{figure}
-\begin{figure}[!htb]
+\begin{figure}
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic2015_5/accuracies.pdf}
     \caption{Best accuracies on the validation set of BPIC15-5}
     \label{fig:max-accuracies-bpic2015-5}
 \end{figure}
-
+\FloatBarrier
 \paragraph{Accuracy on BPIC11}
 The most complex process is captured by BPIC11.
 The validation accuracies that we obtained for this log are depicted in \autoref{fig:max-accuracies-bpic2011}.
@@ -131,6 +130,8 @@ First, the batching strategies that supply the complete trace to the model lead 
 Second, the grouping strategy benefits high accuracies.
 The mean of the top accuracies of the SCH, SP2 and PFS models on different batching strategies shows this in \autoref{tab:strategy-top-accuracies}.
 The mean value is often the highest with the grouping strategy.
+On BPIC12 however, the grouping strategy delivers relatively low accuracies.
+We attribute the drop in accuracy to the large batch sizes that the strategy produces (cf. \autoref{tab:dataset-characteristics}).
 
 Third, the windowing strategy always results in underperforming models.
 Nonetheless, the SP2 model was able to cope with this strategy in the most efficient way, almost reaching maximum accuracies on BPIC15.
@@ -234,7 +235,8 @@ The grouping strategy needs a little less time, and the windowing strategy train
     \caption{Training times measured on BPIC15-5}
     \label{fig:BPIC15-5-training-timings}
 \end{figure}
-
+\FloatBarrier
+\newpage
 \paragraph{Training times on BPIC11}
 \autoref{fig:BPIC11-training-timings} shows the training times measured on BPIC11.
 On this plot, it is visible that the EVM model takes approximately half the training time of the other models.
@@ -252,7 +254,8 @@ The padding strategy incurs a big drop in training times, and the windowing stra
 \paragraph{Verdict on training times}
 Across all datasets, we gathered the following observations.
 The individual strategy leads to the longest times overall.
-This is not surprising, as \autoref{tab:dataset-characteristics} reveals that this strategy leads to hundreds of weight adjustments per epoch.
+This is not surprising, as \autoref{tab:dataset-characteristics} reveals that this strategy leads to hundreds of batches per epoch - more than any other strategy.
+Each batch incurs a weight adjustment, which leads to additional required computing time.
 
 The grouping strategy leads to significant reductions in training times, depending on how diverse the trace lengths are. \autoref{tab:dataset-characteristics} explains why the reduction is not as prominent with BPIC11: It exhibits up to 1814 different lengths, while the other datasets only exhibit $5\%$ to $10\%$ of this number.
 
@@ -311,7 +314,7 @@ The other three curves rise back up to $0.9$ at $35\%$ progress.
 Then, all three slowly sink toward $0.7$ at $85\%$ and rise sharply toward $1$ at the end.
 
 \autoref{fig:bpic12-grouped-stability} shows the stability of the grouping strategy.
-The trajectories of all four curves are precisely as described for the individual strategy.
+The trajectories of all four curves are mostly as described for the individual strategy.
 A small, but notable difference is that the curves of the SCH, SP2 and PFS models are much closer together, and indicate nearly the same values.
 
 In \autoref{fig:bpic12-padded-stability}, the stability for the padding strategy is shown.
@@ -373,7 +376,7 @@ Then, it also jumps up by $0.3$ at the end of the plot.
     \caption{Model stability, grouping strategy, BPIC15-5}
     \label{fig:bpic15-5-grouped-stability}
 \end{figure}
-
+\newpage
 \paragraph{Stability on BPIC11}
 This paragraph covers accuracy stability on the BPIC11 log.
 The most informative plot for this dataset is shown in \autoref{fig:bpic11-grouped-stability} for the grouping strategy.
@@ -403,13 +406,14 @@ The EVM curve constantly hovers at $0.1$.
 In our verdict on the stability measurements across all datasets, we focus on five key observations.
 
 First, we observed that many accuracy curves started with a drop in accuracy.
-Similarly, accuracy spiked up towards the end of the process.
+Similarly, accuracy spiked up towards the end of the process, like on the BPIC12 log.
 The BPIC12 log contains traces from a process that covers a loan application.
-Here, the accuracy tapers off until $85\%$ progress, when it spikes up again.
+On this log, the accuracies taper off until $85\%$ progress, when they spikes up again.
 We believe that this could be connected to the varying degree of complexity in different stages of the process.
-Every application begins in the same way, and thus, variability in the first stages of the process is low, which causes accuracy to be high.
+Every application begins in the same way, and thus, variability in the first stages of the process is low, which could cause accuracy to be high.
 As the process progresses, the variability becomes higher, and the models become less accurate.
 The processes in BPIC12 always end either on approval or dismissal of the application, making the models very accurate in the final stages~\cite{adriansyah2012mining}.
+This could hint at a connection between prediction accuracy and complexity of the stage of a process.
 
 Second, we realized that the grouping strategy did not only contribute to high overall results but brought curves closer together for the SCH, SP2 and PFS models.
 This might be a symptom of a harmonizing effect of the strategy.
@@ -437,13 +441,14 @@ Also, the SP2 accuracy curves on the windowing strategy are among those with the
 We will connect these observations to the other findings from the other verdicts in the following section.
 
 \section{Discussion}\label{sec:eval:discussion}
-We connect the observations made on the accuracy, timing, and stability made in the previous sections and discuss resulting learnings and potential reasons.\\
+In this section, we connect the observations made in the previous sections on accuracy, timing, and stability of the models.
+Furthermore, we discuss resulting learnings and potential reasons.\\
 
 The EVM model consistently underperforms, although it trains faster.
 Furthermore, it has phases in some processes during which it delivers $0$ accuracy.
 The SCH model works a lot better, although both architectures are very similar.
-Indicated by the barely converging loss curves in \autoref{appendix:loss-curves}, there is a reason to believe that something prevents the EVM model from improving.
-The fundamental difference between the two models is an embedding layer, which we suspect to be the cause for the low accuracy.
+Indicated by the barely converging loss curves in \autoref{appendix:loss-curves}, there is reason to believe that something prevents the EVM model from improving.
+The fundamental difference between the EVM and SCH models is an embedding layer, which we suspect to be the cause for the low accuracy.
 We believe that the embedding layer requires more datapoints per target class than currently included to perform well.
 In the HelpDesk log, there is a tiny number of classes and a large number of traces, which could be a reason for the EVM model scoring above $0.720$.
 The faster training speed can be attributed to the use of the SGD optimizer, which is commonly known to produce the fastest convergence.
@@ -452,28 +457,26 @@ Another reason for the big difference between our accuracies and those of Everma
 The original authors used the low-level Tensorflow framework directly, which could have enabled further optimizations.\\
 
 We find that the grouping strategy frequently delivers the best results in terms of speed and accuracy.
-We realize that it should be iterated upon to include a threshold which limits batches to a maximum size.
-Larger batches should be split accordingly.
-On BPIC12, a threshold could have prevented the low accuracies.
-Reasons for this assumption can be found in \autoref{tab:dataset-characteristics} and \autoref{tab:batch-sizes}.
-The dataset has the highest number of traces, and a relatively even distribution of lengths, resulting in a small standard deviation.
+Nonetheless, there is potential for optimization, as the relatively low accuracy on BPIC12 suggests.
+The reason for this accuracy can be found in \autoref{tab:dataset-characteristics} and \autoref{tab:batch-sizes}.
+BPIC12 has the highest number of traces, and a relatively even distribution of lengths, resulting in a small standard deviation.
 This makes the strategy place too many traces into a single batch, causing lost optimization opportunities.
 With this in mind, the grouping strategy should be enhanced to split batches if they exceed a certain size threshold.\\
 
-We were also able to confirm Klinkmüller et al. and their suspicion that the windowing strategy leads to unstable results~\cite{klinkmuller2018reliablemonitoring}.
+We were also able to confirm Klinkmüller et al. and their statement that the windowing strategy leads to unstable results~\cite{klinkmuller2018reliablemonitoring}.
 While it may be a performant strategy to use for time-series prediction, it does not work very well for predicting the future of a single case.\\
 
 Furthermore, we expected the models to become more accurate toward the end of the process.
 This did not turn out to be the case, but instead, we saw a connection of process complexity and accuracy.
 This connection was visible both in absolute accuracy and in accuracy stability measurements.
-\autoref{tab:strategy-top-accuracies} shows that the mean accuracy of the three top-performing models on each dataset goes down as the process complexity goes up.
+\autoref{tab:strategy-top-accuracies} on page \pageref{tab:strategy-top-accuracies} shows that the mean accuracy of the three top-performing models on each dataset goes down as the process complexity goes up.
 In the stability measurements, it was possible to see that the models gave very accurate predictions in phases of low variability.
 For instance, the BPIC12 and HelpDesk logs cover processes which start with a receiving phase.
 The reception of an application or the creation of a ticket always entails the same steps.
 For this reason, the accuracy is high in these initial stages.
 A similar phenomenon can be seen toward the end of these processes.
 An application is either rejected or accepted, and a ticket is always closed.
-This simplicity, in the end, could explain the jumps in accuracy.
+This simplicity in the end of the process could explain the jumps in accuracy.
 
 It is worth reflecting on this last point.
 If a machine learning model is incapable of understanding the choices made in certain phases of a process, it could either be a data problem or a process problem.
@@ -490,15 +493,15 @@ We want to stress that while Evermann et al.~\cite{evermann2016} were able to ob
 Thus they were not able to predict the future of a single case.
 
 Böhmer et al. and Tax et al. worked on next-activity prediction for a particular case.
-Böhmer et al. used a method based on probability distributions and obtained $0.77$ on both HelpDesk and BPIC12 logs.
-Tax et al. made use of neural networks, and obtained $0.71$ and $0.76$, respectively.
+Böhmer et al. used a method based on probability distributions and obtained $0.77$ on both logs.
+Tax et al. made use of neural networks, and obtained $0.71$ on the BPIC12 log and $0.76$ on the HelpDesk log.
 
-The comparison table shows that the three models that have consistently performed well on all datasets also deliver high accuracies on the BPIC12 and HelpDesk logs.
+The comparison table shows that the three models that have consistently performed well on all datasets also deliver high accuracies on the two logs.
 The PFS model surpasses the accuracies in the other works by $0.09$ or more on the HelpDesk log.
 On the BPIC12 log, the SCH model outperforms the other works by $0.08$ or more.
-All our models reached these accuracies with the individual strategy, most likely due to the tendency of the grouping strategy to create too large batches.\\
+All our models reached these accuracies with the individual strategy, most likely due to the fault of the grouping strategy to create too large batches on this dataset.\\
 
-\begin{table}[!htb]
+\begin{table}
 \centering
 \begin{tabular}{lrr}
 \textbf{Model}  &  \textbf{HelpDesk} &  \textbf{BPIC12} \\
@@ -520,4 +523,4 @@ We determined that the grouping strategy delivers the most promising results, bu
 Furthermore, we noted that the complexity of the traces in the log has a significant impact on stability.
 Depending on the amount of variability in different stages of the process, model accuracy varies dramatically.
 We could confirm that our models outperform recently published approaches.
-The next chapter describes ways to improve and continue our research in the next chapter and concludes the thesis with a summary of the results.
+The next chapter describes ways to improve and continue our research, and concludes the thesis with a summary of the results.

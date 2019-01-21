@@ -10,37 +10,45 @@
 \let\cleardoublepage\relax
 
 \chapter*{Abstract}
-Manual labor processes have seen a lot of automation in the past, but knowledge-intensive processes still proceed highly manual.
-Assistance systems for knowledge work have been asked for in recent several literature reviews.
-Such systems need to anticipate the development of a case in order to offer assitance in the right circumstances.
-This capability includes the ability to foresee the next activity in a process.
-Predicting the next activity in a running process is a young discipline which we aimed to contribute to.
+Manual labor processes have seen a lot of automation in the past, but knowledge-intensive processes still proceed in a highly manual fashion.
+Systems to assist knowledge workers have been asked for in recent literature reviews.
+Such assistance systems need to anticipate the development of a case to offer assistance in the right circumstances.
+This includes the capability to foresee the next activity in a process.
+Predicting the next activity in a running process is a young discipline called Predictive Process Monitoring, which we contribute to by evaluating neural network prediction models for this task.
 
-We do so by connecting process prediction to sequence prediction, and adapting a successfully tested word prediction model.
-Additionally, we augmented it with a different feature set in a second model.
-We implement two published models as baselines to avoid comparability issues due to data preprocessing.
-To make model training easier and increase comparability, we also propose a model training framework.
-Using the framework, we evaluate four models with four preprocessing methods on eight datasets.
+In this work, we connect next-activity prediction to sequence prediction.
+Thanks to this connection, we can adapt a prediction model from a natural language processing competition where the next word in a sentence was to be predicted.
+Additionally, we augment this prediction model with a different feature set to produce a second approach.
+To have a direct comparison, we reimplement two published prediction models for business processes.
+Because several strategies are common to create batches from sequential data of variable length, we include a comparison of these strategies in our evaluation.
+To make model training easier and facilitate the inclusion of the strategies into the training process, we also propose a model training framework.
+The framework allowed easy training of the four models with four different batch creation strategies on eight datasets.
 
-Finally, we compare the results to two recent next-activity prediction approaches on a log from BPIC 2012 and on the HelpDesk log.
-On the former, we are able to obtain an accuracy of $0.853$, outperforming the compared approaches by approximately $0.07$.
-On the latter log, we reach an accuracy of $0.862$.
-
+In the evaluation, we note a connection between process complexity and prediction accuracy.
+Furthermore, we realize that one batching strategy delivers the most promising results, and should be explored further.
+Finally, we compare our accuracies with numbers from three recent next-activity prediction approaches on two different real-life process event logs.
+Three out of our four models outperform these numbers.
+\newpage
 \pdfbookmark[1]{German Abstract}{German Abstract}
 \chapter*{German Abstract}
 Wissensarbeit läuft größtenteils manuell ab.
-Assistenzsysteme mit unterstützender Funktion für Wissensarbeiter wurden bereits häufig gefordert.
+Assistenzsysteme mit unterstützender Funktion für Wissensarbeiter werden daher häufig gefordert.
 Diese Systeme müssen die Entwicklung eines Prozesses vorhersehen können, um effektiv zu sein.
 Dazu zählt auch, die unmittelbar nächste Prozessaktivität zu antizipieren.
-Just diese Fähigkeit steht im Mittelpunkt unserer Arbeit.
-Wir verknüpfen die Vorhersage von Prozessaktivitäten mit der Vorhersage von Sequenzen, und können so ein auf Sätzen erprobtes neuronales Netzwerk anpassen.
-Zusätzlich erstellen wir eine Version die eine angepasste Form von Daten verarbeitet.
-Weiterhin bauen wir zwei veröffentlichte Netzwerke nach, um eine Vergleichsbasis zu schaffen.
-Um das Trainieren solcher Netzwerke zu vereinfachen, präsentieren wir zudem ein Trainings-Framework.
-%Mittels dieses Frameworks können wir rasch vier verschiedene Netzwerke auf Basis vier verschiedener Vorverarbeitungsmechanismen auf acht verschiedenen Datensätzen trainieren.
+Just diese Fähigkeit versuchen wir mittels neuronaler Netze zu verbessern.
 
-Wir vergleichen unsere Ergebnisse mit drei Arbeiten auf Basis des BPIC 2012 Logs und des HelpDesk Logs.
-Auf dem BPIC 2012 Log erreichen unsere Modelle eine Genauigkeit von $0.853$, und auf dem HelpDesk Log eine Genauigkeit von $0.862$.
+Wir verknüpfen die Vorhersage von Prozessaktivitäten mit der Vorhersage von Sequenzen, und können so ein auf Sätzen erprobtes neuronales Netzwerk anpassen.
+Zusätzlich erstellen wir eine zweite Version des Netzes, die eine angepasste Form von Daten verarbeitet.
+Weiterhin reproduzieren wir zwei bereits veröffentlichte Netzwerke zur Vorhersage der nächsten Prozessaktivität, um eine Vergleichsbasis zu schaffen.
+Während der Implementierung fielen verschiedene Strategien auf, aus sequentiellen Daten verschiedener Länge Batches zum Training neuronaler Netzwerke zu schaffen.
+Wir möchten zum Verständnis dieser Strategien beitragen, und beziehen ein Vergleich in die Arbeit ein.
+Um das Trainieren der Netzwerke mit den verschiedenen Strategien zu vereinfachen, präsentieren wir im Laufe der Arbeit ein Trainings-Framework.
+Mittels dieses Frameworks können wir vier verschiedene Netzwerke auf Basis vier verschiedener Strategien auf acht verschiedenen Datensätzen trainieren.
+
+In der Auswertung stellen wir einen Zusammenhang zwischen Komplexität und Genaugikeit der Vorhersagen fest.
+Des weiteren stellt sich eine der Batch-Erstellungsstrategien als besonders gut heraus, und sollte erweitert werden.
+Abschließend vergleichen wir unsere Ergebnisse mit drei Arbeiten auf Basis zwei Prozess Logs.
+Auf beiden Logs erreichen drei unserer vier Modelle eine deutlich höhere Genauigkeit.
 
 \endgroup
 
