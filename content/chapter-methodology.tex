@@ -92,7 +92,7 @@ A heatmap for the HelpDesk log was not created, as it only contained two feature
 \begin{table}[!htb]
 \centering
 \begin{adjustbox}{center}
-\begin{tabular}{lp{6cm}p{6cm}}
+\begin{tabular}{lp{5cm}p{5cm}}
 \textbf{Dataset} & \textbf{Omitted features} & \textbf{Remaining features}\\
 \midrule
 \midrule
@@ -239,7 +239,9 @@ The batch sizes of each batching strategy are discussed, too.
 
 We made use of the framework described in \autoref{chap:training-framework}, which implements early stopping, and saves model snapshots when its validation loss hits a new record low. We configured it to stop training if the validation loss did not improve for 10 epochs.
 
-The implementation of the padding strategy required a small cue: The padding values incurred a significant memory overhead so that the prepared BPIC11 data could not fit into GPU memory. For this reason, we filtered out $20\%$ of the longest traces. With regard to the length distribution in \autoref{fig:bpic2011-length-distribution}, these seem to be strong outliers.
+The implementation of the padding strategy required a small cue: The padding values incurred a significant memory overhead so that the prepared BPIC11 data would not fit into GPU memory.
+For this reason, we filtered out $20\%$ of the longest traces.
+%With regard to the length distribution in \autoref{fig:bpic2011-length-distribution}, these seem to be strong outliers.
 
 \begin{table}[!htb]
 \centering

@@ -84,6 +84,7 @@ As evidenced in \autoref{sec:eval:discussion}, this is tied to larger datasets.
 It is worth exploring how well activity names are similar across processes, to gauge the reusability of a word embedding produced on one process for another.
 
 \paragraph{Process optimization} We have seen that the accuracy of a model can be influenced by the variability of the process in a specific stage.
-Assuming that all data on which decisions are usually based, is provided to the model, we believe that accuracy drops can indicate optimization potential in the process.
+For stages in a process where there are not many activities or any decisions, prediction accuracy tends to be high.
+Assuming that all data on which decisions are usually based is provided to the model, we believe that accuracy drops can indicate optimization potential in the process.
 If the model can not understand the connections in the data, it could mean that the control flow decisions are overly complex or do not follow a standard.
-Whether this is the case, and what process fallacies can be detected with this approach should be investigated.
+Whether this is the case, and what process fallacies can be detected based on accuracy fluctuation should be investigated.

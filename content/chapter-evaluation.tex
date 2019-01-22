@@ -462,10 +462,9 @@ Indicated by the barely converging loss curves in \autoref{appendix:loss-curves}
 The fundamental difference between the EVM and SCH models is an embedding layer, which we suspect to be the cause for the low accuracy.
 We believe that the embedding layer requires more datapoints per target class than currently included to perform well.
 In the HelpDesk log, there is a tiny number of classes and a large number of traces, which could be a reason for the EVM model scoring above $0.720$.
-The faster training speed can be attributed to the use of the SGD optimizer, which is commonly known to produce the fastest convergence.
 Another reason for the big difference between our accuracies and those of Evermann et al. could be the implementation.
-\todo[inline]{cite here, do you know a source haojin?}
-The original authors used the low-level Tensorflow framework directly, which could have enabled further optimizations.\\
+While we reverse-engineered the architecture to the best of our knowledge, the original authors used the low-level Tensorflow training framework directly.
+This could have enabled cues and optimizations which are not possible within Keras.\\
 
 We find that the grouping strategy frequently delivers the best results in terms of speed and accuracy.
 Nonetheless, there is potential for optimization, as the relatively low accuracy on BPIC12 suggests.
