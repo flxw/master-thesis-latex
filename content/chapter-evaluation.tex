@@ -408,11 +408,22 @@ In our verdict on the stability measurements across all datasets, we focus on fi
 First, we observed that many accuracy curves started with a drop in accuracy.
 Similarly, accuracy spiked up towards the end of the process, like on the BPIC12 log.
 The BPIC12 log contains traces from a process that covers a loan application.
-On this log, the accuracies taper off until $85\%$ progress, when they spikes up again.
-We believe that this could be connected to the varying degree of complexity in different stages of the process.
-Every application begins in the same way, and thus, variability in the first stages of the process is low, which could cause accuracy to be high.
-As the process progresses, the variability becomes higher, and the models become less accurate.
-The processes in BPIC12 always end either on approval or dismissal of the application, making the models very accurate in the final stages~\cite{adriansyah2012mining}.
+On this log, the accuracies taper off until $85\%$ progress, when they spike up again.
+
+\begin{figure}[!htb]
+    \centering
+    \begin{adjustbox}{center}
+    \includegraphics[width=1.25\textwidth]{gfx/bpic12-mined-process.png}
+    \end{adjustbox}
+    \caption[A mined process model from BPIC12]{A mined process model from BPIC12. Illustration taken from~\cite{adriansyah2012mining}}
+    \label{fig:bpic12-mined-process}
+\end{figure}
+
+\autoref{fig:bpic12-mined-process} reveals a process model that was mined from BPIC12 in \cite{adriansyah2012mining}.
+Seeing the model in context with the stability curve reveals that the accuracy drops and spikes could be related to the varying degrees of complexity in different stages of the process.
+Every application begins in the same way, i.e. variability in the first stages of the process is low, which might cause accuracy to be high.
+As the process progresses, the variability becomes higher, which correlates with the accuracy decline until $80\%$ progress.
+The processes in BPIC12 always end either on approval or dismissal of the application, boosting accuracy from the moment that no more splits have to be anticipated.
 This could hint at a connection between prediction accuracy and complexity of the stage of a process.
 
 Second, we realized that the grouping strategy did not only contribute to high overall results but brought curves closer together for the SCH, SP2 and PFS models.
@@ -476,7 +487,7 @@ The reception of an application or the creation of a ticket always entails the s
 For this reason, the accuracy is high in these initial stages.
 A similar phenomenon can be seen toward the end of these processes.
 An application is either rejected or accepted, and a ticket is always closed.
-This simplicity in the end of the process could explain the jumps in accuracy.
+This simplicity at the end of the process could explain the jumps in accuracy.
 
 It is worth reflecting on this last point.
 If a machine learning model is incapable of understanding the choices made in certain phases of a process, it could either be a data problem or a process problem.
@@ -523,4 +534,4 @@ We determined that the grouping strategy delivers the most promising results, bu
 Furthermore, we noted that the complexity of the traces in the log has a significant impact on stability.
 Depending on the amount of variability in different stages of the process, model accuracy varies dramatically.
 We could confirm that our models outperform recently published approaches.
-The next chapter describes ways to improve and continue our research, and concludes the thesis with a summary of the results.
+The next chapter describes ways to improve and continue our research and concludes the thesis with a summary of the results.

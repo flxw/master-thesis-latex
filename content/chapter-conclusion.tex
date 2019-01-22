@@ -1,83 +1,89 @@
 \chapter{Conclusion} \label{chap:conclusion}
-In order to present our final conclusions, we divide this chapter into two sections.
-We recapitulate the results of our work in \autoref{sec:conclusion:verdict}, and name our limitations in \autoref{sec:conclusion:limitations}.
-In \autoref{sec:conclusion:future-work}, we elaborate on steps with which to carry research further in publications or subsequent master theses.
+In order to present our conclusion, we divide this chapter into two sections.
+In \autoref{sec:conclusion:verdict}, we recapitulate the results of our work.
+We elaborate on our limitations and connect them to steps with which to carry research further in \autoref{sec:conclusion:future-work}.
 
 \section{Summary of the results} \label{sec:conclusion:verdict}
 In this thesis, we compared four different neural network architectures on three criteria in predicting the next activity in a running case.
 The comparison was implemented in Python and Keras and yielded a neural network training framework for sequence prediction.
-It allows to easily evaluate different network architectures with different batch construction strategies for variable-length traces.
-The dataset which the traces originate from is exchangeable.\\
+It allows for quickly training different network architectures with different batch construction strategies for variable-length traces.
+The dataset for training can be exchanged.\\
 
-The framework not only allows for training numerous model-strategy-dataset combinations, but also tackles an issue within current research: comparability.
+\noindent The framework not only allows for training numerous model-strategy-dataset combinations but also tackles an issue within current research: comparability.
 Most publications in Predictive Process Monitoring use different datasets and do not publicize their implementation, thus making comparisons hard.
 It is considered standard practice in machine learning research to make code and datasets accessible for reproduction~\cite{russell1995modern}.
-Our framework could help researchers get results faster and on more datasets until benchmarking datasets are established.
-Researchers only need to make the implementations of the base classes of the framework accessible to the public along with the data.\\
+By using our framework, researchers only need to make the implementations of the base classes accessible to the public along with the data.
+Because the framework covers a large part of typical training logic, development time is also reduced.\\
 
 To establish a baseline, we implemented two of the four neural network models from publications by Evermann et al. and Schönig et al.~\cite{evermann2016, schoenig2018}.
 We then ported an approach from NLP to Predictive Process Monitoring, resulting in a third model~\cite{shibata2016bipartite}.
-Also, we adapted the input features of the ported model according to the findings of another publication to result in a fourth model~\cite{klinkmuller2018reliablemonitoring}.
+By adapting the input features of the ported model per the findings of another publication, we obtained a fourth model~\cite{klinkmuller2018reliablemonitoring}.
 In the order of introduction, we refer to the four models as EVM, SCH, SP2, and PFS.\\
 
-The SP2 model consistently ranked at the top or among the best performing models, which we attribute to the use of SP-2 features. In comparison with recently published accuracy numbers on the BPIC12 log, the SCH and SP2 models were more accurate by $0.07$, and attained $0.853$ and $0.850$~\cite{boehmer2018probability, evermann2016}.
+In our evaluation, we focused on prediction accuracy, training time, and stability of the prediction accuracy over time.
+The SP2 model consistently ranked at the top or among the best performing models, which we attribute to the use of SP-2 features. In comparison with recently published accuracy numbers on the BPIC12 log, the SCH and SP2 models were more accurate by $0.07$ and attained $0.853$ and $0.850$~\cite{boehmer2018probability, evermann2016}.
 On the HelpDesk log, the PFS and SCH models outperformed the published numbers, too, and reached accuracies of $0.862$ and $0.854$.
-Furthermore, we established that grouping traces by length to produce batches contributes to the highest accuracies.
+
+Furthermore, we learned that grouping traces by their length to produce batches contributes to the highest accuracies.
 Generally, the batching strategies which supply complete history to the model perform best.
-The strategy of a single trace per batch sees the smallest advantages.
-As a result of this, we could confirm the findings from Klinkmüller et al. that omitting history from traces negatively impacts accuracy~\cite{klinkmuller2018reliablemonitoring}.
+The strategy of using a single trace per batch sees the smallest accuracy gains and requires the most time to train an epoch.
 
-\section{Limitations}\label{sec:conclusion:limitations}
-Our work has two important limitations:
+Another finding of the measurements was that process complexity seems to influence prediction accuracy.
+The more activities a trace has, and the longer it tends to be, the less accurate the predictions became.
+This connection was also visible in the stability measurements when process complexity went up or down in a stage of the process.
 
-First, we stratified the training and validation sets to include a similar number of traces of the same length.
-We do not know whether the authors of the works we compare to did this.
-Furthermore, we do not know which traces were used in their training and test sets.
+Finally, we could confirm findings from Klinkmüller et al. that omitting history from process traces negatively impacts prediction accuracy~\cite{klinkmuller2018reliablemonitoring}.
 
-Second, we could only compare our work to publications on two logs.
-We deem one of those logs, the HelpDesk log, unsuitable for comparison as it does not contain any other features than activity ID and execution timestamp.
+\section{Future Work And Limitations}\label{sec:conclusion:future-work}
+In this section, we present items which could carry this research further in publications or subsequent master thesis.
+We cluster the future work by topic and connect our limitations where applicable.
 
-\section{Future Work}\label{sec:conclusion:future-work}
-We cluster the future work by items which we believe to be of importance for future research around Predictive Process Monitoring:
-
-\paragraph{Benchmarking dataset} Currently, Predictive Process Monitoring suffer from not having standardized benchmarking datasets for researchers to evaluate their algorithms on.
+\paragraph{Benchmarking dataset} Currently, Predictive Process Monitoring suffers from not having standardized benchmarking datasets for researchers to evaluate their algorithms on.
 This forces researchers to resort to a multitude of datasets, or to even use non-public data.
-Benchmarking datasets are standard in many other machine learning disciplines.
+In our case, we used the BPIC12 and HelpDesk logs for evaluation and accuracy comparison.
+We feel that the HelpDesk log with its two columns can neither be considered a realistic nor an optimal source of data for this use case.
+This is why we advocate for standard benchmarking datasets, which are common in many other machine learning disciplines.
 We believe that it is time to draw up such datasets with real data or close to real-world data, representing industry-typical processes.
+By having different datasets with different characteristics, prediction approaches could be evaluated along different dimensions.
 As there is already a tendency to use BPIC logs, the next year's challenge could be on Predictive Process Monitoring.
 There, a log could be advertised as a future standard to evaluate on.
 Otherwise, the number of datasets that researchers have to use to ensure comparability will only ever increase.
 
 \paragraph{Imbalanced classes} Predictive models learn better with a balanced target class distribution.
-Our targets, the activities, are not distributed uniformly across traces.
-This problem is also commonly encountered in NLP, and weighting classes based on their occurrence is a possibility to deal with it.
-Setting the weights per batch might be an option which could see accuracy gains, although determining the best class weight is not trivial~\cite{web:stackoverflow-keras-class-weights}.
+The prediction targets, activities in our case, are not distributed uniformly across traces.
+This distribution problem is also commonly encountered in NLP.
+Weighting classes based on their occurrence is a possibility to deal with it.
+Keras offers a mechanism to set the weights on a per-batch basis, which could see accuracy gains~\cite{web:stackoverflow-keras-class-weights}.
+We did not pursue this possibility, as our goal was to evaluate different types of models and batching strategies, and not to maximize the performance of a single model.
 
-\paragraph{PFS feature engineering and hyper-parameter tuning} The PFS model uses a binary feature vector.
-Each of its bits encodes the occurrence of a subsequence.
+\paragraph{Feature engineering and hyper-parameter tuning} The PFS model uses a binary feature vector.
+Every bit inside it encodes the occurrence of a single subsequence.
 We chose that the vector should encode the presence of the 25 closed subsequences with the highest support of the respective dataset.
-This threshold should be varied and explored further, as it most likely differs for each dataset.
+We chose not to optimize the number of encoded subsequences, as our goal was different from maximizing accuracy gains from feature engineering.
+However, the chosen threshold should be varied and explored further, as it most likely differs for each dataset.
+It could also be made relative to a minimum support value so that the PFS feature vector covers a different number of features for each dataset.
 Furthermore, none of the model's hyper-parameters, e.g., hidden layer dimensions or activation functions, were optimized.
 This would incur further gains in accuracy.
 
 \paragraph{Data augmentation} Image data for machine learning applications is often augmented to increase the number of available training samples.
-In this case, images are rotated, transformed, stretched or cropped and saved as separate samples.
+In this case, images are rotated, transformed, stretched or cropped and saved as separate samples~\cite{Thoma:2017,}.
 More data generally leads to higher accuracies and more robust models.
 In the interest of improving model performance for Predictive Process Monitoring, augmentation methods should be explored with which to produce more traces from existing logs.
 
-\paragraph{Listing of best event attributes} The predictive power that a feature possesses can be measured.
+\paragraph{Listing of best event attributes} The predictive power that a feature possesses can be measured with different methods.
 If, e.g., a feature by itself exactly indicates what the next activity is going to be, its predictive power is very high.
+During the analysis of a log for prediction, it is important to isolate features with high predictive power and discard those with low predictive power.
 Most event logs are saved in the XES format, which guarantees the type of information that is stored in an attribute.
 In the interest of speeding up feature selection in the future, we believe that it is worthwhile to investigate the predictive power across XES standard attributes for a large number of logs.
-From the findings, a list could be made of those attributes which are most likely to incur accuracy gains.
+From the findings, a list could be made of those attributes which are most likely to possess high predictive power and incur accuracy gains.
 
-\paragraph{Word embeddings} Word embeddings for NLP applications are trained on huge text corpora and help map dictionary-encoded words to a large feature space.
+\paragraph{Word embeddings} Word embeddings for NLP applications are trained on huge text corpora like Wikipedia and help map dictionary-encoded words to a large feature space.
 In \autoref{sec:background:feature-engineering}, we hinted at the fact that the weights for word embeddings can be imported from pre-trained models to avoid training on a similarly large dataset and save time.
 This principle could be transferred to Predictive Process Monitoring by providing pre-trained embeddings for process categories.
 As evidenced in \autoref{sec:eval:discussion}, this is tied to larger datasets.
 It is worth exploring how well activity names are similar across processes, to gauge the reusability of a word embedding produced on one process for another.
 
-\paragraph{Process optimization} We have seen that the accuracy of a model often varies with the variability of the process in that stage.
-Assuming that all data that the decisions are usually based on is provided to the model, we believe that accuracy drops indicate optimization potential in the process.
-If the model can not understand the connections in the data, it could be that the decisions are overly complex or do not follow a standard.
-Whether this is the case, and what process fallacies can be detected with this approach is to be investigated.
+\paragraph{Process optimization} We have seen that the accuracy of a model can be influenced by the variability of the process in a specific stage.
+Assuming that all data on which decisions are usually based, is provided to the model, we believe that accuracy drops can indicate optimization potential in the process.
+If the model can not understand the connections in the data, it could mean that the control flow decisions are overly complex or do not follow a standard.
+Whether this is the case, and what process fallacies can be detected with this approach should be investigated.

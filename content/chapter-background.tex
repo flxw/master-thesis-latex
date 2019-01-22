@@ -65,7 +65,7 @@ Process Mining covers the three steps of process model discovery, conformance ch
     \label{fig:process-data-science}
 \end{figure}
 
-A major problem when discovering process models is posed by spaghetti and lasagna process models~\cite{Aalst2016}. These overly complex and unreadable models are mined from process logs that contain highly variable execution traces. Process Mining mainly revolves around process models, and the data-driven discovery and optimization based on historical data. For this reason, a possibility to act on case developments in real-time without model-imposed restrictions is desirable. Predictive Process Monitoring provides this possibility.
+A major problem when discovering process models is posed by spaghetti and lasagna process models~\cite{Aalst2016}. These overly complex and unreadable models are mined from process logs that contain highly variable execution traces. Process Mining mainly revolves around process models and the data-driven discovery and optimization based on historical data. For this reason, a possibility to act on case developments in real-time without model-imposed restrictions is desirable. Predictive Process Monitoring provides this possibility.
 
 \FloatBarrier
 \subsection{Predictive Process Monitoring}\label{sec:predictive-process-monitoring}
@@ -99,7 +99,7 @@ Predictive models are statistical tools that are used to make predictions. They 
 During the first step of the KDD process in \autoref{fig:kdd_process}, features are chosen as predictors based on differed criteria such as their predictive power or inter-feature correlations. Based on the latter, features can also be omitted from the original dataset.
 
 \subsubsection*{Pre-processing}
-The second step of the KDD process is focused on data quality. Features may be sparse or contain data of low quality, e.g. different spellings of the same entity or typing errors. In this step, these issues are resolved, and appropriate values imputed where they are missing.
+The second step of the KDD process is focused on data quality. Features may be sparse or contain data of low quality, e.g., different spellings of the same entity or typing errors. In this step, these issues are resolved, and appropriate values imputed where they are missing.
 
 \subsubsection*{Transformation}\label{sec:predictive-model-development:transformation}
 The third step of the KDD process is aimed at making the data accessible for machine learning methods. During transformation, some features might be aggregated, normalized or encoded differently to assist the predictive model in picking up relations between variables. Common tasks are one-hot or dictionary encoding of discrete values such as strings, activity names for instance. Variable concatenations or complex aggregations might also be added as \textit{engineered} features~\cite{kuhn2013applied}.
@@ -107,7 +107,7 @@ The third step of the KDD process is aimed at making the data accessible for mac
 \subsubsection*{Data Mining}
 Data mining deals with the extraction of implicit, previously unknown, and potentially useful information from data. Machine learning provides a technical basis for this~\cite{Aalst2016}. The goal of predicting the next activity is a classification task for which a wide array of predictive models is suitable. A selection of these are decision trees, random forests, support vector machines (SVM) or artificial neural networks (ANN)~\cite{kuhn2013applied}.
 
-The data prepared in the previous steps are used to \textit{train} such a model. During this training phase, the model uses accuracy metrics to assess the accuracy of its predictions, and to learn the statistical properties of the data. The models adjust their internals during learning to improve accuracy. The accuracy is calculated on the target labels, i.e. the predictions that the model should produce on known data.
+The data prepared in the previous steps are used to \textit{train} such a model. During this training phase, the model uses accuracy metrics to assess the accuracy of its predictions and to learn the statistical properties of the data. The models adjust their internals during learning to improve accuracy. The accuracy is calculated on the target labels, i.e. the predictions that the model should produce on known data.
 Certain input parameters of the model are adjusted during this phase as well; an activity referred to as \textit{hyper-parameter tuning}.
 
 \subsubsection*{Evaluation}
@@ -177,7 +177,7 @@ In this thesis, we focus on many-to-one predictions, because we aim to predict t
 
 \section{Artificial Neural Networks}\label{sec:artificial-neural-networks}
 An artificial neural network (ANN) mimics the inner workings of a human brain in that it is made up of connected nodes referred to as neurons. These neurons are interconnected and produce an output signal upon receiving an input signal. This section first gives background on the general structure of a basic neural network in \autoref{sec:feedforward-networks} and then highlights two enhancements for sequence prediction in \autoref{sec:recurrent-networks}.
-We end this section in \autoref{sec:bacground:cues} with insights into the architectural cues that we use during this thesis.
+We end this section in \autoref{sec:background:cues} with insights into the architectural cues that we use during this thesis.
 
 \subsection{Structural Basics}\label{sec:feedforward-networks}
 The first and most trivial type of ANN is the feedforward neural network~\cite{schmidhuber2015deep}. It is not optimally suited for sequence prediction but serves as a sufficiently complex example to explain the inner workings of an ANN, and for pointing out why long short-term memory networks are more suited for sequence prediction.
@@ -215,7 +215,7 @@ The layers in a recurrent neural network (RNN) implement a feedback loop. This l
 
 A neuron receives an input $x_t$ and outputs a value $h_t$. The letter $t$ indicates the time dimension. By showing the neuron in an unrolled fashion, it becomes visible that the output of the neuron at time $t$ becomes available to itself at time $t+1$~\cite{web:colah}.
 
-The introduction of the time dimension causes the perception of input data to change: It is now required to be three-dimensional. With feedforward ANNs, training data was two-dimensional and consisted of a list of unrelated samples. Samples were the same as a feature vector, but for RNNs, samples need to be understood as lists of feature vectors. This makes a sample suitable to represent a sequence because its feature vectors can represent the individual timesteps.
+The introduction of the time dimension causes the perception of input data to change: It is now required to be three-dimensional. With feedforward ANNs, training data was two-dimensional and consisted of a list of independent samples. Samples were the same as a feature vector, but for RNNs, samples need to be understood as lists of feature vectors. This makes a sample suitable to represent a sequence because its feature vectors can represent the individual timesteps.
 
 While the loop in an RNN indeed allows recognizing short-term dependencies, the network as a whole will still underperform with long-term dependencies when the gaps between related inputs become too big. The root cause is that RNNs only loop back inputs, and lack memory to bridge those gaps. This problem has been thoroughly explored by Hochreiter et al.~\cite{hochreiter1991untersuchungen} who also proposed the long short-term memory fix presented in the following.
 
@@ -236,7 +236,7 @@ Hochreiter \& Schmidhuber published this enhancement in 1997~\cite{hochreiter199
 The $\sigma$ boxes represent gates. Which parts of $C_{t-1}$ to keep and what to forget is decided at the first gate from the left, by taking $h_{t-1}$ and $x_t$ into account. The following $\sigma$ gate and $tanh$ operator together create the update to $C_{t-1}$. Finally, on the right, the updated cell state $C_t$ is used together with the activation function $tanh$ to produce the output $h_t$. Variants of this original LSTM cell architecture exist, with most modifications made around the construction of the state $C$ - all exhibiting similar performance~\cite{greff2017lstm}.\\
 
 The types of networks layers presented until here can be freely combined inside a network architecture.
-For instance, a feedforward layers can be attached to a LSTM layer.
+For instance, a feedforward layer can be attached to an LSTM layer.
 In our work, we apply several architectural cues besides the combination of different network types.
 These are explained in the following subsections.
 
@@ -251,7 +251,7 @@ As we outlined in the beginning of this section, ANNs implement an optimization 
 This optimization naturally makes the network prone to overfit.
 The use of dropout layers presents a simple, yet effective technique to avoid overfitting.
 By breaking the connection between adjacent neurons with a given probability of $p$, the network learns more robust features.
-Dropout also approximately doubles the number of iterations required to converge, but decreases training for an epoch~\cite{srivastava2014dropout}.
+Dropout also approximately doubles the number of iterations required to converge but decreases training for an epoch~\cite{srivastava2014dropout}.
 \autoref{fig:dropout-application} illustrates the effects of dropout application between two layers.
 
 \begin{figure}
@@ -263,7 +263,7 @@ Dropout also approximately doubles the number of iterations required to converge
 
 \subsubsection*{Embedding Layers}
 Embedding layers make it possible to use word embeddings.
-Embeddings map inputs to a continous vector space.
+Embeddings map inputs to a continuous vector space.
 The layer weights are often imported from pretrained embeddings, as is explained in depth in \autoref{sec:background:word-embedding}.
 
 \subsubsection*{Softmax activation}
@@ -275,7 +275,7 @@ The softmax function normalizes the output $y_i$ of a neuron $i$ to a value betw
 $$S(y_i) = \frac{e^{y_i}}{\sum_j e^{y_j}}$$
 
 The sum of all output values of all neurons in a softmax-activated layer will always be 1.
-Understanding a neuron as the placeholder of a single class, its output can be understood as the proability of this class.
+A is understood as the placeholder of a single class, and its output is interpreted as the probability of this class.
 The neuron with the highest probability reveals the prediction of the network.
 
 \subsubsection*{Rectified Linear Unit activation}
@@ -284,7 +284,7 @@ The rectified linear unit (ReLU) function has become a popular choice for activa
 $$ReLU(y_i) = y_i^+ = max(0, y_i)$$
 
 They are biologically plausible, giving a one-sided output.
-Also they activate in a sparse fashion. In a randomly initialized network, only about half of all hidden units are activated.
+Also, they activate sparsely. In a randomly initialized network, only about half of all hidden units are activated.
 Combined with the simple calculation of the function, the activation function makes for efficient computation~\cite{krizhevsky2012imagenet}.
 
 \section{Data preparation and feature engineering}
@@ -419,7 +419,7 @@ While $n$-grams can be powerful features to use, their high dimensionality cause
 
 \subsubsection*{Subsequence mining}
 One of the main weaknesses of $n$-grams is the restriction to a single $n$ and that "one may need to examine a combinatorially explosive
-number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reason, approaches have been developed that combine the benefit of $n$-grams with more flexibility by avoiding the limitation to $n$. An algorithm sifts through input sequences and detects sequential patterns of any length. These sequences are then encoded, resulting in line items similar to the ones in \autoref{tab:bow-encoding} The respective boolean entry denotes that a specific subsequence has occured in the sequence.
+number of possible subsequence patterns" \cite{pei2001prefixspan}. For this reason, approaches have been developed that combine the benefit of $n$-grams with more flexibility by avoiding the limitation to $n$. An algorithm sifts through input sequences and detects sequential patterns of any length. These sequences are then encoded, resulting in line items similar to the ones in \autoref{tab:bow-encoding} The respective boolean entry denotes that a specific subsequence has occurred in the sequence.
 Examples for these algorithms are GSP \cite{srikant1996gsp}, FreeSpan \cite{han2000freespan} and PrefixSpan \cite{pei2001prefixspan}.\\
 
 For every mined subsequence $ss$, the \textit{support} metric $supp(ss)$ can be calculated. This metric indicates in how many complete sequences, $ss$ occurs as a subsequence. Sometimes, shorter subsequences are part of longer subsequences, like $ss1$ is contained in $ss2$:
