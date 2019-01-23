@@ -491,7 +491,7 @@ In the HelpDesk log, there is a tiny number of classes and a large number of tra
 
 We find that the grouping strategy frequently delivers the best results in terms of speed and accuracy.
 Nonetheless, there is potential for optimization, as the relatively low accuracy on BPIC12 suggests.
-The reason for this accuracy can be found in \autoref{tab:dataset-characteristics} and \autoref{tab:batch-sizes} in \autoref{sec:methodology}.
+The reason for this accuracy can be found in \autoref{tab:dataset-characteristics} and \autoref{tab:batch-sizes} in \autoref{chap:methodology}.
 BPIC12 has the highest number of traces, and a relatively even distribution of lengths, resulting in a small standard deviation.
 This makes the strategy place too many traces into a single batch, causing lost optimization opportunities.
 With this in mind, the grouping strategy should be enhanced to split batches if they exceed a certain size threshold.\\
