@@ -24,12 +24,12 @@ In our evaluation, we focused on prediction accuracy, training time, and stabili
 The SP2 model consistently ranked at the top or among the best performing models, which we attribute to the use of SP-2 features. In comparison with recently published accuracy numbers on the BPIC12 log, the SCH and SP2 models were more accurate by $0.07$ and attained $0.853$ and $0.850$~\cite{boehmer2018probability, evermann2016}.
 On the HelpDesk log, the PFS and SCH models outperformed the published numbers, too, and reached accuracies of $0.862$ and $0.854$.
 
-Furthermore, we learned that grouping traces by their length to produce batches contributes to the highest accuracies.
+Furthermore, we learned that grouping traces by their length to produce batches contributes to the highest accuracies with the smallest training time.
 Generally, the batching strategies which supply complete history to the model perform best.
 The strategy of using a single trace per batch sees the smallest accuracy gains and requires the most time to train an epoch.
 
 Another finding of the measurements was that process complexity seems to influence prediction accuracy.
-The more activities a trace has, and the longer it tends to be, the less accurate the predictions became.
+The more activities a trace has, and the longer it tends to be, the less accurate the predictions become.
 This connection was also visible in the stability measurements when process complexity went up or down in a stage of the process.
 
 Finally, we could confirm findings from Klinkmüller et al. that omitting history from process traces negatively impacts prediction accuracy~\cite{klinkmuller2018reliablemonitoring}.

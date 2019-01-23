@@ -6,7 +6,6 @@ We then lead through the pre-processing phase in \autoref{sec:method:data-prepro
 This section also covers the used logic to engineer the features for the SP2 and PFS models.
 Finally, the system configuration and the used training strategies are presented in \autoref{sec:method:test-setup}.
 
-%Through the use of the framework described in the previous chapter, we can evaluate four different models for next-activity prediction side-by-side: Two implementations that mimic the networks by Evermann et al. and Schönig et al., and the PFS and SP2 approaches presented in \autoref{chap:taking-inspiration}.
 The reimplementations of Evermann's and Schönig's approaches are referred to as EVM and SCH from here on.
 
 \section{Data selection}\label{sec:method:dataset-choice}
@@ -250,7 +249,7 @@ For this reason, we filtered out $20\%$ of the longest traces.
 \midrule
 \textbf{Optimizer} & SGD & \multicolumn{3}{c}{RMSprop} \\
 \textbf{Loss}      &\multicolumn{4}{c}{Categorical crossentropy}\\
-\textbf{Weight initializer} & Zeros & None & \multicolumn{2}{c}{Glorot normal}\\
+\textbf{Weight initializer} & Random normal & None & \multicolumn{2}{c}{Glorot normal}\\
 \textbf{Epochs}    & 50 & 100 & 150 & 150\\
 \textbf{Features}  & \makecell{Activity name} & \multicolumn{3}{c}{All event attributes}\\
 \end{tabular}
@@ -285,6 +284,6 @@ BPIC 15-3 & 1 & 12.27 (19.28) & 10 & 414\\
 BPIC 15-4 & 1 & 9.17 (14.59) & 8 & 334\\
 BPIC 15-5 & 1 & 9.52 (14.36) & 7 & 420\\
 \end{tabular}
-\caption[Batch sizes for each dataset and strategy]{Traces per batch for the different datasets and batching strategies. Since the grouped batches vary in size, their size is stated as \textit{average (standard deviation)}}
+\caption[Batch sizes for each dataset and strategy]{Batch sizes for the different datasets and batching strategies. Since the grouped batches vary in size, their size is stated as \textit{average (standard deviation)}}
 \label{tab:batch-sizes}
 \end{table}
