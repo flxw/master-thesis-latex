@@ -156,7 +156,7 @@ for i in range(1,len(t)):
     sp2_df.values[i] = sp2_df.values[i-1]
     sp2_df[col].values[i] = 1
 \end{minted}
-\caption{Generating SP-2 features for a single trace \texttt{t} and a specific target column \texttt{target\_col}.}
+\caption[SP-2 feature generation code]{SP-2 feature generation code for a single trace \texttt{t} and a specific target column \texttt{target\_col}.}
 \label{lst:sp2-generation}
 \end{listing}
 
@@ -215,7 +215,7 @@ for i in range(0, tlen):
     if subsequence_found:
       subseq_df.values[j+i-1:,subseq_idx] = True
 \end{minted}
-\caption{Enriching a trace \texttt{t} with subsequence features by detecting those that are contained inside it.}
+\caption[Subsequence feature generation]{Subsequence feature generation code for a trace \texttt{t}}
 \label{lst:subsequence-feature-creation}
 \end{listing}
 

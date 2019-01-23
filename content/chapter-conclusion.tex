@@ -20,7 +20,7 @@ We then ported an approach from NLP to Predictive Process Monitoring, resulting 
 By adapting the input features of the ported model per the findings of another publication, we obtained a fourth model~\cite{klinkmuller2018reliablemonitoring}.
 In the order of introduction, we refer to the four models as EVM, SCH, SP2, and PFS.\\
 
-In our evaluation, we focused on prediction accuracy, training time, and stability of the prediction accuracy over time.
+In our evaluation, we focused on prediction accuracy, training time, and the stability of the prediction accuracy over time.
 The SP2 model consistently ranked at the top or among the best performing models, which we attribute to the use of SP-2 features. In comparison with recently published accuracy numbers on the BPIC12 log, the SCH and SP2 models were more accurate by $0.07$ and attained $0.853$ and $0.850$~\cite{boehmer2018probability, evermann2016}.
 On the HelpDesk log, the PFS and SCH models outperformed the published numbers, too, and reached accuracies of $0.862$ and $0.854$.
 
@@ -72,7 +72,7 @@ In the interest of improving model performance for Predictive Process Monitoring
 
 \paragraph{Listing of best event attributes} The predictive power that a feature possesses can be measured with different methods.
 If, e.g., a feature by itself exactly indicates what the next activity is going to be, its predictive power is very high.
-During the analysis of a log for prediction, it is important to isolate features with high predictive power and discard those with low predictive power.
+During the analysis of a log for prediction, it is essential to isolate features with high predictive power and discard those with low predictive power.
 Most event logs are saved in the XES format, which guarantees the type of information that is stored in an attribute.
 In the interest of speeding up feature selection in the future, we believe that it is worthwhile to investigate the predictive power across XES standard attributes for a large number of logs.
 From the findings, a list could be made of those attributes which are most likely to possess high predictive power and incur accuracy gains.
@@ -85,6 +85,6 @@ It is worth exploring how well activity names are similar across processes, to g
 
 \paragraph{Process optimization} We have seen that the accuracy of a model can be influenced by the variability of the process in a specific stage.
 For stages in a process where there are not many activities or any decisions, prediction accuracy tends to be high.
-Assuming that all data on which decisions are usually based is provided to the model, we believe that accuracy drops can indicate optimization potential in the process.
-If the model can not understand the connections in the data, it could mean that the control flow decisions are overly complex or do not follow a standard.
+Assuming that all data on which decisions are usually based are provided to the model, we believe that accuracy drops can indicate optimization potential in the process.
+If the model can not understand the connections in the data, it could mean that the control flow decisions are overly complicated or do not follow a standard.
 Whether this is the case, and what process fallacies can be detected based on accuracy fluctuation should be investigated.

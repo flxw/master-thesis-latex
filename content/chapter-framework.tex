@@ -67,7 +67,7 @@ The grouping strategy could bias the model toward the long tail of the distribut
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=\textwidth]{gfx/bpic11-length-frequency.pdf}
-    \caption{Distribution of trace lengths in BPIC11}
+    \caption[Distribution of trace lengths in BPIC11]{Distribution of trace lengths in BPIC11. Logarithmic scale to highlight extremely long outliers.}
     \label{fig:bpic2011-length-distribution}
 \end{figure}
 
@@ -145,7 +145,7 @@ usage: model_runner.py [-h] [--gpu GPU]
                        {padding,grouping,individual,windowing}
                        datapath
 
-The network training framework script for Felix Wolff's master's thesis!
+The network training runner script of nitro4ppm!
 
 positional arguments:
   {evermann,schoenig,sp2,pfs}

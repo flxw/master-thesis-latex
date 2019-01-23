@@ -9,7 +9,6 @@ We evaluate the four models with a three-pronged strategy, targeting the followi
 \end{enumerate}
 
 We measure accuracy because it is a good indicator of how often the model predicts the right class, and permits comparisons to other works.
-Different from typical machine learning evaluations, we do not measure recall, because it is not typically measured by works in Predictive Process Monitoring.
 Training time is of interest because a real-world application should use as little computing resources as possible.
 We forgo inference timing measurements because few Predictive Process Monitoring solutions are deployed in application scenarios yet.
 The stability criterion permits making a judgment about the behavior of accuracy over time. The works of Francescomarino et al.~\cite{francescomarino2015} and Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} inspired this measure. It provides an understanding of how the prediction accuracy of a model changes as the trace grows longer. This can facilitate building trust in the model, as indicated in the introduction of the thesis~\cite{klinkmuller2018reliablemonitoring, boehmer2018probability}.
@@ -50,7 +49,7 @@ The accuracy measurements on it are visualized in \autoref{fig:max-accuracies-bp
 Again, all four models exhibit very similar accuracies for the individual and grouping batching strategies, where all score above $0.75$.
 On the padding strategy, the EVM model barely reaches an accuracy above $0$, while the others score above $0.8$.
 On all of the three strategies that supply the complete trace to the model, the accuracies are very similar.
-This is not the case for the windowing strategy, which leads to more greater differences between the accuracies.
+The windowing strategy leads to more significant differences between the accuracies.
 Here, the SP2 models outperform all other models.
 The worst accuracy is shown by the EVM model on all four strategies, although the difference to the next-best accuracy is small.
 
@@ -64,22 +63,22 @@ The worst accuracy is shown by the EVM model on all four strategies, although th
 
 \paragraph{Accuracy on BPIC15}
 The accuracies obtained on the validation sets of the BPIC15 logs are visualized in \autoref{fig:max-accuracies-bpic2015-1} to \autoref{fig:max-accuracies-bpic2015-5}.
-The results are very similar, so we describe the measurements in a common fashion and highlight common themes:
+The results are very similar, so we describe the measurements in a grouping fashion per strategy and highlight common themes:
 
 First, the accuracies of all four models are very similar across the individual and grouping strategies.
-The greatest difference in accuracy is $0.1$.
+The biggest difference in accuracy is $0.1$.
 
 Second, the SCH model always outperforms the other models slightly on the individual strategy.
 
-Third, on the padding strategy the SP2 model always is the most accurate.
-On the same strategy, the EVM model fails completely.
+Third, on the padding strategy, the SP2 model always is the most accurate.
+On the same strategy, the EVM model fails.
 
 Fourth, the SP2 model gives the highest accuracies on the grouping, padding and windowing strategies.
 On the windowing strategy, its accuracies are the highest of all models by up to $0.2$.
 The highest accuracies across all strategies are produced by the SP2 model on any BPIC15 dataset.
 
 Fifth, the EVM model accuracy suffers the most from the windowing strategy.
-Generally on any BPIC15 dataset, the EVM model perform second-best on the individual strategy, while it ranks last on any other strategy.
+It is a general rule that, on any BPIC15 dataset, the EVM model performs second-best on the individual strategy, while it ranks last on any other strategy.
 Nonetheless, the differences to the next-best accuracy are always less than $0.2$, except for when the padding strategy is in use.
 
 \begin{figure}
@@ -115,7 +114,7 @@ Nonetheless, the differences to the next-best accuracy are always less than $0.2
 \FloatBarrier
 
 \paragraph{Accuracy on BPIC11}
-The most complex process is captured by BPIC11.
+BPIC11 captures the most complex process.
 The validation accuracies that we obtained for this log are depicted in \autoref{fig:max-accuracies-bpic2011}.
 
 With the individual strategy, the EVM, SCH and PFS models score above $0.6$.
@@ -157,8 +156,8 @@ We continue with the presentation of the timing measurements in the following se
 
 \begin{table}
 \centering
-\begin{tabular}{lrrrr}
-\textbf{Dataset}  &  \textbf{Individual} &  \textbf{Grouping} &   \textbf{Padding} &  \textbf{Windowing}\\
+\begin{tabular}{p{3cm}rrrr}
+\textbf{Strategy / Dataset}  &  \textbf{Individual} &  \textbf{Grouping} &   \textbf{Padding} &  \textbf{Windowing}\\
 \midrule
 \textbf{HelpDesk} &       0.854 &    0.844 &   0.625 &     0.666 \\
 \textbf{BPIC12  } &       0.839 &    0.766 &   0.627 &     0.719 \\
@@ -269,7 +268,7 @@ The individual strategy leads to the longest training times overall.
 This is not surprising, as \autoref{tab:dataset-characteristics} on page \pageref{tab:dataset-characteristics} reveals that it creates hundreds of batches per epoch - more than with any other strategy.
 Each batch incurs a weight adjustment, which leads to additional required computing time.
 
-The grouping strategy leads to significant reductions in training times, depending on how diverse the trace lengths are. \autoref{tab:dataset-characteristics} also explains why the reduction is not as prominent with BPIC11: It exhibits up to 1814 different lengths, while the other datasets only exhibit $5\%$ to $10\%$ as many.
+The grouping strategy leads to significant reductions in training times, depending on how diverse the trace lengths are. \autoref{tab:dataset-characteristics} also explains why the reduction is not as prominent with BPIC11: It exhibits up to 1814 different trace lengths, while the other datasets only exhibit $5\%$ to $10\%$ as many.
 
 With the padding strategy, it is possible to overcome the limitations imposed by trace lengths and construct batches out of any number of traces. This makes it easier to optimize the batch size, which can lead to faster training times.
 
@@ -277,7 +276,7 @@ Fastest of all is the windowing strategy.
 It produces a constant number of timesteps per sample and allows for arbitrary batch sizes.
 The short samples additionally reduce the amount of calculation that needs to be done.
 
-On each strategy the SCH, SP2 and PFS models take approximately the same time to train.
+On each strategy, the SCH, SP2 and PFS models take approximately the same time to train.
 The EVM model trains up to $50\%$ faster, depending on the dataset.
 \FloatBarrier
 
@@ -297,7 +296,7 @@ The following paragraphs explain the curves in further detail.
 On the HelpDesk log, it can be seen again that the batching strategies have a substantial impact on the accuracy in different stages.
 
 \autoref{fig:helpdesk-individual-stability} shows the stability of each model with the individual strategy.
-The four curves start around $0.8$ and linearly rise up to $0.85$ until $60\%$ progress.
+The four curves start around $0.8$ and linearly rise to $0.85$ until $60\%$ progress.
 At the $60\%$ mark, all curves show a small correction, before going up toward an accuracy of $1$ at the end.
 
 \autoref{fig:helpdesk-grouped-stability}, \autoref{fig:helpdesk-padded-stability}, and \autoref{fig:helpdesk-windowed-stability} show the stability on the other strategies.
@@ -326,8 +325,8 @@ Only the PFS curve finishes at $0.5$.
 The stability of the predictions on the BPIC12 log is discussed in this paragraph.
 \autoref{fig:bpic12-individual-stability} shows the stability of each model with the individual strategy on BPIC12.
 The four curves start around $0.8$ and immediately drop by $0.2$.
-The SCH, SP2 and PFS curves swiftly recover by $15\%$, and rise up to $0.9$ at $35\%$ progress
-The recovers slower from the initial drop, rejoining the other curves at $20\%$.
+The SCH, SP2 and PFS curves swiftly recover by $15\%$ and rise to $0.9$ at $35\%$ progress
+The EVM curve recovers slower from the initial drop, rejoining the others at $20\%$.
 From $35\%$ onwards, all curves slowly sink toward $0.7$ at $85\%$ and rise sharply toward $1$ at the end.
 
 \autoref{fig:bpic12-grouped-stability} shows the stability of the grouping strategy.
@@ -362,10 +361,10 @@ In the appendix, \autoref{fig:bpic15-1-individual-stability} to \autoref{fig:bpi
 The curves across BPIC15-1 to BPIC15-5 are very similar within a specific strategy, which is why we give a general description of the observations for each strategy in the following.
 
 In the stability plot of the individual strategy in \autoref{fig:bpic15-5-individual-stability}, all four curves follow the same trend.
-The four curves start around $0.7$, and sink down to $0.6$ at $20\%$.
-At this point, the PFS curve is $0.15$ below the rest, and this difference will stay until the end.
-After $20\%$, the curves rise back up to $0.7$ at $50\%$.
-From there on, they descend to $0.5$ at $80\%$.
+They start around $0.7$ and sink to $0.6$ at $15\%$.
+At this point, the PFS curve is $0.15$ below the rest and stays at this distance until the end.
+After $15\%$, the curves rise back up to $0.7$ at $35\%$.
+From there on, they descend to $0.5$ at $95\%$.
 Then, all three curves see an increase of $0.2$, with the SP2 curve ending at $0.75$.
 The SCH curve ends at $0.7$, and the PFS curve at $0.6$.
 
@@ -377,17 +376,16 @@ The SCH curve ends at $0.7$, and the PFS curve at $0.6$.
 \end{figure}
 
 The stability plot for the grouping strategy in \autoref{fig:bpic15-5-grouped-stability} shows very similar curve trajectories.
-In contrast to the individual strategy, the four curves are a lot closer together.
-This is a theme that is visible on the other BPIC15 datasets, too.
-Also, the EVM curve has moved from the top of the four curves to the lower end.
+In contrast to the individual strategy, the four curves are a lot closer together, and the EVM curve has moved to the lower end.
+This is visible on the other BPIC15 datasets, too.
 
-The stability plots for the padding strategy show steadily declining curves for SCH, SP2 and PFS models from $0.7$ at the beginning towards an accuracy of $0.4$ around $90\%$ progress.
+The plots for the padding strategy show steadily declining curves for SCH, SP2 and PFS models from $0.7$ at the beginning towards an accuracy of $0.4$ around $90\%$ progress.
 Then, the curves jump up by $0.2$ to $0.3$ to finish around $0.7$.
-The EVM curve barely surfaces above $0$, and shows a small spike to $0.1$ at $95\%$.
+The EVM curve does not surface above $0$.
 For BPIC15-1 and BPIC15-4, the SCH curve also dips down after the start.
 On BPIC15-1, the PFS curve also dips down, leaving the SP2 curve as the sole remainder on the steadily declining trajectory described.
 
-The plots for the windowing strategy paint a simple picture.
+The plots for the windowing strategy in \autoref{fig:bpic15-5-windowed-stability} paint a simple picture.
 The EVM, SCH and PFS curves start around $0.6$, and descend toward $0.3$, spiking up toward $0.5$ at the end.
 The SP2 curve hovers above, starting around $0.8$, and linearly descends to $0.55$ until $90\%$ progress.
 Then, it also jumps up by $0.3$ at the end of the plot.
@@ -410,17 +408,18 @@ Then, it also jumps up by $0.3$ at the end of the plot.
 The most informative plot from the BPIC11 stability measurements is shown in \autoref{fig:bpic11-grouped-stability} for the grouping strategy.
 It illustrates how the accuracy is relatively constant for the EVM, SP2 and PFS models around $0.7$.
 Also, the plot shows well how close the curves of the three models are.
-All curves drop slightly in the beginning, and then stay constant until the end, where there is another small drop.
+All curves drop slightly in the beginning and then stay constant until the end, where there is another small drop.
 The SP2 model accuracy drops heavier in the beginning and stays constant around $0.65$.
 
 Little do the curves change for the individual strategy.
 Only two minor differences surface: The SCH and PFS curves are further apart, and the SP2 curve drops asymptotically from $0.65$ in the beginning to $0.1$ at the end.
 
-With the padding strategy, the four curves start around $0.75$, drop to approximately $0.55$ at $55\%$ and stay constant until the end of the process.
+With the padding strategy, the SCH, SP2 and PFS curves start around $0.75$, drop to approximately $0.55$ at $55\%$ and stay constant until the end of the process.
 There is no accuracy drop in the end.
+The EVM curve stays level at $0$ accuracy.
 
 The windowing strategy makes the initial drop from all four models more pronounced from $0.75$ in the beginning to just above $0.4$ from $35\%$ onwards.
-The SP2 model accuracy is approximately $0.1$ higher than the others until sinking down to their level $80\%$
+The SP2 model accuracy is approximately $0.1$ higher than the others until sinking to their level $80\%$
 From there on, the curves stay constant.
 
 \begin{figure}[!htb]
@@ -449,8 +448,8 @@ On this log, the accuracies taper off until $85\%$ progress, when they spike up 
 
 \autoref{fig:bpic12-mined-process} reveals a process model that was mined from BPIC12.
 Seeing the model in context with the stability curve reveals that the accuracy drops and spikes could be related to the varying degrees of complexity in different stages of the process.
-Every application begins in the same way, i.e. variability in the first stages of the process is low, which might cause accuracy to be high.
-As the process progresses, the variability becomes higher, which correlates with the accuracy decline until $80\%$ progress.
+Every application begins in the same way, i.e., variability in the first stages of the process is low, which might cause accuracy to be high.
+As the process progresses, the variability increases, which correlates with the accuracy decline until $80\%$ progress.
 The processes in BPIC12 always end either on approval or dismissal of the application, boosting accuracy from the moment that no more splits have to be anticipated.
 This could hint at a connection between prediction accuracy and complexity of the stage of a process.
 
@@ -467,7 +466,8 @@ It is clear that the grouping strategy leads to the lowest standard deviations.
     \label{fig:grouping-accuracy-harmonization}
 \end{figure}
 
-Third, all models all produce accuracy curves that follow the same trend.
+Third, within a batching strategy, all models produce accuracy curves that follow the same trend.
+On the padding strategy, the EVM model consistently breaks down.
 
 Fourth, the windowing strategy incurs very unstable curves.
 While this statement seems to be especially true for the longer processes in BPIC11 and BPIC15, the windowing strategy seems to have less of an impact with shorter processes as evidenced with BPIC12.
@@ -484,10 +484,12 @@ Furthermore, we discuss resulting learnings and potential reasons.\\
 
 The EVM model consistently underperforms, although it trains faster.
 Furthermore, it does not seem to work at all with the padding strategy.
-The SCH model works a lot better, although both architectures are very similar.
-The fundamental difference between the EVM and SCH models is an embedding layer, which we suspect to be the cause for the lower accuracy.
+The SCH model works better, although both architectures are very similar.
+A fundamental difference between the EVM and SCH models is an embedding layer, which we suspect to be the cause for the lower accuracy.
 We believe that the embedding layer requires more datapoints per target class than currently included to perform well.
-In the HelpDesk log, there is a tiny number of classes and a large number of traces, which could be a reason for the EVM model scoring above $0.85$.\\
+In the HelpDesk log, there is a tiny number of classes and a large number of traces, which could be a reason for the EVM model scoring above $0.85$.
+Also, we noted that the EVM model produced relatively better accuracies with the individual strategy than on the others.
+This might be due to more frequent adjustments of the word embedding.\\
 
 We find that the grouping strategy frequently delivers the best results in terms of speed and accuracy.
 Nonetheless, there is potential for optimization, as the relatively low accuracy on BPIC12 suggests.
@@ -517,17 +519,17 @@ After discussing potential reasons for our findings and consequences thereof, we
 We end the evaluation with a comparison of our best results with publications that also based their results on the BPIC12 and HelpDesk logs.
 The comparison is presented in \autoref{tab:accuracy-comparison}.
 
-We want to stress that while Evermann et al.~\cite{evermann2016} were able to obtain an accuracy of $0.768$ for predicting the next event, they did not focus on specific cases, but on the whole event stream.
-Thus they were not able to predict the future of a single case.
+We want to stress that while Evermann et al.~\cite{evermann2016} were able to obtain an accuracy of $0.768$ for predicting the next event on BPIC12, they did not focus on specific cases.
+They focused on the whole event stream, and thus did not plan to predict the future of a single case.
 
 Böhmer et al. and Tax et al. worked on next-activity prediction for a particular case.
 Böhmer et al. used a method based on probability distributions and obtained $0.77$ on both logs.
 Tax et al. made use of neural networks, and obtained $0.71$ on the BPIC12 log and $0.76$ on the HelpDesk log.
 
-The comparison table shows that the three models that have consistently performed well on all datasets also deliver high accuracies on the two logs.
+The comparison table shows that all four models deliver higher accuracies on both logs.
 The PFS model surpasses the accuracies in the other works by $0.09$ or more on the HelpDesk log.
 On the BPIC12 log, the SCH model outperforms the other works by $0.08$ or more.
-All our models reached these accuracies with the individual strategy, most likely due to the fault of the grouping strategy to create too large batches on this dataset.\\
+We obtained these accuracies with the individual strategy, most likely due to the tendency of the grouping strategy to create too large batches on this dataset.\\
 
 \begin{table}
 \centering
@@ -538,11 +540,12 @@ All our models reached these accuracies with the individual strategy, most likel
 \textbf{Böhmer et al.~\cite{boehmer2018probability}  } & $0.77$ & $0.77$ \\
 \textbf{Tax et al.~\cite{tax2017}} & $0.71$ & $0.76$\\
 \hline
-\textbf{SCH + individual} & $0.854$ & $0.853$ \\
-\textbf{SP2 + individual} & $0.848$ & $0.850$ \\
-\textbf{PFS + individual} & $0.862$ & $0.848$ \\
+\textbf{PFS} & $0.862$ & $0.848$ \\
+\textbf{SCH} & $0.854$ & $0.853$ \\
+\textbf{SP2} & $0.848$ & $0.850$ \\
+\textbf{EVM} & $0.853$ & $0.802$ \\
 \end{tabular}
-\caption{Comparison of our accuracies to published numbers}
+\caption{Accuracy comparison to published numbers}
 \label{tab:accuracy-comparison}
 \end{table}
 
