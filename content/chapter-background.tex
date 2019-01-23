@@ -10,7 +10,7 @@ Business processes are a collection of structured tasks which serve a particular
 
 \begin{figure}[!htb]
     \centering
-    \includegraphics[width=.75\textwidth]{gfx/activity-sequence.pdf}
+    \includegraphics[width=.75\textwidth]{gfx/activity-sequence.png}
     \caption[Control flow in BPMN]{The boxes and their description are used in BPMN to describe an activity, the arrows inbetween denote the control flow}
     \label{fig:activity-introduction}
 \end{figure}
@@ -26,7 +26,7 @@ With the help of workflow management systems (WFMS), it is possible to embed and
     \label{fig:activity-lifecycle}
 \end{figure}
 
-The event logs give rise to the disciplines of Process Mining and Predictive Process Monitoring. These disciplines revolve around analyzing the information contained in those logs~\cite{Aalst2016}. Because of the paramount importance of logs for this work, this section begins with \autoref{sec:log-structure} defining the properties and structure of a log. \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast Process Mining and Predictive Process Monitoring.
+The event logs give rise to the disciplines of Process Mining and Predictive Process Monitoring. These disciplines revolve around analyzing the information contained in those logs~\cite{Aalst2016}. Because of the paramount importance of logs for this work, we begin this chapter a definition of the properties and structure of a log in \autoref{sec:log-structure}. The following \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast Process Mining and Predictive Process Monitoring.
 
 \subsection{Process logs}\label{sec:log-structure}
 A process log tracks the execution history of a process and can be understood in a hierarchical manner. Each log of a process consists of cases, which represent instances of a process. A case itself consists of a trace of events, i.e., a sequence that only belongs to a single case. Each event can have attributes attached~\cite{Aalst2016}.
@@ -52,7 +52,7 @@ The events are ordered by timestamp. In turn, each event $e$ has certain attribu
 Applied to the example in \autoref{fig:process-log}, $e = \#_{trace}(c)[4]$ would get the fourth event in the trace, and $\#_{concept:name}(e)$ would produce the activity name \verb=W_Completeren aanvraag=.
 Calling $attribute\_names(e)$ would yield \verb=lifecycle:transition=, \verb=concept:name=, \verb=time:timestamp=, and \verb=org:resource=.
 
-These operators enable working with log data, the core of Process Mining.
+These operators enable working with log data, which is at the core of Process Mining.
 We will introduce this domain in the next subsection.
 
 \subsection{Process Mining}\label{sec:process-mining}
@@ -67,7 +67,6 @@ Process Mining covers the three steps of process model discovery, conformance ch
 
 A major problem when discovering process models is posed by spaghetti and lasagna process models~\cite{Aalst2016}. These overly complex and unreadable models are mined from process logs that contain highly variable execution traces. Process Mining mainly revolves around process models and the data-driven discovery and optimization based on historical data. For this reason, a possibility to act on case developments in real-time without model-imposed restrictions is desirable. Predictive Process Monitoring provides this possibility.
 
-\FloatBarrier
 \subsection{Predictive Process Monitoring}\label{sec:predictive-process-monitoring}
 Predictive Process Monitoring is aimed at the use of online data to make statements about the progression of a running case~\cite{francescomarino2015, schoenig2018}. It is not based on process models, but predictive models and thus provides a flexibility that is not available within model-based Process Mining.  As visualized in \autoref{fig:process-data-science}, Predictive Process Monitoring connects two sub-domains of Process Science and Data Science. This makes it a discipline within Process Mining~\cite{Aalst2016}. With Predictive Process Monitoring, questions such as the following can be answered:
 
@@ -322,7 +321,7 @@ One-hot encoding is often used for features which have a small to medium-sized n
         \midrule
         0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
     \end{tabular}
-    \caption{One-hot encoding of "Arthur" from alphabet of $seq1$ and $seq2$}
+    \caption[One-hot encoding of "Arthur"]{One-hot encoding of "Arthur" from alphabet of $seq1$ and $seq2$}
     \label{tab:one-hot}
 \end{table}
 
