@@ -8,7 +8,7 @@ Finally, the system configuration and the used training strategies are presented
 
 The reimplementations of Evermann's and Schönig's approaches are referred to as EVM and SCH from here on.
 
-\section{Data selection}\label{sec:method:dataset-choice}
+\section{Data Selection}\label{sec:method:dataset-choice}
 The first step of the KDD process is about picking the right data for the right problem.
 In \autoref{sec:intro:contribution}, we discuss the challenge posed by the great variety of datasets in predictive process monitoring. While we can not establish a standard, we ensure comparability of our results to a variety of works by evaluating the four models on eight datasets:
 
@@ -66,7 +66,7 @@ BPIC15 resides relatively in the middle of the two others in terms of complexity
 
 After the logs are chosen, the contained data can be preprocessed.
 
-\section{Data pre-processing}\label{sec:method:data-preprocessing}
+\section{Data Pre-processing}\label{sec:method:data-preprocessing}
 In the second step of the KDD process~\cite{fayyad1996data}, the data is pre-processed to prepare it for a data mining use case. In this step, we eliminate generally known properties that hinder machine learning model performance. This encompassed three steps for each dataset:
 
 \begin{enumerate}
@@ -110,10 +110,10 @@ A heatmap for the HelpDesk log was not created, as it only contained two feature
 
 The activities described above were conducted in JupyterLab notebooks~\cite{web:jupyter}, where Anaconda~\cite{web:anaconda} was used to create a stable development environment. The OpyenXes~\cite{web:opyenxes} library proved to be especially useful for transferring raw XES logs into more usable data types. This concludes step two of the KDD process.
 
-\section{Data transformation}\label{sec:method:data-transformation}
+\section{Data Transformation}\label{sec:method:data-transformation}
 After selecting suitable features, the third step of the KDD process~\cite{fayyad1996data} suggests the transformation of these features into representations that are better received by predictive models. Feature engineering is an additional part of this step. Thus, the constructions of the SP-2 and PFS features are explained in the following subsections.
 
-\subsection*{Transforming basic features}
+\subsection*{Transforming Basic Features}
 The features remaining after selection can be divided into three categories: timestamps, numerical and categorical. The transformation applied to each category of feature is described briefly in the following:
 
 Timestamps are converted to numerical features for each trace, i.e., each timestamp $t_i$ is made relative to the beginning of a trace by replacing it with the result of $t_i - t_0$. Relative timestamps have been shown to work with sequential data~\cite{lessmannBADS}.
@@ -129,7 +129,7 @@ $$
 
 Categorical features were encoded using one-hot encoding, since no ordinal relationships were present in the data, and the dimensions were not too large.
 
-\subsection*{Engineering the SP-2 features}
+\subsection*{Engineering the SP-2 Features}
 SP-2 features were proposed in the SPiCe submission by Shibata et al.~\cite{shibata2016bipartite}. In a binary bag-of-words feature vector, they mark whether an element has occurred in the past. As such, these features are engineered iteratively. \autoref{lst:sp2-generation} shows the construction of the feature vector in Python.
 \autoref{tab:sp2-activity-trace} in \autoref{sec:contrib:sp2-inspiration} illustrates how such a vector could look like.
 
@@ -161,7 +161,7 @@ for i in range(1,len(t)):
 \end{listing}
 
 \FloatBarrier
-\subsection*{Engineering the PFS features}
+\subsection*{Engineering the PFS Features}
 As presented in \autoref{sec:contrib:pfs-inspiration}, PFS features encode subsequence occurrences. Klinkmüller et al. claim that these features can help models cover a broader variety of relationships~\cite{klinkmuller2018reliablemonitoring}.
 
 The features for the PFS model were created with the help of the PrefixSpan algorithm implementation from the \textit{prefixspan-py} library~\cite{web:prefixspan-py}. Similarly to the SP-2 features, they are based on the target variable.
@@ -219,20 +219,20 @@ for i in range(0, tlen):
 \label{lst:subsequence-feature-creation}
 \end{listing}
 
-\subsection*{Constructing prediction labels}
+\subsection*{Constructing Prediction Labels}
 For each event $e_t$ at a given timestep $t$, the prediction label $\#_{activity name}(e_{t+1})$ was constructed, essentially picking the activity name from the following event. For the target of the final event of a trace, a marker for denoting the end of the sequence was introduced with \verb=EOS=.
 
 To finally work with the data, we needed to identify the column containing the activity name.
 The XES standard states that this column is called \verb=concept:name=~\cite{Aalst2016}, which is subsequently used.
 
-\subsection*{Splitting the datasets}
+\subsection*{Splitting the Datasets}
 To verify model performance on unseen data, it is common to set aside a portion of the dataset for testing purposes.
 
 We split all datasets into training and validation sets of complete traces. While $25\%$ of the traces were used for validation, the remaining $75\%$ were used for training purposes~\cite{kuhn2013applied}. The traces were shuffled and stratified to contain an approximately similar distribution of trace lengths. This avoids possible biases towards trace lengths. The event order in a trace was not changed.\\
 
 With the logs selected, preprocessed, transformed, and organized in separate sets, the models can be trained. How we approached this will be shown in the next section.
 
-\section{Training configuration}\label{sec:method:test-setup}
+\section{Training Configuration}\label{sec:method:test-setup}
 This section highlights the model configuration, and the employed hyper-parameters for each model.
 The batch sizes of each batching strategy are discussed, too.
 

@@ -1,10 +1,10 @@
-\chapter{Sequence prediction with traces}
+\chapter{Sequence Prediction with Traces}
 \label{chap:taking-inspiration}
 Previous works have demonstrated the practicality of LSTM neural networks for predictive process monitoring. However, only the use of embedding layers was inspired by natural language processing (NLP) until now~\cite{evermann2016}. We believe that more knowledge could be transferred because both domains revolve around sequential data. In this chapter, we outline how we take inspiration from sequence prediction in NLP, and thus contribute to Improvement Area 1 (NLP-influence) from \autoref{sec:intro:motivation}.
 
 We establish the connection between traces and sequences by connecting their definitions in \autoref{sec:contrib:case-sequence-understanding}. This provides the underpinning for introducing two NLP-inspired approaches for predicting the next activity in a case. These approaches are presented in \autoref{sec:contrib:sp2-inspiration} and \autoref{sec:contrib:pfs-inspiration}.
 
-\section{Understanding traces as sequences}\label{sec:contrib:case-sequence-understanding}
+\section{Understanding Traces as Sequences}\label{sec:contrib:case-sequence-understanding}
 The definition for sequences presented in \autoref{sec:background:sequences} and the definition of traces in \autoref{sec:log-structure} will be connected in this section to make it clear how events can be understood as itemsets.
 
 Events are ordered in traces, and each case $c$ contains its execution history in its trace attribute $\#_{trace}(c)$.
@@ -45,7 +45,7 @@ $$ predict(seq_{1,k}) = \hat{i_j} $$
 
 With the prediction target at hand, we move on to present the network architectures for executing the prediction.
 
-\section{Adapting a competition submission}\label{sec:contrib:sp2-inspiration}
+\section{Adapting a Competition Submission}\label{sec:contrib:sp2-inspiration}
 Shibata et al.'s bipartite network architecture has shown outstanding performance in the Sequence Prediction challenge (SPiCe)~\cite{web:spice}.
 In the last section we have shown that a case trace can also be understood as a sequence, and thus we adapt Shibata's approach for use in the business process domain.
 
@@ -103,7 +103,7 @@ It is based on a trace from a case $c$, which contains numeric activity names.
 \end{table}
 
 
-\section{Encoding subsequence occurrence}\label{sec:contrib:pfs-inspiration}
+\section{Encoding Subsequence Occurrence}\label{sec:contrib:pfs-inspiration}
 Klinkmüller et al. compared different feature representations and found that features that encode sub-trace occurrence can help models cover a broader variety of relationships~\cite{klinkmuller2018reliablemonitoring}.
 While they found this to be true for random forests, we want to investigate the applicability of such features with LSTM neural networks.
 Francescomarino et al. tried this in their work and achieved discouraging accuracies around $0.50$~\cite{francescomarino2017}.

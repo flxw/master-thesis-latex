@@ -1,4 +1,4 @@
-\chapter{Batch construction strategies}\label{chap:training-framework}
+\chapter{Batch Construction Strategies}\label{chap:training-framework}
 During the development of the models, we realized that there are highly divergent understandings regarding the construction of batches from sequential data.
 We are convinced that these different understandings have a substantial impact on the reproducibility of any prediction approach.
 Furthermore, we needed to automate the training of the networks because we used multiple datasets.
@@ -8,7 +8,7 @@ In doing so, we hope to contribute to Improvement Area 2 (Reproducibility) and A
 
 We show a selection of possible batch construction strategies in \autoref{sec:contrib:input-formatting} and the underlying technical reasons. Finally, we present the training framework in \autoref{sec:contrib:training-framework}.
 
-\section{Contrasting different strategies}\label{sec:contrib:input-formatting}
+\section{Contrasting Different Strategies}\label{sec:contrib:input-formatting}
 We implemented the SP2 and PFS models as well as the comparison models using Python and the Keras neural networks API.
 While doing so, a wide range of recommended possibilities to train the models on sequential data were noted in relevant publications and on online platforms.\\
 
@@ -37,7 +37,7 @@ As the batches themselves do not need to have the same dimensions, this definiti
 We highlight four of them in the following paragraphs.
 To the best of our knowledge, these have not been compared in this context yet.\\
 
-\paragraph{The individual strategy}
+\paragraph{The Individual Strategy}
 First and easiest, batches can be constructed from a single sample.
 This fulfills the requirement of constant dimensions since only a single sample is used.
 \autoref{fig:individual-batching-example} illustrates this batching strategy.
@@ -101,7 +101,7 @@ Furthermore, we are convinced that use of a windowed training data format misses
     \label{fig:windowing-strategy-example}
 \end{figure}
 
-\section{A training framework for sequential data}
+\section{A Training Framework for Sequential Data}
 \label{sec:contrib:training-framework}
 We realize that making different process prediction approaches comparable is not only a technical but also a data-related challenge.
 No established benchmarking datasets for predictive process monitoring exist yet, which complicates comparison.

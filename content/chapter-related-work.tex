@@ -1,10 +1,10 @@
 \chapter{Related Work}\label{chap:related-work}
 This chapter on related literature presents selected publications from Predictive process monitoring as well as from natural language processing. Publications related to Predictive process monitoring are presented in \autoref{sec:related-work-predictive-process-monitoring}. We end the chapter in a detailed presentation of the works reimplemented for comparison. Similarly, we present in \autoref{sec:related-work-sequence-prediction} other sequence prediction approaches from NLP and end with in-depth information on the publication which we adapted for the use case at hand.
 
-\section{Predictive process monitoring}\label{sec:related-work-predictive-process-monitoring}
+\section{Predictive Process Monitoring}\label{sec:related-work-predictive-process-monitoring}
 We identified three types of prediction targets in current publications on Predictive process monitoring: constraint predictions, case-specific next-event predictions, and general next-event predictions without regard to a specific case. These three types will serve as subdivisions to this section.
 
-\subsection*{Constraint predictions}
+\subsection*{Constraint Predictions}
 A constraint could be the delivery of a product within a given timeframe, or the total runtime of a case~\cite{weske2012business, francescomarino2015}.
 
 Polato et al. make use of event attributes in their work for improving the prediction of the remaining time of business process instances~\cite{polato2014}. During feature engineering, their training data is enriched with information about possible other activities. With support vector regression (SVR) from the WEKA toolkit~\cite{web:weka} and default parameters, they reach $6\%$ and $9\%$ mean absolute percentage error (MAPE) on two non-public datasets of 5000 and 1500 traces. While the authors criticize the use of non-public datasets, they also do not publish theirs nor their source code, making the results hard to compare.\\
@@ -21,7 +21,7 @@ Francescomarino et al. organized predictive models in a clustered fashion~\cite{
 
 Clustering improves tree-based models because it makes the training data more homogeneous. By using embedding layers, an ANN can cluster the data by itself, making a manual clustering unnecessary.
 
-\subsection*{Case-specific next-event predictions}
+\subsection*{Case-specific Next-Event Predictions}
 Next-event predictions specific to a case allow answering the question "which activity comes next in this special case?" - the question that we answer with deep learning.\\
 
 Huber~\cite{huber2015} gives an example of how a next-step prediction and recommendation system for caseworkers might look like. The system is prototypically implemented within CoCaMa, a case management application. Its predictions are produced as follows: After gathering the training data from various sources via an extract, transform and load (ETL) process, several \textit{Next Models} are constructed. There are four Next Models which use different data: timestamps, deadlines, decisions, and goals. The predictions from these individual models are combined by the recommender via weights to produce a recommendation. Huber uses decision trees from the WEKA~\cite{web:weka} machine learning toolkit to implement them. The system has been evaluated with 25 hand-made traces~\cite{huber2015}, which explains why high accuracies could not be obtained.\\
@@ -50,7 +50,7 @@ Francescomarino et al. also use LSTM networks to predict the next events of a ca
 
 Tax et al. worked on the prediction of the next activity and its timestamp in a running case. He did so with LSTM neural networks. Both prediction targets were predicted with a single network with two output layers. They compared various architectures in terms of the number of shared and split LSTM layers. Sharing a single layer turned out to contribute to the best results on both the HelpDesk~\cite{Helpdesk} and BPIC12~\cite{BPIC2012} datasets. The obtained accuracies were $0.712$ and $0.760$, respectively~\cite{tax2017}.
 
-\subsection*{General next-event predictions}
+\subsection*{General Next-Event Predictions}
 General next-event predictions predict the next event in a stream of events, without specifying which case this event belongs to. Here, Evermann et al.~\cite{evermann2016} and Schönig et al.~\cite{schoenig2018} made contributions, which also build upon each other.
 
 Evermann et al. remark the lack of research on next event predictions and have successfully demonstrated the applicability of LSTM neural networks in the context of predicting the next event in a stream of events. Using a neural network implemented with Tensorflow, precisions between $0.600$ to $0.900$ on the BPIC12 and BPIC13 datasets are achieved. Evermann et al. want their work to be understood as a "demonstration of the applicability of the approach and the potential for future work." The authors highlight that their work lacks the use of data attributes during model training~\cite{evermann2016}.
@@ -78,7 +78,7 @@ We take the works of Evermann et al. and Schönig et al. and reimplement them as
 
 Clearly, Evermann's architecture left an inspiring impression with Schönig, who decided to remove the Embedding layer and adapt unit counts~\cite{schoenig2018}. In our conversation, Schönig argued that the Embedding was not needed, as the number of unique events was a lot lower than that of words in a text, for which Embeddings were originally developed. Where Evermann et al. used stochastic gradient descent (SGD) with a manual adaption of learning rate decay to $0.75$ after the 25th epoch, Schönig et al. use RMSprop with default values to optimize the network's loss. Furthermore, Schönig et al. fed the training data into their networks in a windowed fashion, contrary to Klinkmüller's suggestion that this might produce unstable results~\cite{klinkmuller2018reliablemonitoring}.
 
-\section{Sequence prediction}\label{sec:related-work-sequence-prediction}
+\section{Sequence Prediction}\label{sec:related-work-sequence-prediction}
 Sequence prediction deals with predicting the next element or next sequence from a given input, as explained in \autoref{sec:background:sequence-prediction}. It is rooted in NLP, and relevant publications are discussed in this section.\\
 
 Kokkinos et al. leveraged a tree-structured neural network to classify sentiments in sentences~\cite{kokkinos2017structural}. In a detailed comparison with other works, their bipartite tree approach yields the highest accuracy on the Stanford Sentiment Treebank dataset. While the proposition of tree-structured Gated Recurrent Units (GRUs, a variant of LSTM cells) and their use of a technique called attention form the main contribution of this work, the authors make use of a bipartite network architecture and word embeddings as well. This gives further appeal to the idea of adapting the approach of Shibata et al., presented in the following.\\
