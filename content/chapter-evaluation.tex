@@ -10,7 +10,7 @@ We evaluate the four models with a three-pronged strategy, targeting the followi
 
 We measure accuracy because it is a good indicator of how often the model predicts the right class, and permits comparisons to other works.
 Training time is of interest because a real-world application should use as little computing resources as possible.
-We forgo inference timing measurements because few Predictive Process Monitoring solutions are deployed in application scenarios yet.
+We forgo inference timing measurements because few predictive process monitoring solutions are deployed in application scenarios yet.
 The stability criterion permits making a judgment about the behavior of accuracy over time. The works of Francescomarino et al.~\cite{francescomarino2015} and Klinkmüller et al.~\cite{klinkmuller2018reliablemonitoring} inspired this measure. It provides an understanding of how the prediction accuracy of a model changes as the trace grows longer. This can facilitate building trust in the model, as indicated in the introduction of the thesis~\cite{klinkmuller2018reliablemonitoring, boehmer2018probability}.
 During the evaluation, results for BPIC logs and the HelpDesk dataset should not be compared too closely, as the BPIC logs are a lot more resourceful in terms of data attributes.
 
@@ -44,7 +44,7 @@ While the SCH, SP2 and PFS models do not show strong reactions to changes in the
 \FloatBarrier
 
 \paragraph{Accuracy on BPIC12}
-The process contained in BPIC12 is more complex than the one captured in the HelpDesk log.
+The process contained in BPIC12 is more complicated than the one captured in the HelpDesk log.
 The accuracy measurements on it are visualized in \autoref{fig:max-accuracies-bpic2012}.
 Again, all four models exhibit very similar accuracies for the individual and grouping batching strategies, where all score above $0.75$.
 On the padding strategy, the EVM model barely reaches an accuracy above $0$, while the others score above $0.8$.
@@ -476,7 +476,7 @@ Fifth, the SP2 model best handles the missing history on the windowing strategy.
 Its curves are the highest among the windowing strategy measurements on any dataset.
 Also, the SP2 accuracy curves on the windowing strategy are among those with the smallest fluctuations.\\
 
-We will connect these observations to the other findings from the other verdicts in the following section.
+We connect these observations to the other findings from the other verdicts in the following section.
 
 \section{Discussion}\label{sec:eval:discussion}
 In this section, we connect the observations made in the previous sections on accuracy, timing, and stability of the models.
@@ -486,7 +486,7 @@ The EVM model consistently underperforms, although it trains faster.
 Furthermore, it does not seem to work at all with the padding strategy.
 The SCH model works better, although both architectures are very similar.
 A fundamental difference between the EVM and SCH models is an embedding layer, which we suspect to be the cause for the lower accuracy.
-We believe that the embedding layer requires more datapoints per target class than currently included to perform well.
+We believe that the embedding layer requires more data points per target class than currently included to perform well.
 In the HelpDesk log, there is a tiny number of classes and a large number of traces, which could be a reason for the EVM model scoring above $0.85$.
 Also, we noted that the EVM model produced relatively better accuracies with the individual strategy than on the others.
 This might be due to more frequent adjustments of the word embedding.\\
@@ -503,7 +503,7 @@ While it may be a performant strategy to use for time-series prediction, it does
 
 Furthermore, we expected the models to become more accurate toward the end of the process.
 This did not turn out to be the case, but instead, we saw a connection of process complexity and accuracy.
-This connection was visible both in absolute accuracy and in accuracy stability measurements.
+This connection was visible both in absolute accuracy and in prediction stability measurements.
 \autoref{tab:strategy-top-accuracies} on page \pageref{tab:strategy-top-accuracies} shows that the mean accuracy of the three top-performing models on each dataset goes down as the process complexity goes up.
 In the stability measurements, it was possible to see that the models gave very accurate predictions in phases of low variability.
 We showed in the preceding section that process phases with few decision points coincide with phases of higher accuracy.

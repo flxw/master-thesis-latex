@@ -24,7 +24,7 @@ These logs are a valuable source of information as they can reveal best practice
 
 Forecasting the course of a running process can be useful for workers doing either manual labor or knowledge work. Questions of time and outcome dominate manual labor because the course of work is clear - natural interests in a world of distributed supply chains and just-in-time production~\cite{web:economist:jit}. The course of the work itself is of importance in the case of unstructured knowledge work, which is often unclear and depends on the information handled inside a case~\cite{francescomarino2015}. If a case were to progress in an unwanted fashion, knowledge about this development would present workers with an opportunity to intervene.\\
 
-By regarding the execution history of an ongoing case, the prediction of its next activity is possible - illustrated in \autoref{fig:next-activity-prediction}. This prediction could then be processed further by the aforementioned assistance system. It proposes an intervention if a case takes an unwanted course, for example. The application of Predictive Analytics on business processes enables this type of prediction. It is relatively new and is commonly referred to as Predictive Process Monitoring.
+By regarding the execution history of an ongoing case, the prediction of its next activity is possible - illustrated in \autoref{fig:next-activity-prediction}. This prediction could then be processed further by an assistance system to propose an intervention if a case takes an unwanted course, for example. The application of Predictive Analytics on business processes enables this type of prediction. It is relatively new and is commonly referred to as predictive process monitoring.
 
 \begin{figure}
     \centering
@@ -36,7 +36,7 @@ By regarding the execution history of an ongoing case, the prediction of its nex
 We realized that the current research in this young domain could be improved in three areas. These will henceforth be referred to as improvement areas:
 
 \begin{enumerate}
-  \item[\textbf{Area 1}] NLP-Influence: The history of a case is essentially a sequence, but little inspiration was taken from Natural Language Processing (NLP), where sequence prediction is common~\cite{shibata2016bipartite, kokkinos2017structural}.
+  \item[\textbf{Area 1}] NLP-Influence: The history of a case is essentially a sequence, but little inspiration was taken from natural language processing (NLP), where sequence prediction is common~\cite{shibata2016bipartite, kokkinos2017structural}.
   \item[\textbf{Area 2}] Reproducibility: Divergent approaches to training the prediction models and low technical depth of the publications make it hard to reproduce the published results. Furthermore, some prediction approaches focus on whole event streams without specific regard to a case~\cite{evermann2016, schoenig2018}.
   \item[\textbf{Area 3}] Comparability: Published approaches often use different datasets, making them hard to compare.
 \end{enumerate}
@@ -44,7 +44,7 @@ We realized that the current research in this young domain could be improved in 
 \section{Contribution}\label{sec:intro:contribution}
 In this work, we make a contribution to ongoing research by applying neural networks to process execution logs to predict the next activity. The three improvement areas guided the work.
 
-We address Area 1 by reusing a successful sequence prediction approach from the NLP domain and applying it on business process log data. We also adapt it to incorporate learnings from a paper on feature engineering for Predictive Process Monitoring~\cite{klinkmuller2018reliablemonitoring}. We compare the two models to reimplementations of two published approaches. Doing so, we ensure the direct comparability mentioned in Improvement Area 3. The models were reverse-engineered from the following publications:
+We address Area 1 by reusing a successful sequence prediction approach from the NLP domain and applying it on business process log data. We also adapt it to incorporate learnings from a paper on feature engineering for predictive process monitoring~\cite{klinkmuller2018reliablemonitoring}. We compare the two models to reimplementations of two published approaches. Doing so, we ensure the direct comparability mentioned in Improvement Area 3. The models were reverse-engineered from the following publications:
 
 \begin{enumerate}
     \item\textit{A Deep Learning Approach for Predicting Process Behaviour at Runtime} by Evermann et al.~\cite{evermann2016}
@@ -57,7 +57,7 @@ As we remarked the comparability of current publications in Improvement Area 3, 
 
 We use the datasets from the Business Process Intelligence Competition (BPIC) years 2011, 2012, and 2015, where the latter consists of five datasets.
 The trace characteristics in each dataset differ.
-From these traits and the different accuracies, we infer a suggestion on which batching strategy could be preferrable to use on which flavor of process log.
+From these traits and the different accuracies, we infer a suggestion on which batching strategy could be preferable to use on which flavor of process log.
 The additional use of the HelpDesk log allows for a comparison to published next-activity prediction approaches.
 
 We evaluate the trained models using three criteria: First, total accuracy. Second, we test for accuracy stability across the whole execution of the process, which we believe is vital for putting trust into the model~\cite{francescomarino2015, boehmer2018probability}. Third, we investigate training time requirements.
@@ -67,10 +67,10 @@ From the three evaluation criteria, we reason about the effectiveness of certain
 \section{Thesis outline}\label{sec:intro:outline}
 \autoref{chap:background} delivers the necessary background on Process Science and Predictive Analytics. Furthermore, it provides information on Predictive Model Development as well as details on the inner workings of the used type of neural network.
 
-\autoref{chap:related-work} gives an overview of current approaches to the prediction task at hand, highlighting the achievements and technicalities of each publication. Furthermore, it presents works on the problem of sequence prediction in the field of Natural Language Processing (NLP). For each publication used as comparison, implementation details are discussed.
+\autoref{chap:related-work} gives an overview of current approaches to the prediction task at hand, highlighting the achievements and technicalities of each publication. Furthermore, it presents works on the problem of sequence prediction in the field of natural language processing (NLP). For each publication used as comparison, implementation details are discussed.
 
 In \autoref{chap:taking-inspiration}, we show how sequences relate to business processes.
-We then go on to adopt a winning approach from an NLP sequence prediction competition for Predictive Process Monitoring.
+We then go on to adopt a winning approach from an NLP sequence prediction competition for predictive process monitoring.
 
 In \autoref{chap:training-framework}, we describe the various possible batch construction strategies that we perceived during the implementation of the predictive models and the exchange with Jörg Evermann and Stephan Schönig. We expand this technical issue into a simple training framework that makes it possible to compare all models and batching strategies side-by-side on all datasets. The framework permits future researchers to train sequence prediction models faster and more consistent.
 
@@ -81,4 +81,4 @@ Furthermore, we include a description of our technology landscape.
 
 In \autoref{chap:evaluation} we present the results obtained from our experiments, and the insights gained. As described in the previous section, we not only focus on total model accuracy, but also the stability of the predictions as a case progresses and more history becomes available.
 
-The thesis ends in \autoref{chap:conclusion}, where we summarize the findings and the accomplishments of this thesis. Also, we give pointers with which to extend this work and carry Predictive Process Monitoring forward.
+The thesis ends in \autoref{chap:conclusion}, where we summarize the findings and the accomplishments of this thesis. Also, we give pointers with which to extend this work and carry predictive process monitoring forward.

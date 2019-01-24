@@ -1,5 +1,5 @@
 \chapter{Background}\label{chap:background}
-To predict the next activity in a running case, we bring together the domains of Process science, Predictive Modeling and Deep Learning. This background chapter gives comprehensive insights into the parts of each domain that are used and referenced throughout this thesis. The chapter approaches them in a top-down fashion, starting with the high-level perspective from Process science and how Process mining is distinguished from Predictive process monitoring in \autoref{sec:process-science}. The section ends with information on how the process logs usually come into existence and which requirements these logs need to fulfill to be used in a prediction scenario.
+To predict the next activity in a running case, we bring together the domains of process science, predictive modeling and deep learning. This background chapter gives comprehensive insights into the parts of each domain that are used and referenced throughout this thesis. The chapter approaches them in a top-down fashion, starting with the high-level perspective from process science and how process mining is distinguished from predictive process monitoring in \autoref{sec:process-science}. The section ends with information on how the process logs usually come into existence and which requirements these logs need to fulfill to be used in a prediction scenario.
 With the data origin explained, \autoref{sec:predictive-modeling} introduces a process along which predictive model development typically takes place.
 \autoref{sec:artificial-neural-networks} gives an in-depth look at neural networks and the components relevant to this thesis.
 Long short-term memory is also explained in detail.
@@ -26,7 +26,7 @@ With the help of workflow management systems (WFMS), it is possible to embed and
     \label{fig:activity-lifecycle}
 \end{figure}
 
-The event logs give rise to the disciplines of Process mining and Predictive process monitoring. These disciplines revolve around analyzing the information contained in those logs~\cite{Aalst2016}. Because of the paramount importance of logs for this work, we begin this chapter a definition of the properties and structure of a log in \autoref{sec:log-structure}. The following \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast Process mining and Predictive process monitoring.
+The event logs give rise to the disciplines of process mining and predictive process monitoring. These disciplines revolve around analyzing the information contained in those logs~\cite{Aalst2016}. Because of the paramount importance of logs for this work, we begin this chapter a definition of the properties and structure of a log in \autoref{sec:log-structure}. The following \autoref{sec:process-mining} and \autoref{sec:predictive-process-monitoring} contrast process mining and predictive process monitoring.
 
 \subsection{Process logs}\label{sec:log-structure}
 A process log tracks the execution history of a process and can be understood in a hierarchical manner. Each log of a process consists of cases, which represent instances of a process. A case itself consists of a trace of events, i.e., a sequence that only belongs to a single case. Each event can have attributes attached~\cite{Aalst2016}.
@@ -52,23 +52,23 @@ The events are ordered by timestamp. In turn, each event $e$ has certain attribu
 Applied to the example in \autoref{fig:process-log}, $e = \#_{trace}(c)[4]$ would get the fourth event in the trace, and $\#_{concept:name}(e)$ would produce the activity name \verb=W_Completeren aanvraag=.
 Calling $attribute\_names(e)$ would yield \verb=lifecycle:transition=, \verb=concept:name=, \verb=time:timestamp=, and \verb=org:resource=.
 
-These operators enable working with log data, which is at the core of Process mining.
-We will introduce this domain in the next subsection.
+These operators enable working with log data, which is at the core of process mining.
+We introduce this domain in the next subsection.
 
 \subsection{Process mining}\label{sec:process-mining}
-Process mining covers the three steps of process model discovery, conformance checking and process model enhancement \cite{Aalst2016} -  all based on process event logs. It is worth noting that the logs can be enriched with data from systems other than WFMS. The three steps are enabled by techniques from Data science, making it possible to understand Process mining as a link between Data science and Process science. This is also visualized in \autoref{fig:process-data-science}.
+Process mining covers the three steps of process model discovery, conformance checking and process model enhancement \cite{Aalst2016} -  all based on process event logs. It is worth noting that the logs can be enriched with data from systems other than WFMS. The three steps are enabled by techniques from Data science, making it possible to understand process mining as a link between data science and process science. This is also visualized in \autoref{fig:process-data-science}.
 
 \begin{figure}[!htb]
     \centering
     \includegraphics[width=.8\textwidth]{gfx/process-data-science.png}
-    \caption[Process mining connects two disciplines]{Process mining connects Process science and Data science - the blue line symbolizes the subdomains that Predictive process monitoring brings together. Illustration taken from~\cite[p.18]{Aalst2016}}
+    \caption[Process mining connects two disciplines]{Process mining connects process science and data science - the blue line symbolizes the subdomains that predictive process monitoring brings together. Illustration taken from~\cite[p.18]{Aalst2016}}
     \label{fig:process-data-science}
 \end{figure}
 
 A major problem when discovering process models is posed by spaghetti and lasagna process models~\cite{Aalst2016}. These overly complex and unreadable models are mined from process logs that contain highly variable execution traces. Process mining mainly revolves around process models and the data-driven discovery and optimization based on historical data. For this reason, a possibility to act on case developments in real-time without model-imposed restrictions is desirable. Predictive process monitoring provides this possibility.
 
 \subsection{Predictive process monitoring}\label{sec:predictive-process-monitoring}
-Predictive process monitoring is aimed at the use of online data to make statements about the progression of a running case~\cite{francescomarino2015, schoenig2018}. It is not based on process models, but predictive models and thus provides a flexibility that is not available within model-based Process mining.  As visualized in \autoref{fig:process-data-science}, Predictive process monitoring connects two sub-domains of Process science and Data science. This makes it a discipline within Process mining~\cite{Aalst2016}. With Predictive process monitoring, questions such as the following can be answered:
+Predictive process monitoring is aimed at the use of online data to make statements about the progression of a running case~\cite{francescomarino2015, schoenig2018}. It is not based on process models, but predictive models and thus provides a flexibility that is not available within model-based process mining.  As visualized in \autoref{fig:process-data-science}, predictive process monitoring connects two sub-domains of process science and data science. This makes it a discipline within process mining~\cite{Aalst2016}. With predictive process monitoring, questions such as the following can be answered:
 
 \begin{enumerate}
     \item Can the service level agreement still be met?
@@ -78,8 +78,8 @@ Predictive process monitoring is aimed at the use of online data to make stateme
 
 The answers to these questions can give case workers the opportunity to intervene if a case takes an unwanted course or might fail to meet requirements. Furthermore, this approach only requires sufficient amounts of logged case executions to train the predictive models. What this entails is explained in the following chapter.
 
-\section{Predictive modelling}\label{sec:predictive-modeling}
-Predictive modelling is a domain that deals with creating models from learned statistical properties of data to predict outcomes~\cite{sivaganesan1994predictive}. These models are referred to as predictive models and are not related to process models. This section introduces a common process for predictive model generation in \autoref{sec:predictive-model-development}.
+\section{Predictive modeling}\label{sec:predictive-modeling}
+Predictive modeling is a domain that deals with creating models from learned statistical properties of data to predict outcomes~\cite{sivaganesan1994predictive}. These models are referred to as predictive models and are not related to process models. This section introduces a common process for predictive model generation in \autoref{sec:predictive-model-development}.
 As we aim to transfer a method from NLP to Predictive process monitoring, we introduce a definition of sequences in \autoref{sec:background:sequences}. Then, we frame the problem in \autoref{sec:background:sequence-prediction} that is fundamental to this thesis: next-element predictions in a sequence.
 
 \subsection{Predictive model development}
@@ -230,7 +230,7 @@ Hochreiter \& Schmidhuber published this enhancement in 1997~\cite{hochreiter199
     \label{fig:lstm}
 \end{figure}
 
-\autoref{fig:lstm} showcases the architecture of an unrolled LSTM cell. In the diagram, each line carries an entire vector. The pink circles represent pointwise operations, like vector addition. The yellow boxes symbolize operations. Merging lines denote concatenation, while a forking line denotes its content being copied in both directions. The cell state $C$ is symbolized by the horizontal upper line running from left to right. The lower line on the left represents $h_{t-1}$, the output of the cell in the previous step.
+\autoref{fig:lstm} showcases the architecture of an unrolled LSTM cell. In the diagram, each line carries an entire vector. The pink circles represent pointwise operations, like vector addition. Yellow boxes symbolize operations. Merging lines denote concatenation, while a forking line denotes copying its content in both directions. The cell state $C$ is symbolized by the horizontal upper line running from left to right. The lower line on the left represents $h_{t-1}$, the output of the cell in the previous step.
 
 The $\sigma$ boxes represent gates. Which parts of $C_{t-1}$ to keep and what to forget is decided at the first gate from the left, by taking $h_{t-1}$ and $x_t$ into account. The following $\sigma$ gate and $tanh$ operator together create the update to $C_{t-1}$. Finally, on the right, the updated cell state $C_t$ is used together with the activation function $tanh$ to produce the output $h_t$. Variants of this original LSTM cell architecture exist, with most modifications made around the construction of the state $C$ - all exhibiting similar performance~\cite{greff2017lstm}.\\
 
@@ -273,7 +273,7 @@ The softmax function normalizes the output $y_i$ of a neuron $i$ to a value betw
 
 $$S(y_i) = \frac{e^{y_i}}{\sum_j e^{y_j}}$$
 
-The sum of all output values of all neurons in a softmax-activated layer will always be 1.
+The sum of all output values of all neurons in a softmax-activated layer always equals 1.
 A is understood as the placeholder of a single class, and its output is interpreted as the probability of this class.
 The neuron with the highest probability reveals the prediction of the network.
 
@@ -356,10 +356,10 @@ $$
 \vec{v}_{king} - \vec{v}_{man} + \vec{v}_{women} = \vec{v}_{queen}
 $$
 
-A word embedding thus allows clustering of words by specific properties. Made famous by Google, word embeddings have motivated numerous publications~\cite{web:ahogrammer, goldberg2014word2vec}. Word embeddings are often available pre-trained on very large text databases, Wikipedia for instance. To use such a pre-trained embedding, the weights from it can be loaded into the respective layer before training the network.
+A word embedding thus allows clustering of words by specific properties. Made famous by Google, word embeddings have motivated numerous publications~\cite{web:ahogrammer, goldberg2014word2vec}. Word embeddings are often available pre-trained on extensive text databases, like Wikipedia. To use such a pre-trained embedding, the weights from it can be loaded into the respective layer before training the network.
 
 \subsection{Feature engineering for sequences}\label{sec:sequential-feature-engineering}
-Predictive model inputs take in feature vectors of fixed size. As shown, sequences can be of arbitrary length, and thus these two requirements collide. To bring variable length inputs into a usable format for predictive models, several methods of formatting have been invented. As some of their names suggest, these come from the domain of Natural Language Processing (NLP), but can easily be transferred to the problem at hand.
+Predictive model inputs take in feature vectors of fixed size. As shown, sequences can be of arbitrary length, and thus these two requirements collide. To bring variable length inputs into a usable format for predictive models, several methods of formatting have been invented. As some of their names suggest, these come from the domain of natural language processing (NLP), but can easily be transferred to the problem at hand.
 
 \subsubsection*{Sliding Window}
 The sliding window format is widespread in the areas of NLP and Time Series Forecasting. The sequences are divided into chunks of width $c$. Chunking results in several input tuples for every sequence and creates the desired tabular format for feeding into the model - illustrated in \autoref{tab:sliding-window}.

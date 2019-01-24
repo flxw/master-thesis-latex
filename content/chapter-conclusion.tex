@@ -10,13 +10,13 @@ It allows for quickly training different network architectures with different ba
 The dataset for training can be exchanged.\\
 
 \noindent The framework not only allows for training numerous model-strategy-dataset combinations but also tackles an issue within current research: comparability.
-Most publications in Predictive Process Monitoring use different datasets and do not publicize their implementation, thus making comparisons hard.
+Most publications in predictive process monitoring use different datasets and do not publicize their implementation, thus making comparisons hard.
 It is considered standard practice in machine learning research to make code and datasets accessible for reproduction~\cite{russell1995modern}.
 By using our framework, researchers only need to make the implementations of the base classes accessible to the public along with the data.
 Because the framework covers a large part of typical training logic, development time is also reduced.\\
 
 To establish a baseline, we implemented two of the four neural network models from publications by Evermann et al. and Schönig et al.~\cite{evermann2016, schoenig2018}.
-We then ported an approach from NLP to Predictive Process Monitoring, resulting in a third model~\cite{shibata2016bipartite}.
+We then ported an approach from NLP to predictive process monitoring, resulting in a third model~\cite{shibata2016bipartite}.
 By adapting the input features of the ported model per the findings of another publication, we obtained a fourth model~\cite{klinkmuller2018reliablemonitoring}.
 In the order of introduction, we refer to the four models as EVM, SCH, SP2, and PFS.\\
 
@@ -24,12 +24,12 @@ In our evaluation, we focused on prediction accuracy, training time, and the sta
 The SP2 model consistently ranked at the top or among the best performing models, which we attribute to the use of SP-2 features. In comparison with recently published accuracy numbers on the BPIC12 log, the SCH and SP2 models were more accurate by $0.07$ and attained $0.853$ and $0.850$~\cite{boehmer2018probability, evermann2016}.
 On the HelpDesk log, the PFS and SCH models outperformed the published numbers, too, and reached accuracies of $0.862$ and $0.854$.
 
-Furthermore, we learned that grouping traces by their length to produce batches contributes to the highest accuracies with the smallest training time.
+Furthermore, we learned that grouping traces by their length to produce batches contributes to the highest accuracies and takes the least training time.
 Generally, the batching strategies which supply complete history to the model perform best.
-The strategy of using a single trace per batch sees the smallest accuracy gains and requires the most time to train an epoch.
+The strategy of using a single trace per batch sees the smallest accuracy gains and requires the most time to train.
 
 Another finding of the measurements was that process complexity seems to influence prediction accuracy.
-The more activities a trace has, and the longer it tends to be, the less accurate the predictions become.
+The more activities a trace has, and the longer it is, the less accurate the predictions become.
 This connection was also visible in the stability measurements when process complexity went up or down in a stage of the process.
 
 Finally, we could confirm findings from Klinkmüller et al. that omitting history from process traces negatively impacts prediction accuracy~\cite{klinkmuller2018reliablemonitoring}.
@@ -38,14 +38,14 @@ Finally, we could confirm findings from Klinkmüller et al. that omitting histor
 In this section, we present items which could carry this research further in publications or subsequent master thesis.
 We cluster the future work by topic and connect our limitations where applicable.
 
-\paragraph{Benchmarking dataset} Currently, Predictive Process Monitoring suffers from not having standardized benchmarking datasets for researchers to evaluate their algorithms on.
+\paragraph{Benchmarking dataset} Currently, predictive process monitoring suffers from not having standardized benchmarking datasets for researchers to evaluate their algorithms on.
 This forces researchers to resort to a multitude of datasets, or to even use non-public data.
 In our case, we used the BPIC12 and HelpDesk logs for evaluation and accuracy comparison.
 We feel that the HelpDesk log with its two columns can neither be considered a realistic nor an optimal source of data for this use case.
 This is why we advocate for standard benchmarking datasets, which are common in many other machine learning disciplines.
 We believe that it is time to draw up such datasets with real data or close to real-world data, representing industry-typical processes.
 By having different datasets with different characteristics, prediction approaches could be evaluated along different dimensions.
-As there is already a tendency to use BPIC logs, the next year's challenge could be on Predictive Process Monitoring.
+As there is already a tendency to use BPIC logs, the next year's challenge could be on predictive process monitoring.
 There, a log could be advertised as a future standard to evaluate on.
 Otherwise, the number of datasets that researchers have to use to ensure comparability will only ever increase.
 
@@ -68,7 +68,7 @@ This would incur further gains in accuracy.
 \paragraph{Data augmentation} Image data for machine learning applications is often augmented to increase the number of available training samples.
 In this case, images are rotated, transformed, stretched or cropped and saved as separate samples~\cite{Thoma:2017,}.
 More data generally leads to higher accuracies and more robust models.
-In the interest of improving model performance for Predictive Process Monitoring, augmentation methods should be explored with which to produce more traces from existing logs.
+In the interest of improving model performance for predictive process monitoring, augmentation methods should be explored with which to produce more traces from existing logs.
 
 \paragraph{Listing of best event attributes} The predictive power that a feature possesses can be measured with different methods.
 If, e.g., a feature by itself exactly indicates what the next activity is going to be, its predictive power is very high.
@@ -79,7 +79,7 @@ From the findings, a list could be made of those attributes which are most likel
 
 \paragraph{Word embeddings} Word embeddings for NLP applications are trained on huge text corpora like Wikipedia and help map dictionary-encoded words to a large feature space.
 In \autoref{sec:background:feature-engineering}, we hinted at the fact that the weights for word embeddings can be imported from pre-trained models to avoid training on a similarly large dataset and save time.
-This principle could be transferred to Predictive Process Monitoring by providing pre-trained embeddings for process categories.
+This principle could be transferred to predictive process monitoring by providing pre-trained embeddings for process categories.
 As evidenced in \autoref{sec:eval:discussion}, this is tied to larger datasets.
 It is worth exploring how well activity names are similar across processes, to gauge the reusability of a word embedding produced on one process for another.
 

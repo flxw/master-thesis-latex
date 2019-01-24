@@ -1,6 +1,6 @@
 \chapter{Sequence prediction with traces}
 \label{chap:taking-inspiration}
-Previous works have demonstrated the practicality of LSTM neural networks for Predictive Process Monitoring. However, only the use of embedding layers was inspired by Natural Language Processing (NLP) until now~\cite{evermann2016}. We believe that more knowledge could be transferred because both domains revolve around sequential data. In this chapter, we outline how we take inspiration from sequence prediction in NLP, and thus contribute to Improvement Area 1 (NLP-influence) from \autoref{sec:intro:motivation}.
+Previous works have demonstrated the practicality of LSTM neural networks for predictive process monitoring. However, only the use of embedding layers was inspired by natural language processing (NLP) until now~\cite{evermann2016}. We believe that more knowledge could be transferred because both domains revolve around sequential data. In this chapter, we outline how we take inspiration from sequence prediction in NLP, and thus contribute to Improvement Area 1 (NLP-influence) from \autoref{sec:intro:motivation}.
 
 We establish the connection between traces and sequences by connecting their definitions in \autoref{sec:contrib:case-sequence-understanding}. This provides the underpinning for introducing two NLP-inspired approaches for predicting the next activity in a case. These approaches are presented in \autoref{sec:contrib:sp2-inspiration} and \autoref{sec:contrib:pfs-inspiration}.
 
@@ -39,7 +39,7 @@ This definition enables sequence prediction on traces, and also provides the tab
 In \autoref{sec:background:sequence-prediction}, a many-to-one prediction is defined to target the next itemset $\widehat{s_{k+1}}$ of any sequence $seq_{1,k}$.
 In the use case at hand, this would entail the prediction of all data attributes in $\widehat{s_{k+1}}$.
 Since we specifically target the name of the next activity, we adjust the definition of the prediction function to target a single item $\hat{i_j}$.
-The index $j$ corresponds to the column index of the target variable inside the itemset $s_{k+1}$, i.e. the index of the activity name in our case.
+The index $j$ corresponds to the column index of the target variable inside the itemset $s_{k+1}$, i.e., the index of the activity name in our case.
 
 $$ predict(seq_{1,k}) = \hat{i_j} $$
 
@@ -71,7 +71,7 @@ This models the problem as a multi-classification problem.
 
 In contrast to the original model, we completely removed the embedding layers.
 Above the SP-2 feature input layer, the embedding layer was replaced with a feedforward layer.
-We argue that embedding layers are not neccessary in this context, because the number of activity names in a process is small compared to the number of words usually processed with embedding layers in NLP scenarios.
+We argue that embedding layers are not necessary for this context, because the number of activity names in a process is small compared to the number of words usually processed with embedding layers in NLP scenarios.
 
 
 Another difference is the dimensionality $n+m$ of the hidden layers.
@@ -79,7 +79,7 @@ In contrast to Evermann et al. and Shibata et al., we do not fix it or make it s
 This follows general advice not to introduce bottlenecks in the hidden layers by using fewer units than required in the output layer~\cite{web:techniques-in-convnets,szegedy2016rethinking}.\\
 
 \noindent Shibata et al. engineered their SP-2 features from prediction targets~\cite{shibata2016bipartite}.
-Therefore, we produce the SP-2 features on the basis of the sequence of activity names.
+Therefore, we produce the SP-2 features from the sequence of activity names.
 An exemplary SP-2 feature vector from activity names is depicted in \autoref{tab:sp2-activity-trace}.
 It is based on a trace from a case $c$, which contains numeric activity names.
 
@@ -121,10 +121,10 @@ The respective architecture is shown in \autoref{fig:pfs-architecture}.
 \end{figure}
 
 We will henceforth refer to both the architecture and the subsequence features as PFS.
-The acronym PFS originates from the word PrefixSpan, which is the name of the algorithm that we use lateron to mine the subsequences.
-The PFS feature vector has $l$ dimensions, and is fed in on the right side of the tree.
+The acronym PFS originates from the word PrefixSpan, which is the name of the algorithm that we use later to mine the subsequences.
+The PFS feature vector has $l$ dimensions and is fed in on the right side of the tree.
 
-The PFS vector encodes whether common subsequences have occured yet, as \autoref{tab:pfs-activity-trace} illustrates.
+The PFS vector encodes whether common subsequences have occurred yet, as \autoref{tab:pfs-activity-trace} illustrates.
 The illustration is based on the trace $seq=\#_{trace}(c)=\langle (1), (8), (6), (8), (6)\rangle$.
 From the log that $seq$ was taken from, we mined four common subsequences: $\langle 6\rangle$, $\langle 1,6\rangle$, $\langle 8,6\rangle$, and $\langle1,8,6\rangle$.
 In the example, a field inside the feature vector is set to 1 when the respective subsequence has occurred.\\
