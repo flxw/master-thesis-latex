@@ -15,9 +15,9 @@ It is considered standard practice in machine learning research to make code and
 By using our framework, researchers only need to make the implementations of the base classes accessible to the public along with the data.
 Because the framework covers a large part of typical training logic, development time is also reduced.\\
 
-To establish a baseline, we implemented two of the four neural network models from publications by Evermann et al. and Schönig et al.~\cite{evermann2016, schoenig2018}.
+To establish a baseline for the comparison, we implemented two of the four neural network models from publications by Evermann et al. and Schönig et al.~\cite{evermann2016, schoenig2018}.
 We then ported an approach from NLP to predictive process monitoring, resulting in a third model~\cite{shibata2016bipartite}.
-By adapting the input features of the ported model per the findings of another publication, we obtained a fourth model~\cite{klinkmuller2018reliablemonitoring}.
+By adapting the input features of the ported model in accordance with the findings of another publication, we obtained a fourth model~\cite{klinkmuller2018reliablemonitoring}.
 In the order of introduction, we refer to the four models as EVM, SCH, SP2, and PFS.\\
 
 In our evaluation, we focused on prediction accuracy, training time, and the stability of the prediction accuracy over time.
@@ -28,13 +28,15 @@ Furthermore, we learned that grouping traces by their length to produce batches 
 Generally, the batching strategies which supply complete history to the model perform best.
 The strategy of using a single trace per batch sees the smallest accuracy gains and requires the most time to train.
 
-Another finding of the measurements was that process complexity seems to influence prediction accuracy.
-The more activities a trace has, and the longer it is, the less accurate the predictions become.
-This connection was also visible in the stability measurements when process complexity went up or down in a stage of the process.
+Another finding of the measurements was that process complexity seemed to influence prediction accuracy.
+The more activities a trace had, and the longer it was, the less accurate the predictions became.
+This connection was also visible in the stability measurements when process complexity went up or down in a stage of the process:
+in a mined process model, process phases with few decision points coincided with phases of higher accuracy in the stability curve.
+
 
 Finally, we could confirm findings from Klinkmüller et al. that omitting history from process traces negatively impacts prediction accuracy~\cite{klinkmuller2018reliablemonitoring}.
 
-\section{Future work and limitations}\label{sec:conclusion:future-work}
+\section{Future Work and Limitations}\label{sec:conclusion:future-work}
 In this section, we present items which could carry this research further in publications or subsequent master thesis.
 We cluster the future work by topic and connect our limitations where applicable.
 

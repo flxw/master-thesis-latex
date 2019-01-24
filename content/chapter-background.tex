@@ -263,7 +263,7 @@ Dropout also approximately doubles the number of iterations required to converge
 \subsubsection*{Embedding layers}
 Embedding layers make it possible to use word embeddings.
 Embeddings map inputs to a continuous vector space.
-The layer weights are often imported from pretrained embeddings, as is explained in depth in \autoref{sec:background:word-embedding}.
+The layer weights are often imported from pretrained embeddings, as is explained in depth in \autoref{sec:categorical-feature-engineering}.
 
 \subsubsection*{Softmax activation}
 The softmax activation is useful for converting the output of a network into a classification.
@@ -336,7 +336,7 @@ In contrast to one-hot encoding, this dictionary encoding does not result in wid
     \end{split}
 \end{equation*}
 
-\begin{figure}
+\begin{table}
     \centering
     \begin{tabular}{c|ccccccccc}
         Word & Maria & Arthur & is & wants & to & king & be & the & queen\\
@@ -345,9 +345,9 @@ In contrast to one-hot encoding, this dictionary encoding does not result in wid
     \end{tabular}
     \caption{The dictionary built from the $seq1$ and $seq2$}
     \label{tab:dictionary-encoding}
-\end{figure}
+\end{table}
 
-\subsubsection*{Word Embedding}\label{sec:background:word-embedding}
+\subsubsection*{Word Embedding}
 Because dictionary encodings impose order and one-hot encodings lead to sparse data, word embeddings are perceived as a viable alternative for encoding categorical variables. Word embeddings are rooted in NLP, where applications deal with very large alphabets.
 
 A word embedding is the output of a neural network with a single hidden layer that has been trained on a large, dictionary-encoded text corpus. It detects how words relate to each other and puts out highly dimensional vectors for each word~\cite{web:word-embedding}. These represent any word property that the model has picked up. In the following example from~\cite{mikolov2013distributed}, the network was able to detect gender properties and social semantics of words:
